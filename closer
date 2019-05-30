@@ -1,0 +1,58 @@
+#!/bin/sh
+#
+# closer
+
+ARGS="$@"
+
+usage() {
+    cat >&2 << EOF
+Usage: $(basename $0) [direction]
+    -u | up:    Focus next window up.
+    -l | left:  Focus next window left.
+    -d | down:  Focus next window down.
+    -r | right: Focus next window right.
+    -h | help:  Show this help.
+EOF
+
+    test $# -eq 0 || exit $1
+}
+
+windowsUp() {
+    wid=$( (lsw; pfw) | sort -u | xargs wattr yi | sort -nr | \
+            sed "0,/$PFW/d" | sed "1s/^[0-9]* //p;d")
+}
+
+windowsDown() {
+    wid=$( (lsw; pfw) | sort -u | xargs wattr yi | sort -n | \
+            sed "0,/$PFW/d" | sed "1s/^[0-9]* //p;d")
+}
+
+windowsLeft() {
+    wid=$( (lsw; pfw) | sort -u | xargs wattr xi | sort -nr | \
+            sed "0,/$PFW/d" | sed "1s/^[0-9]* //p;d")
+}
+
+windowsRight() {
+    wid=$( (lsw; pfw) | sort -u | xargs wattr xi | sort -n | \
+            sed "0,/$PFW/d" | sed "1s/^[0-9]* //p;d")
+}
+
+main() {
+    . fwmrc
+
+    case "$1" in
+        -u|--up|up)       windowsUp    ;;
+        -d|--down|down)   windowsDown  ;;
+        -l|--left|left)   windowsLeft  ;;
+        -r|--right|right) windowsRight ;;
+        -h|--help|help)   usage 0      ;;
+        *)                usage 1      ;;
+    esac
+
+    test ! -z "$wid" && {
+        focus --wid "$wid"
+        return
+    }
+}
+
+main $ARGS

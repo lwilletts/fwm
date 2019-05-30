@@ -1,0 +1,95 @@
+#!/bin/sh
+#
+# full
+
+ARGS="$@"
+
+usage() {
+    base=$(basename $0)
+
+    cat >&2 << EOF
+Usage:
+    $ $base <wid> <screen>
+    $ $base [-c|--clean] <wid>
+    $ $base [-h|--help]
+EOF
+
+    test $# -eq 0 || exit $1
+}
+
+widCheck() {
+    case "$1" in
+        0x*) return 0 ;;
+        *)   usage 1  ;;
+    esac
+}
+
+clean() {
+    cleanWid=$1
+    widCheck "$cleanWid"
+
+    # search all fsfiles for matching wid
+    grep -qrw "$cleanWid" "$fsdir" && {
+        screenIdFile=$(grep -rH "$cleanWid" "$fsdir" | cut -d: -f 1)
+
+        test ! -z "$wid" && {
+            wtp $(grep -w "$wid" "$screenIdFile")
+            chwb -s $BW -c "$ACTIVE" "$wid"
+        }
+
+        rm "$screenIdFile"
+    }
+}
+
+main() {
+    . fwmrc
+
+    case "$1" in
+        -h|--help|help)
+            usage 0
+            ;;
+        -c|--clean|clean)
+            clean "$2"
+            ;;
+        *)
+            case $# in
+                0)
+                    wattr "$PFW" && wid=$PFW || return 1
+                    screenId="$SCR"
+                    ;;
+                1)
+                    wattr "$1" && wid="$1" || wid="$PFW"
+                    screenId="$SCR"
+                    ;;
+                2)
+                    wattr "$1" && wid="$1" || wid="$PFW"
+                    mattr "$2" && SCR="$2" || {
+                        printf '%s\n' "$2 is not a connected screen."
+                        exit 1
+                    }
+                    ;;
+            esac
+            ;;
+    esac
+
+    # clean wid if already focused
+    grep -qrw "$wid" "$fsdir" && {
+        clean "$wid"
+        return
+    }
+
+    # focus fullwid if it exists
+    test -e "$fsdir/$SCR" && {
+        focus wid $(cat "$fsdir/$SCR" | cut -d\  -f 5)
+        return
+    }
+
+    # save window info to disk
+    wattr xywhi "$wid" > "$fsdir/$screenId"
+
+    # perform fullscreen operations
+    chwb -s 0 "$wid"
+    sh -c "wtp $(mattr xywh $wid) $wid"
+}
+
+main $ARGS

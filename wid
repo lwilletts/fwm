@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# wid
+# wrapper to find any visible window that matches a string
+
+ARGS="$@"
+
+usage() {
+    cat >&2 << EOF
+Usage: $(basename $0) [Search String]
+EOF
+
+    test $# -eq 0 || exit $1
+}
+
+findName() {
+    for wid in $(lsw); do
+        printf '%s\n' "$wid $(name "$wid")"
+    done
+}
+
+findClass() {
+    for wid in $(lsw); do
+        printf '%s\n' "$wid $(class "$wid")"
+    done
+}
+
+findTitle() {
+    for wid in $(lsw); do
+        printf '%s\n' "$wid $(wname "$wid")"
+    done
+}
+
+showAll() {
+    findName
+    findClass
+}
+
+main() {
+    test $# -eq 0 && usage 1
+
+    case "$1" in
+        -h|--help|help) usage 0 ;;
+    esac
+
+    . fwmrc
+
+    showAll | grep -i "$@" | cut -d\  -f 1 | sort | uniq
+}
+
+main $ARGS

@@ -1,0 +1,79 @@
+#!/bin/sh
+#
+# fwmrc
+
+# check if arg 1 is an integer
+intCheck() {
+    test $1 -ne 0 2> /dev/null
+    test $? -ne 2 || return 1
+}
+
+name() {
+    test $# -eq 0 && return 1
+    for wid in $@; do
+        lsw -a | grep -q "$wid" && {
+            xprop -id "$wid" WM_CLASS | cut -d\" -f 2
+            unset -v wid
+        } || {
+            printf '%s\n' "Please enter a valid window id." >&2
+            unset -v wid
+            return 1
+        }
+    done
+}
+
+class() {
+    test $# -eq 0 && return 1
+    for wid in $@; do
+        lsw -a | grep -q "$wid" && {
+            xprop -id "$wid" WM_CLASS | cut -d\" -f 4
+            unset -v wid
+        } || {
+            printf '%s\n' "Please enter a valid window id." >&2
+            unset -v wid
+            return 1
+        }
+    done
+}
+
+process() {
+    test $# -eq 0 && return 1
+    for wid in $@; do
+        lsw -a | grep -q "$wid" && {
+            xprop -id "$wid" _NET_WM_PID | cut -d\  -f 3
+            unset -v wid
+        } || {
+            printf '%s\n' "Please enter a valid window id." >&2
+            unset -v wid
+            return 1
+        }
+    done
+}
+
+# list current windows on current focused wid screen
+current() {
+    for wid in $(lsw); do
+        printf '%s\n' "$(mattr i $wid) $wid"
+    done | grep "$SCR" | cut -d\  -f 2
+}
+
+# check there is a display running
+test -z "$DISPLAY" && return 1
+
+# environment
+fwmdir=${fwmdir:-/tmp/fwm}
+confdir=${confdir:-~/.config/fwm}
+
+fsdir=${fsdir:-$fwmdir/fs}
+test ! -d "$fsdir" && mkdir -p "$fsdir"
+groupdir=${groupdir:-$fwmdir/groups}
+test ! -d "$groupdir" && mkdir -p "$groupdir"
+
+PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000001")"
+SCR=$(mattr i $PFW)
+
+BW="$(grep "borderwidth" $HOME/.cwmrc | cut -d\  -f 2)"
+GAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 3)"
+ACTIVE="$(grep "color activeborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
+URGENT="$(grep "color urgencyborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
+INACTIVE="$(grep "color inactiveborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"

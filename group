@@ -1,0 +1,43 @@
+#!/bin/sh
+#
+# group
+
+ARGS="$@"
+
+usage() {
+    base=$(basename $0)
+
+    cat >&2 << EOF
+Usage:
+
+add wid to group
+hide group
+show group
+only show given group
+toggle group
+cycle through windows if on group
+clean wid from all groups
+remove all wids from group
+listen to window close event and clean wid from groups
+listen to window unmap event to leave current wid at the top of group stack
+find what wid belongs to what group
+list all groups
+EOF
+
+    test $# -eq 0 || exit $1
+}
+
+main() {
+    case "$1" in
+        -h|--help|help)
+            usage 0
+            ;;
+        *)
+            usage 1
+            ;;
+    esac
+
+    . fwmrc
+}
+
+main $ARGS
