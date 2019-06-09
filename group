@@ -107,6 +107,9 @@ mapGroup() {
 
         # start cwm up again
         cwm &
+
+        # focus top wid in group
+        focus --wid "$(head -n 1 "$groupdir/$grp")"
     } || return 1
 }
 
@@ -135,12 +138,12 @@ toggleGroup() {
     intCheck "$1" && grp="$1" || usage 1
 
     # only continue if active file exists
-    test -f "$active" && {
+    test -f "$inactive" && {
         # map group if found inactive
         while read -r inactiveGroup; do
             test "$inactiveGroup" -eq "$grp" && mapGroup "$grp" && return 0
         done < "$inactive"
-    } || return 1
+    }
 
     unmapGroup "$grp"
 }
@@ -148,7 +151,9 @@ toggleGroup() {
 listGroups() {
     for group in $(find $groupdir/? 2> /dev/null); do
         printf '%s\n' "group $(printf '%s' "$group" | rev | cut -d'/' -f 1 | rev):"
-        cat "${group}"
+        while read -r wid; do
+            printf '%s\n' "$wid: $(name $wid),$(class $wid)"
+        done < "$group"
     done
 }
 

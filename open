@@ -14,8 +14,20 @@ esac
 
 case "$(class $wid)" in
     URxvt)
+        case "$(wname $wid)" in
+            [mosh]*)
+                group add 0 $wid
+                ;;
+            *)
+                group add 1 $wid
+                ;;
+        esac
         ;;
     Firefox)
+        group add 2 $wid
+        ;;
+    mpv)
+        group add 3 $wid
         ;;
     discord)
         ;;
@@ -26,8 +38,10 @@ case "$(class $wid)" in
     obs)
         ;;
     Lutris)
+        group add 5 $wid
         ;;
     Steam)
+        group add 5 $wid
         ;;
     steam_app_439370)
         ;;
