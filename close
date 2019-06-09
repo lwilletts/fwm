@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# close
+
+. fwmrc
+
+wattr "$1" && wid="$1" || exit 1
+
+case "$(class $wid)" in
+    TelegramDesktop)
+        kill -15 $(process "$wid")
+        ;;
+    obs)
+        kill -15 $(process "$wid")
+        ;;
+    *)
+        killw "$wid"
+        ;;
+esac

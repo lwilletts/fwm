@@ -8,6 +8,13 @@ intCheck() {
     test $? -ne 2 || return 1
 }
 
+widCheck() {
+    case "$1" in
+        0x*) return 0 ;;
+        *)   return 1 ;;
+    esac
+}
+
 name() {
     test $# -eq 0 && return 1
     for wid in $@; do
@@ -70,7 +77,7 @@ groupdir=${groupdir:-$fwmdir/groups}
 test ! -d "$groupdir" && mkdir -p "$groupdir"
 
 PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000001")"
-SCR=$(mattr i $PFW)
+SCR=$(mattr i $PFW 2> /dev/null || printf '%s\n' "Displayport-0")
 
 BW="$(grep "borderwidth" $HOME/.cwmrc | cut -d\  -f 2)"
 GAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 3)"

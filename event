@@ -15,16 +15,12 @@ event() {
         . fwmrc
 
         case "$ev" in
-            7)
-                ;;
             16)
+                wattr o "$wid" || open "$wid"
                 ;;
             17)
                 full -c "$wid"
-                ;;
-            18)
-                ;;
-            19)
+                group -c "$wid"
                 ;;
         esac
     done

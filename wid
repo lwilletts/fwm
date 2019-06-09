@@ -1,7 +1,6 @@
 #!/bin/sh
 #
 # wid
-# wrapper to find any visible window that matches a string
 
 ARGS="$@"
 

@@ -11,22 +11,16 @@ usage() {
 Usage:
     $ $base <wid> <screen>
     $ $base [-c|--clean] <wid>
+    $ $base [-r|--reset]
     $ $base [-h|--help]
 EOF
 
     test $# -eq 0 || exit $1
 }
 
-widCheck() {
-    case "$1" in
-        0x*) return 0 ;;
-        *)   usage 1  ;;
-    esac
-}
-
 clean() {
     cleanWid=$1
-    widCheck "$cleanWid"
+    widCheck "$cleanWid" || usage 1
 
     # search all fsfiles for matching wid
     grep -qrw "$cleanWid" "$fsdir" && {
@@ -39,6 +33,12 @@ clean() {
 
         rm "$screenIdFile"
     }
+
+    exit 0
+}
+
+reset() {
+    rm $fsdir/* 2> /dev/null
 }
 
 main() {
@@ -50,6 +50,9 @@ main() {
             ;;
         -c|--clean|clean)
             clean "$2"
+            ;;
+        -r|--reset|reset)
+            reset
             ;;
         *)
             case $# in

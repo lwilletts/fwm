@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+# open
+
+. fwmrc
+
+wattr "$1" && wid="$1" || exit 1
+
+case "$(name $wid)" in
+    "")                      exit 1 ;;
+    "WM_CLASS")              exit 1 ;;
+    "WM_CLASS:  not found.") exit 1 ;;
+esac
+
+case "$(class $wid)" in
+    URxvt)
+        ;;
+    Firefox)
+        ;;
+    discord)
+        ;;
+    TelegramDesktop)
+        ;;
+    Blender)
+        ;;
+    obs)
+        ;;
+    Lutris)
+        ;;
+    Steam)
+        ;;
+    steam_app_439370)
+        ;;
+esac
