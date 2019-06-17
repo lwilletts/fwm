@@ -10,8 +10,8 @@ intCheck() {
 
 widCheck() {
     case "$1" in
-        0x*) return 0 ;;
-        *)   return 1 ;;
+        0x*) wattr "$1" ;;
+        *)   return 1   ;;
     esac
 }
 
@@ -59,9 +59,7 @@ process() {
 
 # list current windows on current focused wid screen
 current() {
-    for wid in $(lsw); do
-        printf '%s\n' "$(mattr i $wid) $wid"
-    done | grep "$SCR" | cut -d\  -f 2
+    mattr si $(lsw) | grep "$SCR" | cut -d\  -f 1
 }
 
 # check there is a display running
@@ -77,10 +75,13 @@ groupdir=${groupdir:-$fwmdir/groups}
 test ! -d "$groupdir" && mkdir -p "$groupdir"
 
 PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000001")"
-SCR=$(mattr i $PFW 2> /dev/null || printf '%s\n' "Displayport-0")
+SCR="$(mattr i "$PFW" 2> /dev/null || xrandr | grep primary | cut -d\  -f 1)"
 
 BW="$(grep "borderwidth" $HOME/.cwmrc | cut -d\  -f 2)"
-GAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 3)"
+TGAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 2)"
+BGAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 3)"
+LGAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 4)"
+RGAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 5)"
 ACTIVE="$(grep "color activeborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
 URGENT="$(grep "color urgencyborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
 INACTIVE="$(grep "color inactiveborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"

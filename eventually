@@ -1,0 +1,35 @@
+#!/bin/sh
+#
+# event
+
+usage() {
+    cat >&2 << EOF
+Usage: $(basename $0) [-d|--debug] [-h|--help]
+EOF
+
+    test $# -eq 0 || exit $1
+}
+
+event() {
+    wew | while IFS=: read ev wid; do
+        case "$ev" in
+            16)
+                wattr o "$wid" || open "$wid"
+                ;;
+            17)
+                full -c "$wid"
+                ;;
+            18)
+                ;;
+        esac
+    done
+}
+
+case "$1" in
+    -h|--help)
+        usage 0
+        ;;
+    *)
+        event
+        ;;
+esac

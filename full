@@ -39,6 +39,7 @@ clean() {
 
 reset() {
     rm $fsdir/* 2> /dev/null
+    exit 0
 }
 
 main() {
@@ -57,15 +58,13 @@ main() {
         *)
             case $# in
                 0)
-                    wattr "$PFW" && wid=$PFW || return 1
-                    screenId="$SCR"
+                    widCheck "$PFW" && wid="$PFW" || usage 1
                     ;;
                 1)
-                    wattr "$1" && wid="$1" || wid="$PFW"
-                    screenId="$SCR"
+                    widCheck "$1" && wid="$1" || usage 1
                     ;;
                 2)
-                    wattr "$1" && wid="$1" || wid="$PFW"
+                    widCheck "$1" && wid="$1" || usage 1
                     mattr "$2" && SCR="$2" || {
                         printf '%s\n' "$2 is not a connected screen."
                         exit 1
@@ -88,10 +87,11 @@ main() {
     }
 
     # save window info to disk
-    wattr xywhi "$wid" > "$fsdir/$screenId"
+    wattr xywhi "$wid" > "$fsdir/$SCR"
 
     # perform fullscreen operations
     chwb -s 0 "$wid"
+    chwso -r "$wid"
     sh -c "wtp $(mattr xywh $wid) $wid"
 }
 
