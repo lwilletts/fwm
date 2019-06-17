@@ -4,7 +4,7 @@
 
 usage() {
     cat >&2 << EOF
-Usage: $(basename $0) [-d|--debug] [-h|--help]
+Usage: $(basename $0) [-h|--help]
 EOF
 
     test $# -eq 0 || exit $1
@@ -26,10 +26,6 @@ event() {
 }
 
 case "$1" in
-    -h|--help)
-        usage 0
-        ;;
-    *)
-        event
-        ;;
+    -h|--help) usage 0 ;;
+    *)         event   ;;
 esac
