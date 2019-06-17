@@ -25,6 +25,8 @@ case "$(class $wid)" in
         ;;
     mpv)
         ;;
+    mpv)
+        ;;
     discord)
         ;;
     TelegramDesktop)
@@ -34,6 +36,8 @@ case "$(class $wid)" in
     obs)
         ;;
     Lutris)
+        ;;
+    Steam)
         ;;
     Steam)
         ;;

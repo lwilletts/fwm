@@ -58,7 +58,7 @@ cleanWid() {
 addWid() {
     intCheck "$1" && grp="$1" || usage 1
     test -n "$2" && wid="$2" || wid="$PFW"
-    widCheck "$wid"|| usage 1
+    widCheck "$wid" || usage 1
 
     # test for no focused window
     test "$wid" = "0x00000001" && return 1
@@ -155,7 +155,7 @@ resetGroups() {
     # map all groups to the screen
     test -f "$groupdir/inactive" && {
         while read -r resetGroupNum; do
-            showGroup $resetGroupNum
+            mapGroup $resetGroupNum
         done < "$groupdir/inactive"
     }
 

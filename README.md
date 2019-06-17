@@ -29,7 +29,7 @@ Fullscreen a given window id. Run the same command to reset the window back to
 its original position. Used mainly so windows can be fullscreened by a script
 and then unfullscreened by the user.
 
-### event
+### eventually
 
 An window id event watcher wrapper around wew to provide added functionality
 such as automatically adding windows to groups via `open` or providing cleanup

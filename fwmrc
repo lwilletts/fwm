@@ -10,8 +10,8 @@ intCheck() {
 
 widCheck() {
     case "$1" in
-        0x*) return 0 ;;
-        *)   return 1 ;;
+        0x*) wattr "$1" ;;
+        *)   return 1   ;;
     esac
 }
 
@@ -59,9 +59,7 @@ process() {
 
 # list current windows on current focused wid screen
 current() {
-    for wid in $(lsw); do
-        printf '%s\n' "$(mattr i $wid) $wid"
-    done | grep "$SCR" | cut -d\  -f 2
+    mattr si $(lsw) | grep "$SCR" | cut -d\  -f 1
 }
 
 wmenv() {

@@ -5,78 +5,90 @@
 ARGS="$@"
 
 usage() {
+    base="$(basename $0)"
     cat >&2 << EOF
-Usage: $(basename $0) [-lrvfeRh] <wid> <screen>
-    -l | --left:    Make current or given window half of the screen positioned on the left.
-    -r | --right:   Make current or given window half of the screen positioned on the right.
-    -f | --fuller:  Make current or given window fullscreen minus border gaps.
-    -e | --extend:  Extend current or given window to the maximum screen height.
-    -b | --bottom:  Extend current or given window to the bottom edge of the screen.
-    -s | --screen:  Position current or given window on to given screen.
-    -Q | --quarter: Make current or given window quartar of the screen.
-    -R | --restore: Restore current or given window to minW and minH values.
-    -h | --help:    Show this help.
+Usage:
+
+left
+right
+top
+topleft
+topright
+bottom
+bottomleft
+bottomright
+center
+maximise
+vmaximise
+hmaximise
+
 EOF
 
     test $# -eq 0 || exit $1
 }
 
-screen() {
-    X=$(wattr x "$wid" 2> /dev/null)
-    Y=$(wattr y "$wid" 2> /dev/null)
-    W=$(wattr w "$wid" 2> /dev/null)
-    H=$(wattr h "$wid" 2> /dev/null)
-
-    X=$((SX + X))
-    Y=$((SY + Y))
-}
-
-restore() {
-    W=$minW
-    H=$minH
-}
-
-extend() {
-    W=$minW
-    Y=$((TGAP + SY))
-    H=$((eSH - (VGAP / ROWS) * BW))
-}
-
-bottom() {
-    H=$((eSH - (VGAP / ROWS) * BW - Y + TGAP))
-}
-
-quarter() {
-    W=$((eSW/2 - IGAP/2 - (IGAP / COLS) * BW))
-    H=$((eSH/2 - VGAP/2 - (VGAP / ROWS) * BW))
+center() {
+    W=$(wattr w "$wid")
+    H=$(wattr h "$wid")
+    X=$((SX + SW/2 - W/2))
+    Y=$((SY + SH/2 - H/2))
+    wtp $X $Y $W $H $wid
 }
 
 left() {
-    X=$((XGAP + SX))
-    Y=$((TGAP + SY))
-    W=$((eSW/2 - IGAP/2 - (IGAP / COLS) * BW))
-    H=$((eSH - (VGAP / ROWS) * BW))
+    sh -c "wtp $SX $(wattr ywhi "$wid")"
 }
 
 right() {
-    Y=$((TGAP + SY))
-    W=$((eSW/2 - IGAP/2 - (IGAP / COLS) * BW))
-    H=$((eSH - (VGAP / ROWS) * BW))
-    X=$((W + XGAP + IGAP + (IGAP / COLS) * BW))
+    Y=$(wattr y "$wid")
+    W=$(wattr w "$wid")
+    H=$(wattr h "$wid")
+    X=$((SX + SW - W))
+    wtp $X $Y $W $H $wid
 }
 
-full() {
-    X=$((XGAP + SX))
-    Y=$((TGAP + SY))
-    W=$((eSW - (IGAP / COLS) * BW))
-    H=$((eSH - (VGAP / ROWS) * BW))
+top() {
+    X=$(wattr x "$wid")
+    W=$(wattr w "$wid")
+    H=$(wattr h "$wid")
+    Y=$((SY + SH - H))
+    wtp $X $Y $W $H $wid
 }
 
-moveMouse() {
-    . mouse
+topleft() {
+    return 0
+}
 
-    mouseStatus=$(getMouseStatus)
-    test ! -z $mouseStatus && test $mouseStatus -eq 1 && moveMouseEnabled "$wid"
+topright() {
+    return 0
+}
+
+bottom() {
+    X=$(wattr x "$wid")
+    W=$(wattr w "$wid")
+    H=$(wattr h "$wid")
+    Y=$(echo "$SY + $SH - $H" | bc )
+    wtp $X $Y $W $H $wid
+}
+
+bottomleft() {
+    return 0
+}
+
+bottomright() {
+    return 0
+}
+
+maximise() {
+    wtp $SX $SY $SW $SH $wid
+}
+
+vmaximise() {
+    return 0
+}
+
+hmaximise() {
+    return 0
 }
 
 main() {
@@ -84,42 +96,45 @@ main() {
 
     . fwmrc
 
+    widCheck "$2" && wid="$2" || usage 1
+
     case $# in
-        1)
-            wattr "$PFW" && wid=$PFW || return 1
-            ;;
-        2)
-            wattr "$2" && wid="$2" || {
-                wid="$PFW"
-                intCheck $2 && retrieveScreenValues $2
+        3)
+            mattr "$3" && SCR="$3" || {
+                printf '%s\n' "$3 is not a connected screen."
+                exit 1
             }
             ;;
-        3)
-            wattr "$2" && wid="$2" || wid="$PFW"
-            retrieveScreenValues $3
-            ;;
     esac
-
-    echo $SX $SY $SW $SH
 
     # exit if wid is currently fullscreen
-    grep -qw "$wid" "$FSFILE" 2> /dev/null && return 1
+    grep -qrw "$wid" "$fsdir" 2> /dev/null && return 1
+
+    SX=$(($(mattr x $SCR) + LGAP))
+    SY=$(($(mattr y $SCR) + TGAP))
+    SW=$(($(mattr w $SCR) - LGAP - RGAP))
+    SH=$(($(mattr h $SCR) - TGAP - BGAP))
 
     case "$1" in
-        -l|--left)    left    ;;
-        -r|--right)   right   ;;
-        -f|--fuller)  full    ;;
-        -e|--extend)  extend  ;;
-        -b|--bottom)  bottom  ;;
-        -s|--screen)  screen  ;;
-        -Q|--quarter) quartar ;;
-        -R|--restore) restore ;;
-        *)            usage 1 ;;
+        -l|--left)         left        ;;
+        -r|--right)        right       ;;
+        -t|--top)          top         ;;
+        -b|--bottom)       bottom      ;;
+        -tl|--topleft)     topleft     ;;
+        -tr|--topright)    topright    ;;
+        -bl|--bottomleft)  bottomleft  ;;
+        -br|--bottomright) bottomright ;;
+        -c|--center)       center      ;;
+        -m|--maximise)     maximise    ;;
+        -vm|--vmaximised)  vmaximise   ;;
+        -hm|--hmaximised)  hmaximise   ;;
+        -h|--help)         usage 0     ;;
+        *)                 usage 1     ;;
     esac
 
-    echo $X $Y $W $H
-    wtp $X $Y $W $H "$wid"
-    test "$MOUSE" = "true" && moveMouse
+    # move mouse to middle of window
+    wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
+           $(($(wattr y $wid) + $(wattr h $wid) / 2))
 }
 
 main $ARGS
