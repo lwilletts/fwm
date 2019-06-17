@@ -46,24 +46,24 @@ focus() {
     case $? in
         # no border when wid is found to be fullscreen
         0)
-            chwb -s $BW -c "$INACTIVE" "$PFW"
+            chwb -s "$BW" -c "$INACTIVE" "$PFW"
             chwb -s 0 "$wid"
             ;;
         1)
             grep -qrw "$PFW" "$fsdir" && {
                 # set border when focusing from a fullscreen wid
                 chwb -s 0 "$PFW"
-                chwb -s $BW -c "$ACTIVE" "$wid"
+                chwb -s "$BW" -c "$ACTIVE" "$wid"
             } || {
                 # normal focusing
-                chwb -s $BW -c "$INACTIVE" "$PFW"
-                chwb -s $BW -c "$ACTIVE" "$wid"
+                chwb -s "$BW" -c "$INACTIVE" "$PFW"
+                chwb -s "$BW" -c "$ACTIVE" "$wid"
             }
             ;;
         *)
             # normal focusing
-            chwb -s $BW -c "$INACTIVE" "$PFW"
-            chwb -s $BW -c "$ACTIVE" "$wid"
+            chwb -s "$BW" -c "$INACTIVE" "$PFW"
+            chwb -s "$BW" -c "$ACTIVE" "$wid"
             ;;
     esac
 
@@ -74,6 +74,8 @@ focus() {
 
 main() {
     . fwmrc
+    wmenv
+    wmcolours
 
     case "$1" in
         -w|--wid|wid)   wid "$2" ;;

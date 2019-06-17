@@ -96,17 +96,11 @@ mapGroup() {
         # clean group from inactive file
         test -f "$inactive" && sed -i -n '/'"$grp"'/!p' "$inactive"
 
-        # kill cwm to prevent windows grouping at mouse location
-        pkill cwm
-
         # show all windows in group and put them on top of the stack
         while read -r mapWid; do
             mapw -m "$mapWid";
             chwso -r "$mapWid"
         done < "$groupdir/$grp"
-
-        # start cwm up again
-        cwm &
 
         # focus top wid in group
         focus --wid "$(head -n 1 "$groupdir/$grp")"
@@ -172,7 +166,7 @@ resetGroups() {
 }
 
 main() {
-    . fwmrc
+    . fwmrc; wmenv
 
     active="$groupdir/active"
     inactive="$groupdir/inactive"

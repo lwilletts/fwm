@@ -12,25 +12,18 @@ EOF
 
 event() {
     wew | while IFS=: read ev wid; do
-        . fwmrc
-
         case "$ev" in
             16)
                 wattr o "$wid" || open "$wid"
                 ;;
             17)
                 full -c "$wid"
-                group -c "$wid"
                 ;;
         esac
     done
 }
 
 case "$1" in
-    -h|--help)
-        usage 0
-        ;;
-    *)
-        event
-        ;;
+    -h|--help) usage 0 ;;
+    *)         event   ;;
 esac

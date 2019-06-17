@@ -28,7 +28,7 @@ clean() {
 
         test ! -z "$wid" && {
             wtp $(grep -w "$wid" "$screenIdFile")
-            chwb -s $BW -c "$ACTIVE" "$wid"
+            chwb -s "$BW" -c "$ACTIVE" "$wid"
         }
 
         rm "$screenIdFile"
@@ -39,21 +39,18 @@ clean() {
 
 reset() {
     rm $fsdir/* 2> /dev/null
+    exit 0
 }
 
 main() {
     . fwmrc
+    wmenv
+    wmcolours
 
     case "$1" in
-        -h|--help|help)
-            usage 0
-            ;;
-        -c|--clean|clean)
-            clean "$2"
-            ;;
-        -r|--reset|reset)
-            reset
-            ;;
+        -h|--help|help)   usage 0    ;;
+        -r|--reset|reset) reset      ;;
+        -c|--clean|clean) clean "$2" ;;
         *)
             case $# in
                 0)
@@ -92,6 +89,7 @@ main() {
 
     # perform fullscreen operations
     chwb -s 0 "$wid"
+    chwso -r "$wid"
     sh -c "wtp $(mattr xywh $wid) $wid"
 }
 

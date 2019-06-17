@@ -64,23 +64,32 @@ current() {
     done | grep "$SCR" | cut -d\  -f 2
 }
 
+wmenv() {
+    fwmdir=${fwmdir:-/tmp/fwm}
+    confdir=${confdir:-~/.config/fwm}
+
+    fsdir=${fsdir:-$fwmdir/fs}
+    test ! -d "$fsdir" && mkdir -p "$fsdir"
+    groupdir=${groupdir:-$fwmdir/groups}
+    test ! -d "$groupdir" && mkdir -p "$groupdir"
+
+    PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000001")"
+    SCR=$(mattr i $PFW 2> /dev/null || printf '%s\n' "null")
+    BW="$(grep "borderwidth" $HOME/.cwmrc | cut -d\  -f 2)"
+}
+
+wmgaps() {
+    TGAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 2)"
+    BGAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 3)"
+    LGAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 4)"
+    RGAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 5)"
+}
+
+wmcolours() {
+    ACTIVE="$(grep "color activeborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
+    URGENT="$(grep "color urgencyborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
+    INACTIVE="$(grep "color inactiveborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
+}
+
 # check there is a display running
 test -z "$DISPLAY" && return 1
-
-# environment
-fwmdir=${fwmdir:-/tmp/fwm}
-confdir=${confdir:-~/.config/fwm}
-
-fsdir=${fsdir:-$fwmdir/fs}
-test ! -d "$fsdir" && mkdir -p "$fsdir"
-groupdir=${groupdir:-$fwmdir/groups}
-test ! -d "$groupdir" && mkdir -p "$groupdir"
-
-PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000001")"
-SCR=$(mattr i $PFW 2> /dev/null || printf '%s\n' "Displayport-0")
-
-BW="$(grep "borderwidth" $HOME/.cwmrc | cut -d\  -f 2)"
-GAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 3)"
-ACTIVE="$(grep "color activeborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
-URGENT="$(grep "color urgencyborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
-INACTIVE="$(grep "color inactiveborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"

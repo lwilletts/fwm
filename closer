@@ -18,27 +18,27 @@ EOF
 }
 
 windowsUp() {
-    wid=$( (lsw; pfw) | sort -u | xargs wattr yi | sort -nr | \
-            sed "0,/$PFW/d" | sed "1s/^[0-9]* //p;d")
+    wid="$(lsw | xargs wattr yi | sort -nr | \
+        sed -n "/$PFW/{n;p}" | cut -d\  -f 2)"
 }
 
 windowsDown() {
-    wid=$( (lsw; pfw) | sort -u | xargs wattr yi | sort -n | \
-            sed "0,/$PFW/d" | sed "1s/^[0-9]* //p;d")
+    wid="$(lsw | xargs wattr yi | sort -n | \
+        sed -n "/$PFW/{n;p}" | cut -d\  -f 2)"
 }
 
 windowsLeft() {
-    wid=$( (lsw; pfw) | sort -u | xargs wattr xi | sort -nr | \
-            sed "0,/$PFW/d" | sed "1s/^[0-9]* //p;d")
+    wid="$(lsw | xargs wattr xi | sort -nr | \
+        sed -n "/$PFW/{n;p}" | cut -d\  -f 2)"
 }
 
 windowsRight() {
-    wid=$( (lsw; pfw) | sort -u | xargs wattr xi | sort -n | \
-            sed "0,/$PFW/d" | sed "1s/^[0-9]* //p;d")
+    wid="$(lsw | xargs wattr xi | sort -n | \
+        sed -n "/$PFW/{n;p}" | cut -d\  -f 2)"
 }
 
 main() {
-    . fwmrc
+    PFW=$(pfw)
 
     case "$1" in
         -u|--up|up)       windowsUp    ;;
@@ -49,10 +49,7 @@ main() {
         *)                usage 1      ;;
     esac
 
-    test ! -z "$wid" && {
-        focus --wid "$wid"
-        return
-    }
+    test ! -z "$wid" && focus --wid "$wid"
 }
 
 main $ARGS
