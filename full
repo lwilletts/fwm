@@ -58,6 +58,7 @@ main() {
                     ;;
                 1)
                     widCheck "$1" && wid="$1" || usage 1
+                    SCR=$(pfm)
                     ;;
                 2)
                     widCheck "$1" && wid="$1" || usage 1
@@ -88,7 +89,7 @@ main() {
     # perform fullscreen operations
     chwb -s 0 "$wid"
     chwso -r "$wid"
-    sh -c "wtp $(mattr xywh $wid) $wid"
+    sh -c "wtp $(mattr xywh $SCR) $wid"
 }
 
 main $ARGS
