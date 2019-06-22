@@ -20,7 +20,6 @@ EOF
 
 clean() {
     cleanWid=$1
-    widCheck "$cleanWid" || usage 1
 
     # search all fsfiles for matching wid
     grep -qrw "$cleanWid" "$fsdir" && {
