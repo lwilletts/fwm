@@ -5,38 +5,39 @@
 ARGS="$@"
 
 usage() {
+    base=$(basename $0)
+
     cat >&2 << EOF
-Usage: $(basename $0) [-w wid] [-nph]
-    -w | wid:   Focus window id.
-    -n | next:  Focus the next window in stack.
-    -p | prev:  Focus the previous window in stack.
-    -h | help:  Show this help.
+Usage:
+    $base -w | wid:   Focus given window id.
+    $base -n | next:  Focus the next window in stack.
+    $base -p | prev:  Focus the previous window in stack.
+    $base -h | help:  Show this help.
 EOF
 
     test $# -eq 0 || exit $1
 }
 
 wid() {
-    # check passed wid exists
-    wattr "$1" && {
-        wid="$1"
-        focus
+    wid="$1"
+    widCheck "$wid" && {
+        test "$wid" != "$PFW" && focus || exit 1
+    } || {
+        exit 1
     }
 }
 
 next() {
     wid="$(lsw | grep -v "$PFW" | sed '1 p;d')"
-    test ! -z "$wid" && focus
+    focus
 }
 
 prev() {
     wid="$(lsw | grep -v "$PFW" | sed '$ p;d')"
-    test ! -z "$wid" && focus
+    focus
 }
 
 focus() {
-    test "$wid" = "$PFW" && exit 1
-
     # be as responsive as possible to user input
     wtf "$wid"
     chwso -r "$wid"
