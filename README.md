@@ -54,5 +54,5 @@ string.
 
 ###### extras
 
-- group: a group map script that those work but cwm places all newly mapped
-windows beneath the cursor, destroying the group layout.
+- group: groups implemented using `mapw` that does work but is not compatible
+with cwm.
