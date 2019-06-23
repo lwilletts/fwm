@@ -1,58 +1,58 @@
 # fwm
 
-A set of wmutils/mmutils/xprop scripts to extend cwm with better multihead and
-keyboard support, and
+Scripts to extend cwm with better multihead and keyboard support.
 
-### fwmrc
+Dependencies:
 
-The main environment file that sources various information like cwm variables
-and also includes functions to list 
+- wmutils core
+- wmutils opt
+- mmutils
+- xprop
 
-### wid
+###### closer
 
-Find any visible window id whose name or class properties fuzzy match a given
-string.
+Focuses the closest window in a given direction. If no window is currently
+focused, uses mouse x y coordinates to find closest window.
 
-### focus
+###### focus
 
 Focus a window id, or focus through the ordered stack of windows on screen.
 
 TODO: cycle through windows on a given screen
 
-### closer
-
-Focuses the closest window in a given direction.
-
-### full
+###### full
 
 Fullscreen a given window id. Run the same command to reset the window back to
-its original position. Used mainly so windows can be fullscreened by a script
-and then unfullscreened by the user.
+its original position. Improved over cwm window-fullscreen by following mouse.
 
-### eventually
+###### fwmrc
 
-An window id event watcher wrapper around wew to provide added functionality
-such as automatically adding windows to groups via `open` or providing cleanup
-when a window is closed. Recommend to add `event` to your xinitrc to load on X11
-start.
+A script that sources various environment variables from ~/.cwmrc and
+implements global functions that can be called from the shell once sourced.
 
-### group
+###### eventually
 
-My own groups script to add various options over default cwm maps. Functionally
-very similar to how you can use cwm groups, but I have found cwm groups to have
-issues with wine windows.
+An window id event watcher wrapper around wew to provide added functionality.
+Mainly cleaning up fullscreen window ids at the moment.  Recommend to add
+`eventually &` to your xinitrc to load on X11 start.
 
-### open
+###### move
 
-When a window class matches the given window id, run commands. These can be
-adding windows to a certain group or position. Edit based on your own personal
-preference, examples are given.
+Move and position windows on your multihead setup. Follows mouse pointer for
+monitor information.
 
-### close
+###### tile
 
-Script to specifically target EMWH-compliant programs via the kill
-command to properly terminate the process behind the window.
+Tile windows on a given screen horizontally or vertically.
 
-### move
+TODO: not implemented yet
 
-Move and position windows on your multihead setup.
+###### wid
+
+Find any visible window id whose name or class properties fuzzy match a given
+string.
+
+###### extras
+
+- group: a group map script that those work but cwm places all newly mapped
+windows beneath the cursor, destroying the group layout.
