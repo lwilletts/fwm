@@ -17,39 +17,58 @@ EOF
     test $# -eq 0 || exit $1
 }
 
-windowsUp() {
-    wid="$(lsw | xargs wattr yi | sort -nr | \
-        sed -n "/$PFW/{n;p}" | cut -d\  -f 2)"
+windowUp() {
+    test "$PFW" = "0x00000001" && {
+        mouseY="$(wmp -r | cut -d\  -f 2)"
+        lsw | (xargs wattr yi; printf '%s\n' "$mouseY") | sort -nr | \
+            sed -n "/$mouseY/{n;p}" | cut -d\  -f 2
+    } || {
+        lsw | xargs wattr yi | sort -nr | sed -n "/$PFW/{n;p}" | cut -d\  -f 2
+    }
 }
 
-windowsDown() {
-    wid="$(lsw | xargs wattr yi | sort -n | \
-        sed -n "/$PFW/{n;p}" | cut -d\  -f 2)"
+windowDown() {
+    test "$PFW" = "0x00000001" && {
+        mouseY="$(wmp -r | cut -d\  -f 2)"
+        lsw | (xargs wattr yi; printf '%s\n' "$mouseY") | sort -n | \
+            sed -n "/$mouseY/{n;p}" | cut -d\  -f 2
+    } || {
+        lsw | xargs wattr yi | sort -n | sed -n "/$PFW/{n;p}" | cut -d\  -f 2
+    }
 }
 
-windowsLeft() {
-    wid="$(lsw | xargs wattr xi | sort -nr | \
-        sed -n "/$PFW/{n;p}" | cut -d\  -f 2)"
+windowLeft() {
+    test "$PFW" = "0x00000001" && {
+        mouseX="$(wmp -r | cut -d\  -f 1)"
+        lsw | (xargs wattr xi; printf '%s\n' "$mouseX") | sort -nr | \
+            sed -n "/$mouseX/{n;p}" | cut -d\  -f 2
+    } || {
+        lsw | xargs wattr xi | sort -nr | sed -n "/$PFW/{n;p}" | cut -d\  -f 2
+    }
 }
 
-windowsRight() {
-    wid="$(lsw | xargs wattr xi | sort -n | \
-        sed -n "/$PFW/{n;p}" | cut -d\  -f 2)"
+windowRight() {
+    test "$PFW" = "0x00000001" && {
+        mouseX="$(wmp -r | cut -d\  -f 1)"
+        lsw | (xargs wattr xi; printf '%s\n' "$mouseX") | sort -n | \
+            sed -n "/$mouseX/{n;p}" | cut -d\  -f 2
+    } || {
+        lsw | xargs wattr xi | sort -n | sed -n "/$PFW/{n;p}" | cut -d\  -f 2
+    }
 }
+
 
 main() {
-    PFW=$(pfw)
+    PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000001")"
 
     case "$1" in
-        -u|--up|up)       windowsUp    ;;
-        -d|--down|down)   windowsDown  ;;
-        -l|--left|left)   windowsLeft  ;;
-        -r|--right|right) windowsRight ;;
-        -h|--help|help)   usage 0      ;;
-        *)                usage 1      ;;
+        -u|--up|up)       focus --wid "$(windowUp)"    ;;
+        -d|--down|down)   focus --wid "$(windowDown)"  ;;
+        -l|--left|left)   focus --wid "$(windowLeft)"  ;;
+        -r|--right|right) focus --wid "$(windowRight)" ;;
+        -h|--help|help)   usage 0                      ;;
+        *)                usage 1                      ;;
     esac
-
-    test ! -z "$wid" && focus --wid "$wid"
 }
 
 main $ARGS
