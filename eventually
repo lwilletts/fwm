@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# event
+# eventually
 
 usage() {
     cat >&2 << EOF
@@ -14,7 +14,6 @@ event() {
     wew | while IFS=: read ev wid; do
         case "$ev" in
             16)
-                wattr o "$wid" || open "$wid"
                 ;;
             17)
                 full -c "$wid"
