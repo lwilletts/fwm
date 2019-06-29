@@ -2,6 +2,9 @@
 #
 # fwmrc
 
+# check there is a display running
+test -z "$DISPLAY" && return 1
+
 # check if arg 1 is an integer
 intCheck() {
     test $1 -ne 0 2> /dev/null
@@ -57,22 +60,18 @@ process() {
     done
 }
 
-# list current windows on current focused wid screen
-current() {
+# list windows on currently focused wid screen
+listcurrent() {
     mattr si $(lsw) | grep "$SCR" | cut -d\  -f 1
 }
 
 wmenv() {
     fwmdir=${fwmdir:-/tmp/fwm}
-    confdir=${confdir:-~/.config/fwm}
 
     fsdir=${fsdir:-$fwmdir/fs}
     test ! -d "$fsdir" && mkdir -p "$fsdir"
-    groupdir=${groupdir:-$fwmdir/groups}
-    test ! -d "$groupdir" && mkdir -p "$groupdir"
 
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000001")"
-    SCR=$(mattr i $PFW 2> /dev/null || printf '%s\n' "null")
     BW="$(grep "borderwidth" $HOME/.cwmrc | cut -d\  -f 2)"
 }
 
@@ -88,6 +87,3 @@ wmcolours() {
     URGENT="$(grep "color urgencyborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
     INACTIVE="$(grep "color inactiveborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
 }
-
-# check there is a display running
-test -z "$DISPLAY" && return 1

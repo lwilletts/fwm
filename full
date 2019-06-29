@@ -54,10 +54,11 @@ main() {
             case $# in
                 0)
                     widCheck "$PFW" && wid="$PFW" || usage 1
+                    SCR="$(mattr i $PFW)"
                     ;;
                 1)
                     widCheck "$1" && wid="$1" || usage 1
-                    SCR=$(pfm)
+                    SCR="$(pfm)"
                     ;;
                 2)
                     widCheck "$1" && wid="$1" || usage 1
