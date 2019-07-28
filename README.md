@@ -17,6 +17,7 @@ focused, uses mouse x y coordinates to find closest window.
 ###### focus
 
 Focus a window id, or focus through the ordered stack of windows on screen.
+Accepts piped window id to focus.
 
 TODO: cycle through windows on a given screen
 
@@ -52,7 +53,11 @@ TODO: not implemented yet
 Find any visible window id whose name or class properties fuzzy match a given
 string.
 
+###### wmenu
+
+Dmenu selection menu for all visible windows.
+
 ###### extras
 
 - group: groups implemented using `mapw` that does work but is not compatible
-with cwm.
+with cwm as it maps all new visible windows to mouse pointer location.
