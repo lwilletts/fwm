@@ -18,7 +18,7 @@ EOF
     test $# -eq 0 || exit $1
 }
 
-wid() {
+window() {
     wid="$1"
     widCheck "$wid" && {
         test "$wid" != "$PFW" && focus || exit 1
@@ -71,6 +71,8 @@ focus() {
     # move mouse to middle of window
     wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
            $(($(wattr y $wid) + $(wattr h $wid) / 2))
+
+    exit 0
 }
 
 main() {
@@ -78,12 +80,19 @@ main() {
     wmenv
     wmcolours
 
+    PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000001")"
+
+    # grab piped input
+    test -p /dev/stdin && {
+        read wid && window "$wid" || exit 0
+    }
+
     case "$1" in
-        -w|--wid|wid)   wid "$2" ;;
-        -n|--next|next) next     ;;
-        -p|--prev|prev) prev     ;;
-        -h|--help|help) usage 0  ;;
-        *)              usage 1  ;;
+        -w|--wid|wid)   window "$2" ;;
+        -n|--next|next) next        ;;
+        -p|--prev|prev) prev        ;;
+        -h|--help|help) usage 0     ;;
+        *)              usage 1     ;;
     esac
 }
 
