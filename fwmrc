@@ -62,6 +62,8 @@ process() {
 
 # list windows on currently focused wid screen
 listcurrent() {
+    PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000001")"
+    SCR="$(mattr i $PFW)"
     mattr si $(lsw) | grep "$SCR" | cut -d\  -f 1
 }
 
@@ -76,6 +78,7 @@ wmenv() {
 }
 
 wmgaps() {
+    PRI="$(lsm -p)"
     TGAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 2)"
     BGAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 3)"
     LGAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 4)"
@@ -83,6 +86,7 @@ wmgaps() {
 }
 
 wmcolours() {
+    BACK="$(grep "color menufg" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
     ACTIVE="$(grep "color activeborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
     URGENT="$(grep "color urgencyborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
     INACTIVE="$(grep "color inactiveborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
