@@ -11,6 +11,7 @@ usage() {
 Usage:
     $base -w | wid:   Focus given window id.
     $base -n | next:  Focus the next window in stack.
+    $base -c | cycle: Focus the next window in stack on the same screen.
     $base -p | prev:  Focus the previous window in stack.
     $base -h | help:  Show this help.
 EOF
@@ -34,6 +35,12 @@ next() {
 
 prev() {
     wid="$(lsw | grep -v "$PFW" | sed '$ p;d')"
+    focus
+}
+
+# 
+cycle() {
+    wid="$(lsw | grep "$(listcurrent)" | grep -v "$PFW" | sed '1 p;d')"
     focus
 }
 
@@ -88,11 +95,12 @@ main() {
     }
 
     case "$1" in
-        -w|--wid|wid)   window "$2" ;;
-        -n|--next|next) next        ;;
-        -p|--prev|prev) prev        ;;
-        -h|--help|help) usage 0     ;;
-        *)              usage 1     ;;
+        -w|--wid|wid)     window "$2" ;;
+        -n|--next|next)   next        ;;
+        -p|--prev|prev)   prev        ;;
+        -c|--cycle|cycle) cycle       ;;
+        -h|--help|help)   usage 0     ;;
+        *)                usage 1     ;;
     esac
 }
 

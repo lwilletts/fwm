@@ -16,10 +16,8 @@ focused, uses mouse x y coordinates to find closest window.
 
 ###### focus
 
-Focus a window id, or focus through the ordered stack of windows on screen.
+Focus a window id, or cycle through the ordered stack of windows on screen.
 Accepts piped window id to focus.
-
-TODO: cycle through windows on a given screen
 
 ###### full
 
