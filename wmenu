@@ -2,15 +2,50 @@
 #
 # wmenu
 
-. fwmrc
-wmcolours
+usage() {
+    base=$(basename $0)
 
-FONT=$(awk '/lemon/ {print $3}' < ~/.Xresources |  head -n 1 | cut -d',' -f 1)
-LINES=$(lsw | wc -l)
+    cat >&2 << EOF
+Usage:
+    $base                Select visible windows.
+    $base -a | all:      Select all windows.
+    $base -u | unmapped: Select only unmapped windows.
+    $base -h | help:     Show this help.
+EOF
 
-for wid in $(lsw); do
-    printf '%s\n' "$wid $(class $wid) | $(wname $wid)"
-done | \
-dmenu -name "wmenu" -f -b -l $LINES -s 0 -i -fn $FONT -p "Window:" \
--nf "#$ACTIVE" -sf "#$URGENT" -nb "#$BACK" -sb "#$BACK" | \
-cut -d\  -f 1 | focus
+    test $# -eq 0 || exit $1
+}
+
+main() {
+
+    . fwmrc
+    wmcolours
+
+    FONT=$(awk '/lemon/ {print $3}' < ~/.Xresources |  head -n 1 | cut -d',' -f 1)
+
+    case "$1" in
+        -a|--all|all)
+            LSWCMD="lsw -a"
+            ;;
+        -u|--unmapped|unmapped)
+            LSWCMD="lsw -u"
+            ;;
+        -h|--help|help)
+            usage 0
+            ;;
+        *)
+            LSWCMD="lsw"
+            ;;
+    esac
+
+    LINES=$($LSWCMD | wc -l)
+
+    for wid in $($LSWCMD); do
+        printf '%s\n' "$wid $(class $wid) | $(wname $wid)"
+    done | \
+    dmenu -name "wmenu" -f -b -l $LINES -s 0 -i -fn $FONT -p "Window:" \
+    -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$BACK" -sb "#$BACK" | \
+    cut -d\  -f 1 | focus
+}
+
+main "$@"

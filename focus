@@ -45,6 +45,9 @@ cycle() {
 }
 
 focus() {
+    # map window if not visible
+    wattr m "$wid" || mapw -m "$wid"
+
     # be as responsive as possible to user input
     wtf "$wid"
     chwso -r "$wid"
