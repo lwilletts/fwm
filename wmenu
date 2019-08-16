@@ -17,11 +17,10 @@ EOF
 }
 
 main() {
-
     . fwmrc
     wmcolours
 
-    FONT=$(awk '/lemon/ {print $3}' < ~/.Xresources |  head -n 1 | cut -d',' -f 1)
+    FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
 
     case "$1" in
         -a|--all|all)
@@ -40,11 +39,18 @@ main() {
 
     LINES=$($LSWCMD | wc -l)
 
+    test $LINES -eq 0 && exit 1
+
+    # CWM-like right click
+    X=$(wmp | cut -d\  -f 1)
+    Y=$(($(wmp | cut -d\  -f 2) - 520))
+
     for wid in $($LSWCMD); do
         printf '%s\n' "$wid $(class $wid) | $(wname $wid)"
-    done | \
-    dmenu -name "wmenu" -f -b -l $LINES -s 0 -i -fn $FONT -p "Window:" \
-    -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$BACK" -sb "#$BACK" | \
+    done | sort -k 2 | \
+    dmenu -name "wmenu" -f -l $LINES -s 0 -i -fn $FONT -p "Window >" \
+    -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$BACK" -sb "#$BACK" \
+    -x -10000 -y -10000 -w "500" | \
     cut -d\  -f 1 | focus
 }
 
