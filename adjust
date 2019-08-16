@@ -1,0 +1,68 @@
+#!/bin/sh
+#
+# adjust
+
+ARGS="$@"
+
+usage() {
+    base="$(basename $0)"
+    cat >&2 << EOF
+
+Usage:
+    $ $base up    | --up)    Move $JUMP pixels up.
+    $ $base down  | --down)  Move $JUMP pixels down.
+    $ $base left  | --left)  Move $JUMP pixels left.
+    $ $base right | --right) Move $JUMP pixels right.
+EOF
+
+    test $# -eq 0 || exit $1
+}
+
+main() {
+    test $# -eq 0 && usage 1
+
+    . fwmrc
+    wmenv
+
+    # exit if wid is currently fullscreen
+    grep -qrw "$wid" "$fsdir" 2> /dev/null && return 1
+
+    test -e "$2"
+
+    case "$#" in
+        1) wid="$PFW"                           ;;
+        2) widCheck "$2" && wid="$2" || usage 1 ;;
+        *) usage 1                              ;;
+    esac
+
+    W=$(wattr w $wid)
+    H=$(wattr h $wid)
+
+    case "$1" in
+        up|--up)
+            X=$(wattr x $wid)
+            Y=$(($(wattr y $wid) - $JUMP))
+            ;;
+        down|--down)
+            X=$(wattr x $wid)
+            Y=$(($(wattr y $wid) + $JUMP))
+            ;;
+        left|--left)
+            X=$(($(wattr x $wid) - $JUMP))
+            Y=$(wattr y $wid)
+            ;;
+        right|--right)
+            X=$(($(wattr x $wid) + $JUMP))
+            Y=$(wattr y $wid)
+            ;;
+    esac
+
+    # move window
+    wtp $X $Y $W $H $wid
+
+    # move mouse to middle of window
+    wmp -a $((X + W / 2)) \
+           $((Y+ H/ 2))
+}
+
+main $ARGS
