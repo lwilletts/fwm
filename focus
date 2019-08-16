@@ -29,18 +29,17 @@ window() {
 }
 
 next() {
-    wid="$(lsw | grep -v "$PFW" | sed '1 p;d')"
+    wid="$(lsw | head -n 1)"
     focus
 }
 
 prev() {
-    wid="$(lsw | grep -v "$PFW" | sed '$ p;d')"
+    wid="$(lsw | tail -n 2 | head -n 1)"
     focus
 }
 
-# 
 cycle() {
-    wid="$(lsw | grep "$(listcurrent)" | grep -v "$PFW" | sed '1 p;d')"
+    wid="$(lsw | grep "$(listcurrent)" | head -n 1)"
     focus
 }
 
