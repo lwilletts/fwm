@@ -1,0 +1,46 @@
+#!/bin/sh
+#
+# under
+
+ARGS="$@"
+
+usage() {
+    base=$(basename $0)
+
+    cat >&2 << EOF
+Usage:
+    $base [command]
+EOF
+
+    test $# -eq 0 || exit $1
+}
+
+main() {
+    test "$#" -eq 0 && usage 1
+
+    pointX=$(wmp | cut -d\  -f 1)
+    pointY=$(wmp | cut -d\  -f 2)
+
+    for wid in $(lsw | tac); do
+        windowX="$(wattr x $wid)"
+        windowY="$(wattr y $wid)"
+
+        # no match if the left and top edges are greater than X or Y
+        test "$windowX" -gt "$pointX" && continue
+        test "$windowY" -gt "$pointY" && continue
+
+        windowW="$(wattr w $wid)"
+        windowH="$(wattr h $wid)"
+
+        # no match if the right and bottom edges are less than X or Y
+        test "$((windowX + windowW))" -lt "$pointX" && continue
+        test "$((windowY + windowH))" -lt "$pointY" && continue
+
+        # exit as window detected under cursor
+        exit
+    done
+
+    sh -c "$@"
+}
+
+main $ARGS
