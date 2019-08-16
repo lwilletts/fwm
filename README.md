@@ -2,15 +2,15 @@
 
 X11 & wmutils scripts
 
-- (https://github.com/wmutils/core)[core]
-- (https://github.com/wmutils/opt)[opt]
-- (https://github.com/pockata/mmutils)[mmutils]
+- [core](https://github.com/wmutils/core)
+- [opt](https://github.com/wmutils/opt)
+- [mmutils](https://github.com/pockata/mmutils)
 - xprop
 
 Options:
 
-- (https://tools.suckless.org/dmenu)[dmenu]
-- (https://github.com/baskerville/sxhkd)[sxhkd]
+- [dmenu](https://tools.suckless.org/dmenu)
+- [sxhkd](https://github.com/baskerville/sxhkd)
 
 ###### adjust
 
