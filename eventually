@@ -14,9 +14,31 @@ event() {
     wew | while IFS=: read ev wid; do
         case "$ev" in
             16)
+                . fwmrc
+                wmenv
+                wmcolours
+
+                W=$(wattr w $wid)
+                H=$(wattr h $wid)
+                test -z $W && continue
+                test -z $H && continue
+
+                X=$(($(wmp | cut -d\  -f 1) - $W / 2))
+                Y=$(($(wmp | cut -d\  -f 2) - $H / 2))
+                wtp $X $Y $W $H $wid
+                chwso -r "$wid"
+                chwb -s "$BW" -c "$ACTIVE" "$wid"
+                chwb -s "$BW" -c "$INACTIVE" "$PFW"
+                wtf "$wid"
                 ;;
             17)
+                prev="$(lsw | tail -n 1)"
+                chwso -r "$prev"
+                chwb -s "$BW" -c "$ACTIVE" "$prev"
+                wtf "$prev"
+
                 full -c "$wid"
+                group -c "$wid"
                 ;;
             18)
                 ;;

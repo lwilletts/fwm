@@ -17,6 +17,10 @@ topright
 bottom
 bottomleft
 bottomright
+jumpup
+jumpdown
+jumpleft
+jumpright
 center
 maximise
 vmaximise
@@ -25,6 +29,11 @@ hmaximise
 EOF
 
     test $# -eq 0 || exit $1
+}
+
+clean() {
+    # search all files for matching wid
+    return 0
 }
 
 center() {
@@ -79,6 +88,22 @@ bottomright() {
     return 0
 }
 
+jumpleft() {
+    return 0
+}
+
+jumpright() {
+    return 0
+}
+
+jumpup() {
+    return 0
+}
+
+jumpdown() {
+    return 0
+}
+
 maximise() {
     wtp $SX $SY $SW $SH $wid
 }
@@ -95,6 +120,8 @@ main() {
     test $# -eq 0 && usage 1
 
     . fwmrc
+    wmenv
+    wmgaps
 
     widCheck "$2" && wid="$2" || usage 1
 
@@ -110,26 +137,34 @@ main() {
     # exit if wid is currently fullscreen
     grep -qrw "$wid" "$fsdir" 2> /dev/null && return 1
 
+    SCR="$(pfm)"
     SX=$(($(mattr x $SCR) + LGAP))
     SY=$(($(mattr y $SCR) + TGAP))
     SW=$(($(mattr w $SCR) - LGAP - RGAP))
     SH=$(($(mattr h $SCR) - TGAP - BGAP))
 
+    # save window postion
+
+
     case "$1" in
-        -l|--left)         left        ;;
-        -r|--right)        right       ;;
-        -t|--top)          top         ;;
-        -b|--bottom)       bottom      ;;
-        -tl|--topleft)     topleft     ;;
-        -tr|--topright)    topright    ;;
-        -bl|--bottomleft)  bottomleft  ;;
-        -br|--bottomright) bottomright ;;
-        -c|--center)       center      ;;
-        -m|--maximise)     maximise    ;;
-        -vm|--vmaximised)  vmaximise   ;;
-        -hm|--hmaximised)  hmaximise   ;;
-        -h|--help)         usage 0     ;;
-        *)                 usage 1     ;;
+        -l|--left|left)                 left        ;;
+        -r|--right|right)               right       ;;
+        -t|--top|top)                   top         ;;
+        -b|--bottom|bottom)             bottom      ;;
+        -tl|--topleft|topleft)          topleft     ;;
+        -tr|--topright|topright)        topright    ;;
+        -bl|--bottomleft|bottomleft)    bottomleft  ;;
+        -br|--bottomright|bottomright)  bottomright ;;
+        -c|--center|center)             center      ;;
+        -m|--maximise|maximise)         maximise    ;;
+        -jl|--jumpleft|jumpleft)        jumpleft    ;;
+        -jr|--jumpright|jumpright)      jumpright   ;;
+        -ju|--jumpup|jumpup)            jumpup      ;;
+        -jd|--jumpdown|jumpdown)        jumpdown    ;;
+        -vm|--vmaximised|vmaximised)    vmaximise   ;;
+        -hm|--hmaximised|hmaximised)    hmaximise   ;;
+        -h|--help)         usage 0                  ;;
+        *)                 usage 1                  ;;
     esac
 
     # move mouse to middle of window
