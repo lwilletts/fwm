@@ -72,22 +72,27 @@ wmenv() {
 
     fsdir=${fsdir:-$fwmdir/fs}
     test ! -d "$fsdir" && mkdir -p "$fsdir"
+    movedir=${movedir:-$fwmdir/move}
+    test ! -d "$movedir" && mkdir -p "$movedir"
+    groupdir=${groupdir:-$fwmdir/grp}
+    test ! -d "$groupdir" && mkdir -p "$groupdir"
 
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000001")"
     BW="$(grep "borderwidth" $HOME/.cwmrc | cut -d\  -f 2)"
+    JUMP=20
 }
 
 wmgaps() {
     PRI="$(lsm -p)"
-    TGAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 2)"
-    BGAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 3)"
-    LGAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 4)"
-    RGAP="$(grep "gap" $HOME/.cwmrc | cut -d\  -f 5)"
+    TGAP="10"
+    BGAP="40"
+    LGAP="10"
+    RGAP="10"
 }
 
 wmcolours() {
-    BACK="$(grep "color menufg" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
-    ACTIVE="$(grep "color activeborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
-    URGENT="$(grep "color urgencyborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
-    INACTIVE="$(grep "color inactiveborder" $HOME/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
+    BACK="808080"
+    ACTIVE="101010"
+    URGENT="C0392B"
+    INACTIVE="EFEFEF"
 }
