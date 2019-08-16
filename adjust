@@ -7,7 +7,6 @@ ARGS="$@"
 usage() {
     base="$(basename $0)"
     cat >&2 << EOF
-
 Usage:
     $ $base up    | --up)    Move $JUMP pixels up.
     $ $base down  | --down)  Move $JUMP pixels down.

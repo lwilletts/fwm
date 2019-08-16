@@ -21,7 +21,7 @@ EOF
 clean() {
     cleanWid=$1
 
-    # search all fsfiles for matching wid
+    # search all files for matching wid
     grep -qrw "$cleanWid" "$fsdir" && {
         screenIdFile=$(grep -rH "$cleanWid" "$fsdir" | cut -d: -f 1)
 
