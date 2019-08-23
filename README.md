@@ -2,12 +2,14 @@
 
 X11 & wmutils scripts
 
+Dependencies:
+
 - [core](https://github.com/wmutils/core)
 - [opt](https://github.com/wmutils/opt)
 - [mmutils](https://github.com/pockata/mmutils)
 - xprop
 
-Options:
+Optional:
 
 - [dmenu](https://tools.suckless.org/dmenu)
 - [sxhkd](https://github.com/baskerville/sxhkd)
@@ -39,13 +41,13 @@ its original position. Improved over cwm window-fullscreen by following mouse.
 
 ###### fwmrc
 
-A script that sources various environment variables from ~/.cwmrc and
-implements global functions that can be called from the shell once sourced.
+Sets various environment variables and can be sourced by your shell for usage
+of it's custom xprop wrapper functions for retrieving window names, classes and
+process ids.
 
 ###### group
 
-Groups implemented using `mapw` that does work but is not compatible
-with cwm as it maps all new visible windows to mouse pointer location.
+Groups implemented using `mapw`.
 
 ###### move
 
@@ -55,8 +57,8 @@ monitor information.
 ###### under
 
 Detects if the window underneath the mouse pointer is the root window. If it
-is, the given command will be run. Useful a window selection menu CWM style.
-You'll need to use the following example in your sxhkd if you want to bind to
+is, the given command will be run. Useful for running dmenu scripts based on
+selection of the root window. You'll need to use the following example in your sxhkd if you want to bind to
 the mouse.
 
 ```
@@ -66,9 +68,7 @@ the mouse.
 
 ###### tile
 
-Tile windows on a given screen horizontally or vertically.
-
-TODO: not implemented yet
+Tile windows on a given screen in a variety of manners. Not implemented yet.
 
 ###### wid
 
