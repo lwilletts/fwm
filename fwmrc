@@ -78,20 +78,19 @@ wmenv() {
     test ! -d "$groupdir" && mkdir -p "$groupdir"
 
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000001")"
-    BW="$(grep "borderwidth" $HOME/.cwmrc | cut -d\  -f 2)"
     JUMP=20
+    BW=1
 }
 
 wmgaps() {
     PRI="$(lsm -p)"
     TGAP="10"
-    BGAP="40"
+    BGAP="50"
     LGAP="10"
-    RGAP="10"
+    RGAP="20"
 }
 
 wmcolours() {
-    BACK="808080"
     ACTIVE="101010"
     URGENT="C0392B"
     INACTIVE="EFEFEF"
