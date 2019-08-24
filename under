@@ -21,7 +21,7 @@ main() {
     pointX=$(wmp | cut -d\  -f 1)
     pointY=$(wmp | cut -d\  -f 2)
 
-    for wid in $(lsw | tac); do
+    for wid in $(lsw -a | tac); do
         windowX="$(wattr x $wid)"
         windowY="$(wattr y $wid)"
 
