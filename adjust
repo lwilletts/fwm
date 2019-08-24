@@ -26,42 +26,22 @@ main() {
     # exit if wid is currently fullscreen
     grep -qrw "$wid" "$fsdir" 2> /dev/null && return 1
 
-    test -e "$2"
-
     case "$#" in
         1) wid="$PFW"                           ;;
         2) widCheck "$2" && wid="$2" || usage 1 ;;
         *) usage 1                              ;;
     esac
 
-    W=$(wattr w $wid)
-    H=$(wattr h $wid)
-
     case "$1" in
-        up|--up)
-            X=$(wattr x $wid)
-            Y=$(($(wattr y $wid) - $JUMP))
-            ;;
-        down|--down)
-            X=$(wattr x $wid)
-            Y=$(($(wattr y $wid) + $JUMP))
-            ;;
-        left|--left)
-            X=$(($(wattr x $wid) - $JUMP))
-            Y=$(wattr y $wid)
-            ;;
-        right|--right)
-            X=$(($(wattr x $wid) + $JUMP))
-            Y=$(wattr y $wid)
-            ;;
+        up|--up)       wmv 0 -$JUMP "$wid" ;;
+        down|--down)   wmv 0 +$JUMP "$wid" ;;
+        left|--left)   wmv -$JUMP 0 "$wid" ;;
+        right|--right) wmv +$JUMP 0 "$wid" ;;
     esac
 
-    # move window
-    wtp $X $Y $W $H $wid
-
     # move mouse to middle of window
-    wmp -a $((X + W / 2)) \
-           $((Y+ H/ 2))
+    wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
+           $(($(wattr y $wid) + $(wattr h $wid) / 2))
 }
 
 main $ARGS
