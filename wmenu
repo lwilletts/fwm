@@ -18,40 +18,31 @@ EOF
 
 main() {
     . fwmrc
+    wmgaps
     wmcolours
 
     FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
 
     case "$1" in
-        -a|--all|all)
-            LSWCMD="lsw -a"
-            ;;
-        -u|--unmapped|unmapped)
-            LSWCMD="lsw -u"
-            ;;
-        -h|--help|help)
-            usage 0
-            ;;
-        *)
-            LSWCMD="lsw"
-            ;;
+        -a|--all|all)           LSWCMD="lsw -a" ;;
+        -u|--unmapped|unmapped) LSWCMD="lsw -u" ;;
+        -h|--help|help)         usage 0         ;;
+        *)                      LSWCMD="lsw"    ;;
     esac
 
     LINES=$($LSWCMD | wc -l)
-
     test $LINES -eq 0 && exit 1
 
     # CWM-like right click
-    X=$(wmp | cut -d\  -f 1)
-    Y=$(($(wmp | cut -d\  -f 2) - 520))
+    X=$(($(wmp | cut -d\  -f 1) - $(mattr x $PRI) - 10))
+    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y $PRI) - 10))
 
     for wid in $($LSWCMD); do
         printf '%s\n' "$wid $(class $wid) | $(wname $wid)"
     done | sort -k 2 | \
     dmenu -name "wmenu" -f -l $LINES -s 0 -i -fn $FONT -p "Window >" \
-    -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$BACK" -sb "#$BACK" \
-    -x -10000 -y -10000 -w "500" | \
-    cut -d\  -f 1 | focus
+    -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" \
+    -x $X -y $Y -w "300" | cut -d\  -f 1 | focus
 }
 
 main "$@"
