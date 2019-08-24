@@ -91,10 +91,8 @@ main() {
 
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000001")"
 
-    # grab piped input
-    test -p /dev/stdin && {
-        read wid && window "$wid" || exit 0
-    }
+    read wid
+    widCheck "$wid" && focus "$wid"
 
     case "$1" in
         -w|--wid|wid)     window "$2" ;;
