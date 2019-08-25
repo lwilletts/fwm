@@ -2,8 +2,6 @@
 #
 # focus
 
-ARGS="$@"
-
 usage() {
     base=$(basename $0)
 
@@ -21,11 +19,7 @@ EOF
 
 window() {
     wid="$1"
-    widCheck "$wid" && {
-        test "$wid" != "$PFW" && focus || exit 1
-    } || {
-        exit 1
-    }
+    widCheck "$wid" && focus
 }
 
 next() {
@@ -87,8 +81,6 @@ main() {
     wmenv
     wmcolours
 
-    PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000001")"
-
     case "$1" in
         -w|--wid|wid)     window "$2" ;;
         -n|--next|next)   next        ;;
@@ -99,4 +91,4 @@ main() {
     esac
 }
 
-main $ARGS
+main "$@"
