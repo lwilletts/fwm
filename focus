@@ -80,8 +80,6 @@ focus() {
     # move mouse to middle of window
     wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
            $(($(wattr y $wid) + $(wattr h $wid) / 2))
-
-    exit 0
 }
 
 main() {
@@ -90,9 +88,6 @@ main() {
     wmcolours
 
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000001")"
-
-    read wid
-    widCheck "$wid" && focus "$wid"
 
     case "$1" in
         -w|--wid|wid)     window "$2" ;;
