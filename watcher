@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# ev
+
+event() {
+    . fwmrc
+    wmcolours
+
+    wew | while IFS=: read ev wid; do
+        case "$ev" in
+            7)  ;; # enter window
+            16) ;; # create window
+            17) # destroy window
+                full -c "$wid"
+                # wattr o "$wid" || focus -w "$(lsw | tail -n 1)"
+                ;;
+            18) ;; # unmap window
+            19) ;; # map window
+        esac
+    done
+}
+
+event

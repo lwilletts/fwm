@@ -19,7 +19,11 @@ EOF
 
 window() {
     wid="$1"
-    widCheck "$wid" && focus
+    widCheck "$wid" && {
+        test "$wid" != "$PFW" && focus || exit 1
+    } || {
+        exit 1
+    }
 }
 
 next() {

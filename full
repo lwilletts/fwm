@@ -2,8 +2,6 @@
 #
 # full
 
-ARGS="$@"
-
 usage() {
     base=$(basename $0)
 
@@ -92,4 +90,4 @@ main() {
     sh -c "wtp $(mattr xywh $SCR) $wid"
 }
 
-main $ARGS
+main "$@"

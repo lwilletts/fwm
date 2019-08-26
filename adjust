@@ -2,8 +2,6 @@
 #
 # adjust
 
-ARGS="$@"
-
 usage() {
     base="$(basename $0)"
     cat >&2 << EOF
@@ -44,4 +42,4 @@ main() {
            $(($(wattr y $wid) + $(wattr h $wid) / 2))
 }
 
-main $ARGS
+main "$@"

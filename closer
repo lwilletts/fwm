@@ -2,8 +2,6 @@
 #
 # closer
 
-ARGS="$@"
-
 usage() {
     cat >&2 << EOF
 Usage: $(basename $0) [direction]
@@ -71,4 +69,4 @@ main() {
     esac
 }
 
-main $ARGS
+main "$@"

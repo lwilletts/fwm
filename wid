@@ -2,8 +2,6 @@
 #
 # wid
 
-ARGS="$@"
-
 usage() {
     cat >&2 << EOF
 Usage: $(basename $0) [Search String]
@@ -33,6 +31,7 @@ findTitle() {
 showAll() {
     findName
     findClass
+    findTitle
 }
 
 main() {
@@ -47,4 +46,4 @@ main() {
     showAll | grep -i "$@" | cut -d\  -f 1 | sort | uniq
 }
 
-main $ARGS
+main "$@"

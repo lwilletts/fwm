@@ -1,6 +1,7 @@
 # fwm
 
-X11 & wmutils scripts
+X11 & wmutils enhancer scripts for cwm. Can be used independently. I use cwm
+for sloppy focus, ewmh support, and groups.
 
 Dependencies:
 
@@ -11,6 +12,7 @@ Dependencies:
 
 Optional:
 
+- [cwm](https://tools.suckless.org/dmenu)
 - [dmenu](https://tools.suckless.org/dmenu)
 - [sxhkd](https://github.com/baskerville/sxhkd)
 
@@ -23,16 +25,9 @@ Adjusts position of window in a direction by the amount chosen in fwmrc.
 Focuses the closest window in a given direction. If no window is currently
 focused, uses mouse x y coordinates to find closest window.
 
-###### eventually
-
-An window id event watcher wrapper around wew to provide added functionality.
-Mainly cleaning up fullscreen window ids at the moment.  Recommend to add
-`eventually &` to your xinitrc to load on X11 start.
-
 ###### focus
 
 Focus a window id, or cycle through the ordered stack of windows on screen.
-Accepts piped window id to focus.
 
 ###### full
 
@@ -45,10 +40,6 @@ Sets various environment variables and can be sourced by your shell for usage
 of it's custom xprop wrapper functions for retrieving window names, classes and
 process ids.
 
-###### group
-
-Groups implemented using `mapw`.
-
 ###### move
 
 Move and position windows on your multihead setup. Follows mouse pointer for
@@ -56,10 +47,11 @@ monitor information.
 
 ###### under
 
-Detects if the window underneath the mouse pointer is the root window. If it
-is, the given command will be run. Useful for running dmenu scripts based on
-selection of the root window. You'll need to use the following example in your sxhkd if you want to bind to
-the mouse.
+Prints the id of the window currently underneath the cursor. If no window is
+found and has an argument passed to it, the given command will be executed.
+Useful for running dmenu scripts based on selection of the root window. You'll
+need to use the following example in your sxhkd if you want to bind to the
+mouse:
 
 ```
 ~button3
@@ -69,6 +61,11 @@ the mouse.
 ###### tile
 
 Tile windows on a given screen in a variety of manners. Not implemented yet.
+
+###### watcher
+
+An window id event watcher wrapper around wew to provide added functionality.
+Recommend to add `watcher &` to your xinitrc to load on X11 start.
 
 ###### wid
 

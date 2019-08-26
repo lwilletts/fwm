@@ -2,26 +2,11 @@
 #
 # under
 
-ARGS="$@"
-
-usage() {
-    base=$(basename $0)
-
-    cat >&2 << EOF
-Usage:
-    $base [command]
-EOF
-
-    test $# -eq 0 || exit $1
-}
-
 main() {
-    test "$#" -eq 0 && usage 1
-
     pointX=$(wmp | cut -d\  -f 1)
     pointY=$(wmp | cut -d\  -f 2)
 
-    for wid in $(lsw -a | tac); do
+    for wid in $(lsw | tac); do
         windowX="$(wattr x $wid)"
         windowY="$(wattr y $wid)"
 
@@ -36,11 +21,13 @@ main() {
         test "$((windowX + windowW))" -lt "$pointX" && continue
         test "$((windowY + windowH))" -lt "$pointY" && continue
 
-        # exit as window detected under cursor
+        # print wid on detection if no args passed
+        test "$#" -eq 0 && printf '%s\n' "$wid"
         exit
     done
 
-    sh -c "$@"
+    # run args as command to shell as no window was detected
+    test "$#" -gt 0 && sh -c "$@"
 }
 
-main $ARGS
+main "$@"

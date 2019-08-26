@@ -42,8 +42,8 @@ main() {
                printf '%s\n' "$window $(class $window) | $(wname $window)"
            done | sort -k 2 | \
            dmenu -name "wmenu" -f -l $LINES -s 0 -i -fn $FONT -p "Window >" \
-           -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" \
-           -x $X -y $Y -w "300" | cut -d\  -f 1)"
+           -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
+           -x $X -y $Y -w "300" -bw 1 | cut -d\  -f 1)"
 
     focus -w "$wid"
 }

@@ -2,38 +2,31 @@
 #
 # move
 
-ARGS="$@"
-
 usage() {
     base="$(basename $0)"
+
     cat >&2 << EOF
 Usage:
-
-left
-right
-top
-topleft
-topright
-bottom
-bottomleft
-bottomright
-jumpup
-jumpdown
-jumpleft
-jumpright
-center
-maximise
-vmaximise
-hmaximise
-
+    $base -t  | top <wid> <screen>
+    $base -l  | left <wid> <screen>
+    $base -r  | right <wid> <screen>
+    $base -b  | bottom <wid> <screen>
+    $base -c  | center <wid> <screen>
+    $base -tl | topleft <wid> <screen>
+    $base -tr | topright <wid> <screen>
+    $base -bl | bottomleft <wid> <screen>
+    $base -br | bottomright <wid> <screen>
+    $base -m  | maximise <wid> <screen>
+    $base -vm | vmaximise <wid> <screen>
+    $base -hm | hmaximise <wid> <screen>
 EOF
 
     test $# -eq 0 || exit $1
 }
 
-clean() {
-    # search all files for matching wid
-    return 0
+reset() {
+    rm $movedir/* 2> /dev/null
+    exit 0
 }
 
 center() {
@@ -41,11 +34,13 @@ center() {
     H=$(wattr h "$wid")
     X=$((SX + SW/2 - W/2))
     Y=$((SY + SH/2 - H/2))
-    wtp $X $Y $W $H $wid
 }
 
 left() {
-    sh -c "wtp $SX $(wattr ywhi "$wid")"
+    X=$SX
+    Y=$(wattr y "$wid")
+    W=$(wattr w "$wid")
+    H=$(wattr h "$wid")
 }
 
 right() {
@@ -53,7 +48,6 @@ right() {
     W=$(wattr w "$wid")
     H=$(wattr h "$wid")
     X=$((SX + SW - W))
-    wtp $X $Y $W $H $wid
 }
 
 top() {
@@ -61,59 +55,59 @@ top() {
     W=$(wattr w "$wid")
     H=$(wattr h "$wid")
     Y=$((SY + SH - H))
-    wtp $X $Y $W $H $wid
 }
 
 topleft() {
-    return 0
+    X=$SX
+    Y=$SY
+    W=$(wattr w "$wid")
+    H=$(wattr h "$wid")
 }
 
 topright() {
-    return 0
+    Y=$SY
+    W=$(wattr w "$wid")
+    H=$(wattr h "$wid")
+    X=$((SX + SW -W))
 }
 
 bottom() {
     X=$(wattr x "$wid")
     W=$(wattr w "$wid")
     H=$(wattr h "$wid")
-    Y=$(echo "$SY + $SH - $H" | bc )
-    wtp $X $Y $W $H $wid
+    Y=$(($SY + $SH - $H))
 }
 
 bottomleft() {
-    return 0
+    X=$SX
+    W=$(wattr w "$wid")
+    H=$(wattr h "$wid")
+    Y=$((SY + SH - H))
 }
 
 bottomright() {
     return 0
 }
-
-jumpleft() {
-    return 0
-}
-
-jumpright() {
-    return 0
-}
-
-jumpup() {
-    return 0
-}
-
-jumpdown() {
-    return 0
-}
-
 maximise() {
-    wtp $SX $SY $SW $SH $wid
+    X=$SX
+    Y=$SY
+    W=$SW
+    H=$SH
 }
 
 vmaximise() {
-    return 0
+    X=$(wattr x "$wid")
+    Y=$SY
+    W=$(wattr w "$wid")
+    H=$SH
+
 }
 
 hmaximise() {
-    return 0
+    X=$SX
+    Y=$(wattr y "$wid")
+    W=$SW
+    H=$(wattr h "$wid")
 }
 
 main() {
@@ -123,9 +117,19 @@ main() {
     wmenv
     wmgaps
 
-    widCheck "$2" && wid="$2" || usage 1
+    mode="$1"
+
+    case "$mode" in
+        -r|--reset|reset) reset ;;
+    esac
 
     case $# in
+        1)
+            wid=$PFW
+            ;;
+        2)
+            widCheck "$2" && wid="$2" || usage 1
+            ;;
         3)
             mattr "$3" && SCR="$3" || {
                 printf '%s\n' "$3 is not a connected screen."
@@ -137,39 +141,46 @@ main() {
     # exit if wid is currently fullscreen
     grep -qrw "$wid" "$fsdir" 2> /dev/null && return 1
 
+    # restore window position
+    grep -qrw "$wid" "$movedir" 2> /dev/null && {
+        test "$(tail -n 1 "$movedir/$wid")" = "$mode" && {
+            wtp $(head -n 1 "$movedir/$wid")
+            rm "$movedir/$wid"
+            exit 0
+        }
+    }
+
     SCR="$(pfm)"
     SX=$(($(mattr x $SCR) + LGAP))
     SY=$(($(mattr y $SCR) + TGAP))
     SW=$(($(mattr w $SCR) - LGAP - RGAP))
     SH=$(($(mattr h $SCR) - TGAP - BGAP))
 
-    # save window postion
-
-
-    case "$1" in
+    case "$mode" in
         -l|--left|left)                 left        ;;
         -r|--right|right)               right       ;;
         -t|--top|top)                   top         ;;
         -b|--bottom|bottom)             bottom      ;;
+        -c|--center|center)             center      ;;
         -tl|--topleft|topleft)          topleft     ;;
         -tr|--topright|topright)        topright    ;;
         -bl|--bottomleft|bottomleft)    bottomleft  ;;
         -br|--bottomright|bottomright)  bottomright ;;
-        -c|--center|center)             center      ;;
         -m|--maximise|maximise)         maximise    ;;
-        -jl|--jumpleft|jumpleft)        jumpleft    ;;
-        -jr|--jumpright|jumpright)      jumpright   ;;
-        -ju|--jumpup|jumpup)            jumpup      ;;
-        -jd|--jumpdown|jumpdown)        jumpdown    ;;
-        -vm|--vmaximised|vmaximised)    vmaximise   ;;
-        -hm|--hmaximised|hmaximised)    hmaximise   ;;
-        -h|--help)         usage 0                  ;;
-        *)                 usage 1                  ;;
+        -vm|--vmaximise|vmaximise)      vmaximise   ;;
+        -hm|--hmaximise|hmaximise)      hmaximise   ;;
+        -h|--help)                      usage 0     ;;
+        *)                              usage 1     ;;
     esac
+
+    # save window postion and mode
+    (wattr xywhi "$wid"; printf '%s\n' "$mode") > "$movedir/$wid"
+
+    wtp $X $Y $W $H $wid
 
     # move mouse to middle of window
     wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
            $(($(wattr y $wid) + $(wattr h $wid) / 2))
 }
 
-main $ARGS
+main "$@"
