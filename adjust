@@ -21,25 +21,23 @@ main() {
     . fwmrc
     wmenv
 
+
+    case $# in
+        1) wid="$PFW"                ;;
+        2) widCheck "$2" && wid="$2" ;;
+    esac
+
     # exit if wid is currently fullscreen
     grep -qrw "$wid" "$fsdir" 2> /dev/null && return 1
 
-    case "$#" in
-        1) wid="$PFW"                           ;;
-        2) widCheck "$2" && wid="$2" || usage 1 ;;
-        *) usage 1                              ;;
-    esac
-
     case "$1" in
-        up|--up)       wmv 0 -$JUMP "$wid" ;;
-        down|--down)   wmv 0 +$JUMP "$wid" ;;
-        left|--left)   wmv -$JUMP 0 "$wid" ;;
-        right|--right) wmv +$JUMP 0 "$wid" ;;
+        up|--up)        wmv 0 -$JUMP $wid ;;
+        down|--down)    wmv 0 +$JUMP $wid ;;
+        left|--left)    wmv -$JUMP 0 $wid ;;
+        right|--right)  wmv +$JUMP 0 $wid ;;
+        -h|--help|help) usage 0           ;;
+        *)              usage 1           ;;
     esac
-
-    # move mouse to middle of window
-    wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
-           $(($(wattr y $wid) + $(wattr h $wid) / 2))
 }
 
 main "$@"
