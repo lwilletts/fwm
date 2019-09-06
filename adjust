@@ -21,7 +21,6 @@ main() {
     . fwmrc
     wmenv
 
-
     case $# in
         1) wid="$PFW"                ;;
         2) widCheck "$2" && wid="$2" ;;
@@ -38,6 +37,10 @@ main() {
         -h|--help|help) usage 0           ;;
         *)              usage 1           ;;
     esac
+
+    # move mouse to middle of window
+    wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
+           $(($(wattr y $wid) + $(wattr h $wid) / 2))
 }
 
 main "$@"
