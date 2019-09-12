@@ -52,9 +52,9 @@ right() {
 
 top() {
     X=$(wattr x "$wid")
+    Y=$SY
     W=$(wattr w "$wid")
     H=$(wattr h "$wid")
-    Y=$((SY + SH - H))
 }
 
 topleft() {
@@ -86,8 +86,12 @@ bottomleft() {
 }
 
 bottomright() {
-    return 0
+    W=$(wattr w "$wid")
+    H=$(wattr h "$wid")
+    X=$((SX + SW - W))
+    Y=$((SY + SH - H))
 }
+
 maximise() {
     X=$SX
     Y=$SY
@@ -120,7 +124,7 @@ main() {
     mode="$1"
 
     case "$mode" in
-        -r|--reset|reset) reset ;;
+        --reset|reset) reset ;;
     esac
 
     case $# in
@@ -145,6 +149,12 @@ main() {
     grep -qrw "$wid" "$movedir" 2> /dev/null && {
         test "$(tail -n 1 "$movedir/$wid")" = "$mode" && {
             wtp $(head -n 1 "$movedir/$wid")
+
+            # move mouse to middle of window
+            wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
+                   $(($(wattr y $wid) + $(wattr h $wid) / 2))
+
+            # clean file
             rm "$movedir/$wid"
             exit 0
         }
@@ -157,18 +167,18 @@ main() {
     SH=$(($(mattr h $SCR) - TGAP - BGAP))
 
     case "$mode" in
-        -l|--left|left)                 left        ;;
-        -r|--right|right)               right       ;;
-        -t|--top|top)                   top         ;;
-        -b|--bottom|bottom)             bottom      ;;
-        -c|--center|center)             center      ;;
-        -tl|--topleft|topleft)          topleft     ;;
-        -tr|--topright|topright)        topright    ;;
-        -bl|--bottomleft|bottomleft)    bottomleft  ;;
-        -br|--bottomright|bottomright)  bottomright ;;
-        -m|--maximise|maximise)         maximise    ;;
-        -vm|--vmaximise|vmaximise)      vmaximise   ;;
-        -hm|--hmaximise|hmaximise)      hmaximise   ;;
+        -t|--top|top)                   top         ; mode="top"         ;;
+        -l|--left|left)                 left        ; mode="left"        ;;
+        -r|--right|right)               right       ; mode="right"       ;;
+        -b|--bottom|bottom)             bottom      ; mode="bottom"      ;;
+        -c|--center|center)             center      ; mode="center"      ;;
+        -tl|--topleft|topleft)          topleft     ; mode="topleft"     ;;
+        -tr|--topright|topright)        topright    ; mode="topright"    ;;
+        -bl|--bottomleft|bottomleft)    bottomleft  ; mode="bottomleft"  ;;
+        -br|--bottomright|bottomright)  bottomright ; mode="bottomright" ;;
+        -m|--maximise|maximise)         maximise    ; mode="maximise"    ;;
+        -vm|--vmaximise|vmaximise)      vmaximise   ; mode="vmaximise"   ;;
+        -hm|--hmaximise|hmaximise)      hmaximise   ; mode="hmaximise"   ;;
         -h|--help)                      usage 0     ;;
         *)                              usage 1     ;;
     esac
