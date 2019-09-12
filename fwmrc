@@ -80,6 +80,7 @@ wmenv() {
 
 wmgaps() {
     PRI="$(lsm -p)"
+    SEC="$(lsm | grep -v "$PRI")"
     TGAP="$(grep "gap" ~/.cwmrc | cut -d\  -f 2)"
     BGAP="$(grep "gap" ~/.cwmrc | cut -d\  -f 3)"
     LGAP="$(grep "gap" ~/.cwmrc | cut -d\  -f 4)"
