@@ -4,18 +4,30 @@
 
 event() {
     . fwmrc
-    wmcolours
+    wmenv
 
     wew | while IFS=: read ev wid; do
         case "$ev" in
-            7)  ;; # enter window
-            16) ;; # create window
+            16) # create window
+                wattr o "$wid" | case "$(class "$wid")" in
+                    steam_app_*)
+                        pkill compton
+                        printf '%s\n' "$wid" >> "$fwmdir/compton"
+                        ;;
+                esac
+                ;;
             17) # destroy window
                 full -c "$wid"
-                # wattr o "$wid" || focus -w "$(lsw | tail -n 1)"
+                grep -q "$wid" "$fwmdir/compton" && {
+                    pgrep compton > /dev/null 2>&1 || compton &
+                    cleaned="$(grep -v "$wid" "$fwmdir/compton")"
+                    printf '%s' "$cleaned" > "$fwmdir/compton"
+                }
                 ;;
-            18) ;; # unmap window
-            19) ;; # map window
+            18) # unmap window
+                ;;
+            19) # map window
+                ;;
         esac
     done
 }
