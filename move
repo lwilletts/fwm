@@ -148,15 +148,19 @@ main() {
     # restore window position
     grep -qrw "$wid" "$movedir" 2> /dev/null && {
         test "$(tail -n 1 "$movedir/$wid")" = "$mode" && {
-            wtp $(head -n 1 "$movedir/$wid")
+            case "$mode" in
+                vmaximise|hmaximise|maximise)
+                    # move mouse to middle of window
+                    wtp $(head -n 1 "$movedir/$wid")
 
-            # move mouse to middle of window
-            wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
-                   $(($(wattr y $wid) + $(wattr h $wid) / 2))
+                    wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
+                           $(($(wattr y $wid) + $(wattr h $wid) / 2))
 
-            # clean file
-            rm "$movedir/$wid"
-            exit 0
+                    # clean file
+                    rm "$movedir/$wid"
+                    exit 0
+                    ;;
+            esac
         }
     }
 
