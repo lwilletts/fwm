@@ -16,24 +16,7 @@ EOF
     test $# -eq 0 || exit $1
 }
 
-main() {
-    . fwmrc
-    wmenv
-    wmgaps
-    wmcolours
-
-    FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
-
-    case "$1" in
-        -a|--all|all)           LSWCMD="lsw -a" ;;
-        -u|--unmapped|unmapped) LSWCMD="lsw -u" ;;
-        -h|--help|help)         usage 0         ;;
-        *)                      LSWCMD="lsw"    ;;
-    esac
-
-    LINES=$($LSWCMD | wc -l)
-    test $LINES -eq 0 && exit 1
-
+menu() {
     # CWM-like right click
     X=$(($(wmp | cut -d\  -f 1) - $(mattr x $PRI) - 10))
     Y=$(($(wmp | cut -d\  -f 2) - $(mattr y $PRI) - 10))
@@ -43,7 +26,39 @@ main() {
            done | sort -k 2 | \
            dmenu -name "wmenu" -f -l $LINES -s 0 -i -fn $FONT -p "Window >" \
            -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
-           -x $X -y $Y -w "300" -bw 1 | cut -d\  -f 1)"
+           -x $X -y $Y -w "400" -bw 1 | cut -d\  -f 1)"
+}
+
+bar() {
+    wid="$(for window in $($LSWCMD); do
+               printf '%s\n' "$window $(class $window) | $(wname $window)"
+           done | \
+           dmenu -name "wmenu" -f -l $LINES -s 0 -i -fn $FONT -p "Window >" \
+           -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
+           -bw 1 | cut -d\  -f 1)"
+}
+
+main() {
+    . fwmrc
+    wmenv
+    wmgaps
+    wmcolours
+
+    FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
+
+    LSWCMD="lsw"
+
+    LINES=$($LSWCMD | wc -l)
+    test $LINES -eq 0 && exit 1
+
+    case "$1" in
+        -b) bar ;;
+        *) menu ;;
+    esac
+
+    # always ensure focus and stack order
+    wtf "$wid"
+    chwso -r "$wid"
 
     focus -w "$wid"
 }
