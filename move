@@ -121,6 +121,10 @@ position() {
     printf '%s\n' "$X $Y $W $H"; \
     printf '%s\n' "$mode") > "$movedir/$wid"
 
+    # briefly hide mouse
+    wmp -a $(wattr wh $(lsw -r))
+
+    # position window
     wtp $X $Y $W $H $wid
 
     # move mouse to middle of window
@@ -176,9 +180,13 @@ main() {
                         $mode
                         position
                     } || {
-                        # move mouse to middle of window
+                        # briefly hide mouse
+                        wmp -a $(wattr wh $(lsw -r))
+
+                        # restore position
                         wtp $(sed '1!d' "$movedir/$wid")
 
+                        # move mouse to middle of window
                         wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
                                $(($(wattr y $wid) + $(wattr h $wid) / 2))
 
