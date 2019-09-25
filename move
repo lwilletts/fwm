@@ -26,6 +26,7 @@ EOF
 
 reset() {
     rm $movedir/* 2> /dev/null
+    printf '%s\n' "resetting move directory..."
     exit 0
 }
 
@@ -114,6 +115,19 @@ hmaximise() {
     H=$(wattr h "$wid")
 }
 
+position() {
+    # save old window postion, new window position, and mode
+    (wattr xywhi "$wid"; \
+    printf '%s\n' "$X $Y $W $H"; \
+    printf '%s\n' "$mode") > "$movedir/$wid"
+
+    wtp $X $Y $W $H $wid
+
+    # move mouse to middle of window
+    wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
+           $(($(wattr y $wid) + $(wattr h $wid) / 2))
+}
+
 main() {
     test $# -eq 0 && usage 1
 
@@ -145,30 +159,38 @@ main() {
     # exit if wid is currently fullscreen
     grep -qrw "$wid" "$fsdir" 2> /dev/null && return 1
 
-    # restore window position
-    grep -qrw "$wid" "$movedir" 2> /dev/null && {
-        test "$(tail -n 1 "$movedir/$wid")" = "$mode" && {
-            case "$mode" in
-                vmaximise|hmaximise|maximise)
-                    # move mouse to middle of window
-                    wtp $(head -n 1 "$movedir/$wid")
-
-                    wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
-                           $(($(wattr y $wid) + $(wattr h $wid) / 2))
-
-                    # clean file
-                    rm "$movedir/$wid"
-                    exit 0
-                    ;;
-            esac
-        }
-    }
-
+    # grab screen variables
     SCR="$(pfm)"
     SX=$(($(mattr x $SCR) + LGAP))
     SY=$(($(mattr y $SCR) + TGAP))
     SW=$(($(mattr w $SCR) - LGAP - RGAP))
     SH=$(($(mattr h $SCR) - TGAP - BGAP))
+
+    # restore window position
+    grep -qrw "$wid" "$movedir" 2> /dev/null && {
+        test "$(sed '3!d' "$movedir/$wid")" = "$mode" && {
+            case "$mode" in
+                vmaximise|hmaximise|maximise)
+                    # test if window has moved since last run
+                    test "$(sed '2!d' "$movedir/$wid")" != "$(wattr xywh $wid)" && {
+                        $mode
+                        position
+                    } || {
+                        # move mouse to middle of window
+                        wtp $(sed '1!d' "$movedir/$wid")
+
+                        wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
+                               $(($(wattr y $wid) + $(wattr h $wid) / 2))
+
+                        # clean file
+                        rm "$movedir/$wid"
+                    }
+
+                    exit 0
+                    ;;
+            esac
+        }
+    }
 
     case "$mode" in
         -t|--top|top)                   top         ; mode="top"         ;;
@@ -187,14 +209,7 @@ main() {
         *)                              usage 1     ;;
     esac
 
-    # save window postion and mode
-    (wattr xywhi "$wid"; printf '%s\n' "$mode") > "$movedir/$wid"
-
-    wtp $X $Y $W $H $wid
-
-    # move mouse to middle of window
-    wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
-           $(($(wattr y $wid) + $(wattr h $wid) / 2))
+    position
 }
 
 main "$@"
