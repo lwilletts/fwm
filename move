@@ -147,12 +147,15 @@ main() {
 
     case $# in
         1)
+            SCR="$(pfm)"
             wid=$PFW
             ;;
         2)
+            SCR="$(pfm)"
             widCheck "$2" && wid="$2" || usage 1
             ;;
         3)
+            widCheck "$2" && wid="$2" || usage 1
             mattr "$3" && SCR="$3" || {
                 printf '%s\n' "$3 is not a connected screen."
                 exit 1
@@ -164,7 +167,6 @@ main() {
     grep -qrw "$wid" "$fsdir" 2> /dev/null && return 1
 
     # grab screen variables
-    SCR="$(pfm)"
     SX=$(($(mattr x $SCR) + LGAP))
     SY=$(($(mattr y $SCR) + TGAP))
     SW=$(($(mattr w $SCR) - LGAP - RGAP))
