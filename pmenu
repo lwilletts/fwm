@@ -23,11 +23,11 @@ main() {
     FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
 
     programs="urxvt
-    steam
-    discord
-    qutebrowser
-    pizero
-    obs"
+steam
+discord
+qutebrowser
+pizero
+obs"
 
     program=$(printf '%s\n' "$programs" | \
     dmenu -name "pmenu" -f -l 10 -s 0 -fn "$FONT" -p "Run >" \
