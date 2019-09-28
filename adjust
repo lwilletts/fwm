@@ -6,25 +6,20 @@ usage() {
     base="$(basename $0)"
     cat >&2 << EOF
 Usage:
-    $ $base up    | --up)    Move $JUMP pixels up.
-    $ $base down  | --down)  Move $JUMP pixels down.
-    $ $base left  | --left)  Move $JUMP pixels left.
-    $ $base right | --right) Move $JUMP pixels right.
+    $ $base up    | --up $(pfw))    Move $JUMP pixels up.
+    $ $base down  | --down $(pfw))  Move $JUMP pixels down.
+    $ $base left  | --left $(pfw))  Move $JUMP pixels left.
+    $ $base right | --right $(pfw)) Move $JUMP pixels right.
 EOF
 
     test $# -eq 0 || exit $1
 }
 
 main() {
-    test $# -eq 0 && usage 1
-
     . fwmrc
     wmenv
 
-    case $# in
-        1) wid="$PFW"                ;;
-        2) widCheck "$2" && wid="$2" ;;
-    esac
+    widCheck "$2" && wid="$2" || usage 1
 
     # exit if wid is currently fullscreen
     grep -qrw "$wid" "$fsdir" 2> /dev/null && return 1
