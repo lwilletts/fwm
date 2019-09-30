@@ -23,9 +23,9 @@ clean() {
     grep -qrw "$cleanWid" "$fsdir" && {
         screenIdFile=$(grep -rH "$cleanWid" "$fsdir" | cut -d: -f 1)
 
-        test ! -z "$wid" && {
-            wtp $(grep -w "$wid" "$screenIdFile")
+        test ! -z "$cleanWid" && {
             chwb -s "$BW" -c "$ACTIVE" "$wid"
+            wtp $(grep -w "$wid" "$screenIdFile")
         }
 
         rm "$screenIdFile"
