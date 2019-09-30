@@ -19,6 +19,8 @@ Usage:
     $base -m  | maximise <wid> <screen>
     $base -vm | vmaximise <wid> <screen>
     $base -hm | hmaximise <wid> <screen>
+    $base help | --help
+    $base reset | --reset
 EOF
 
     test $# -eq 0 || exit $1
@@ -26,7 +28,7 @@ EOF
 
 reset() {
     rm $movedir/* 2> /dev/null
-    printf '%s\n' "resetting move directory..."
+    printf '%s\n' "move directory reset..."
     exit 0
 }
 
@@ -133,8 +135,6 @@ position() {
 }
 
 main() {
-    test $# -eq 0 && usage 1
-
     . fwmrc
     wmenv
     wmgaps
@@ -146,9 +146,12 @@ main() {
     esac
 
     case $# in
+        0)
+            usage 1
+            ;;
         1)
             SCR="$(pfm)"
-            wid=$PFW
+            wid="$PFW"
             ;;
         2)
             SCR="$(pfm)"
@@ -215,7 +218,7 @@ main() {
         -m|--maximise|maximise)         maximise    ; mode="maximise"    ;;
         -vm|--vmaximise|vmaximise)      vmaximise   ; mode="vmaximise"   ;;
         -hm|--hmaximise|hmaximise)      hmaximise   ; mode="hmaximise"   ;;
-        -h|--help)                      usage 0     ;;
+        -h|--help|help)                 usage 0     ;;
         *)                              usage 1     ;;
     esac
 
