@@ -85,6 +85,7 @@ wmgaps() {
     BGAP="$(grep "gap" ~/.cwmrc | cut -d\  -f 3)"
     LGAP="$(grep "gap" ~/.cwmrc | cut -d\  -f 4)"
     RGAP="$(grep "gap" ~/.cwmrc | cut -d\  -f 5)"
+    IGAP="20"
 }
 
 wmcolours() {
