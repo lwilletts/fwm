@@ -15,10 +15,28 @@ EOF
     test $# -eq 0 || exit $1
 }
 
+split() {
+    X=$SX
+    W=$(((SW + IGAP) / nWindows - IGAP))
+    for wid in $windows; do
+        wtp $X $SY $W $SH $wid
+        X=$((X + W + IGAP))
+    done
+}
+
+vertical() {
+    Y=$SY
+    H=$(((SH + IGAP) / nWindows - IGAP))
+    for wid in $windows; do
+        wtp $SX $Y $SW $H $wid
+        Y=$((Y + H + IGAP))
+    done
+}
+
 focused() {
     # tile smaller windows on the left
     Y=$SY
-    W=$(echo "$SW / 100 * 35" | bc -l | cut -d. -f 1)
+    W=$(echo "$SW / 100 * 33" | bc -l | cut -d. -f 1)
     H=$(((SH + IGAP) / (nWindows - 1) - IGAP))
     for wid in $(listcurrent); do
         wtp $SX $Y $W $H $wid
@@ -31,26 +49,6 @@ focused() {
     wtp $X $SY $W $SH $wid
 }
 
-vertical() {
-    Y=$SY
-    H=$(((SH + IGAP) / nWindows - IGAP))
-    for wid in $windows; do
-        wtp $SX $Y $SW $H $wid
-        Y=$((Y + H + IGAP))
-    done
-}
-
-split() {
-    X=$SX
-
-    W=$(((SW + IGAP) / nWindows - IGAP))
-
-    for wid in $windows; do
-        wtp $X $SY $W $SH $wid
-        X=$((X + W + IGAP))
-    done
-}
-
 main() {
     . fwmrc
     wmenv
@@ -61,7 +59,7 @@ main() {
             usage 1
             ;;
         1)
-            SCR="$(pfm)"
+            SCR="$(mattr i "$PFW")"
             ;;
         2)
             mattr "$2" && SCR="$2" || {
@@ -71,13 +69,14 @@ main() {
             ;;
     esac
 
-    # clean fullscreen and tile it
-    grep -qrw "$PFW" "$fsdir" 2> /dev/null && full --clean "$PFW"
-
     # grab screen variables
     windows="$(listcurrent)"
     nWindows="$(printf '%s\n' "$windows" | wc -l)"
     test "$nWindows" -eq 0 && exit 0
+
+    # clean fullscreen
+    cat "$fsdir/$SCR" > /dev/null 2>&1 && \
+        full --clean "$(cat "$fsdir/$SCR" | cut -d\  -f 5)"
 
     SX=$(($(mattr x $SCR) + LGAP))
     SY=$(($(mattr y $SCR) + TGAP))
