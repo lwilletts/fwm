@@ -60,7 +60,8 @@ mouse:
 
 ###### tile
 
-Tile windows on a given screen in a variety of manners. Not implemented yet.
+Tile windows on a given screen in a variety of manners. Variety includes simple
+vertical and horizontal splits, or a 'focused' mode similar to dwm style.
 
 ###### watcher
 
