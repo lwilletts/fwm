@@ -70,6 +70,8 @@ wmenv() {
 
     fsdir=${fsdir:-$fwmdir/fs}
     test ! -d "$fsdir" && mkdir -p "$fsdir"
+    tiledir=${movedir:-$fwmdir/tile}
+    test ! -d "$tiledir" && mkdir -p "$tiledir"
     movedir=${movedir:-$fwmdir/move}
     test ! -d "$movedir" && mkdir -p "$movedir"
 

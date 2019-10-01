@@ -15,6 +15,24 @@ EOF
     test $# -eq 0 || exit $1
 }
 
+save() {
+    for wid in $(windows); do
+        wattr xywhi "$wid" >> "$tiledir/$SCR"
+    done
+}
+
+
+# try our hardest to restore window position
+restore() {
+    echo $SCR
+    test -e "$tiledir/$SCR" && {
+        exit 0
+    } || {
+        exit 1
+    }
+
+}
+
 split() {
     X=$SX
     W=$(((SW + IGAP) / nWindows - IGAP))
@@ -33,19 +51,41 @@ vertical() {
     done
 }
 
-focused() {
-    # tile smaller windows on the left
+# tile minimum width terminals alternating on each side
+middle() {
+    W=440
+    return 0
+}
+
+# tile smaller windows on the right
+bigLeft() {
+    Y=$SY
+    W=$(echo "$SW / 100 * 33" | bc -l | cut -d. -f 1)
+    X=$((SX + SW - W))
+    H=$(((SH + IGAP) / (nWindows - 1) - IGAP))
+
+    for wid in $windows; do
+        wtp $X $Y $W $H $wid
+        Y=$((Y + H + IGAP))
+    done
+
+    W=$((SW - W - IGAP))
+    wtp $SX $SY $W $SH $wid
+}
+
+# tile smaller windows on the left
+bigRight() {
     Y=$SY
     W=$(echo "$SW / 100 * 33" | bc -l | cut -d. -f 1)
     H=$(((SH + IGAP) / (nWindows - 1) - IGAP))
-    for wid in $(listcurrent); do
+
+    for wid in $windows; do
         wtp $SX $Y $W $H $wid
         Y=$((Y + H + IGAP))
     done
 
     X=$((SX + W + IGAP))
     W=$((SW - W - RGAP))
-
     wtp $X $SY $W $SH $wid
 }
 
@@ -69,10 +109,20 @@ main() {
             ;;
     esac
 
+    case "$1" in
+        -r|--restore|restore) restore ;;
+    esac
+
     # grab screen variables
     windows="$(listcurrent)"
     nWindows="$(printf '%s\n' "$windows" | wc -l)"
-    test "$nWindows" -eq 0 && exit 0
+
+    # test if possible to tile; revert to last wid if no focus
+    test "$nWindows" -eq 0 && {
+        exit 0
+    } || {
+        test "$PFW" = "0x00000001" && PFW="$(lsw | tail -n 1)"
+    }
 
     # clean fullscreen
     cat "$fsdir/$SCR" > /dev/null 2>&1 && \
@@ -84,17 +134,18 @@ main() {
     SH=$(($(mattr h $SCR) - TGAP - BGAP))
 
     case "$1" in
-        -s|--split|split)       split    ;;
-        -f|--focused|focused)   focused  ;;
-        -v|--vertical|vertical) vertical ;;
-        -h|--help|help)         usage 0  ;;
-        *)                      usage 1  ;;
+        -s|--split|split)        split    ;;
+        -v|--vertical|vertical)  vertical ;;
+        -m|--middle|middle)      middle   ;;
+        -bl|--bigleft|bigleft)   bigLeft  ;;
+        -br|--bigright|bigright) bigRight ;;
+        -h|--help|help)          usage 0  ;;
+        *)                       usage 1  ;;
     esac
 
     # move mouse to middle of window
-    wid="$PFW"
-    wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
-           $(($(wattr y $wid) + $(wattr h $wid) / 2))
+    wmp -a $(($(wattr x $PFW) + $(wattr w $PFW) / 2)) \
+           $(($(wattr y $PFW) + $(wattr h $PFW) / 2))
 }
 
 main "$@"
