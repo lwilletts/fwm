@@ -94,6 +94,8 @@ main() {
     wmenv
     wmgaps
 
+    test "$PFW" = "0x00000001" && exit 0
+
     case $# in
         0)
             usage 1
