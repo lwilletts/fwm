@@ -18,7 +18,7 @@ Optional:
 
 ###### adjust
 
-Adjusts position of window in a direction by the amount chosen in fwmrc.
+Adjusts position of window in a direction by the moveamount given in cwmrc.
 
 ###### closer
 
@@ -37,13 +37,13 @@ its original position. Improved over cwm window-fullscreen by following mouse.
 ###### fwmrc
 
 Sets various environment variables and can be sourced by your shell for usage
-of it's custom xprop wrapper functions for retrieving window names, classes and
+of custom xprop wrapper functions for retrieving window names, classes and
 process ids.
 
 ###### move
 
 Move and position windows on your multihead setup. Follows mouse pointer for
-monitor information.
+monitor information if no monitor given.
 
 ###### under
 
@@ -60,8 +60,8 @@ mouse:
 
 ###### tile
 
-Tile windows on a given screen in a variety of manners. Variety includes simple
-vertical and horizontal splits, or a 'focused' mode similar to dwm style.
+Tile windows on a given screen in a variety of manners. Still under
+development.
 
 ###### watcher
 
@@ -75,4 +75,5 @@ string.
 
 ###### wmenu
 
-dmenu selection menu for visible windows.
+dmenu selection menu for visible windows. Functions either as a bar or floating
+window.

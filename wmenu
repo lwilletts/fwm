@@ -7,10 +7,9 @@ usage() {
 
     cat >&2 << EOF
 Usage:
-    $base                Select visible windows.
-    $base -a | all:      Select all windows.
-    $base -u | unmapped: Select only unmapped windows.
-    $base -h | help:     Show this help.
+    $base -b | bar  <-a|-u> : Show as a bar.
+    $base -m | menu <-a|-u> : Show as a floating window.
+    $base -h | help         : Show this help.
 EOF
 
     test $# -eq 0 || exit $1
@@ -24,7 +23,7 @@ menu() {
     wid="$(for window in $($LSWCMD); do
                printf '%s\n' "$window $(class $window) | $(wname $window)"
            done | sort -k 2 | \
-           dmenu -name "wmenu" -f -l $LINES -s 0 -i -fn $FONT -p "Window >" \
+           dmenu -name "wmenu" -f -l $nWindows -s 0 -i -fn $FONT -p "Window >" \
            -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
            -x $X -y $Y -w "400" -bw 1 | cut -d\  -f 1)"
 }
@@ -32,8 +31,8 @@ menu() {
 bar() {
     wid="$(for window in $($LSWCMD); do
                printf '%s\n' "$window $(class $window) | $(wname $window)"
-           done | \
-           dmenu -name "wmenu" -f -l $LINES -s 0 -i -fn $FONT -p "Window >" \
+           done | sort -k 2 | \
+           dmenu -name "wmenu" -f -l $nWindows -b -x -2 -y 2 -s 0 -i -fn $FONT -p "Window >" \
            -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
            -bw 1 | cut -d\  -f 1)"
 }
@@ -46,19 +45,21 @@ main() {
 
     FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
 
-    LSWCMD="lsw"
-
-    LINES=$($LSWCMD | wc -l)
-    test $LINES -eq 0 && exit 1
-
-    case "$1" in
-        -b) bar ;;
-        *) menu ;;
+    case "$2" in
+        -a|all) LSWCMD="lsw -a" ;;
+        -u|hid) LSWCMD="lsw -u" ;;
+        *)      LSWCMD="lsw"    ;;
     esac
 
-    # always ensure focus and stack order
-    wtf "$wid"
-    chwso -r "$wid"
+    nWindows=$($LSWCMD | wc -l)
+    test $nWindows -eq 0 && exit 1
+
+    case "$1" in
+        -b|bar)  bar     ;;
+        -m|menu) menu    ;;
+        -h|help) usage 0 ;;
+        *)       usage 1 ;;
+    esac
 
     focus -w "$wid"
 }
