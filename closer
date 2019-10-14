@@ -16,7 +16,7 @@ EOF
 }
 
 windowUp() {
-    test "$PFW" = "0x00000001" && {
+    test "$PFW" = "0x00000000" && {
         mouseY="$(wmp -r | cut -d\  -f 2)"
         lsw | (xargs wattr yi; printf '%s\n' "$mouseY") | sort -nr | \
             sed -n "/$mouseY/{n;p}" | cut -d\  -f 2
@@ -26,7 +26,7 @@ windowUp() {
 }
 
 windowDown() {
-    test "$PFW" = "0x00000001" && {
+    test "$PFW" = "0x00000000" && {
         mouseY="$(wmp -r | cut -d\  -f 2)"
         lsw | (xargs wattr yi; printf '%s\n' "$mouseY") | sort -n | \
             sed -n "/$mouseY/{n;p}" | cut -d\  -f 2
@@ -36,7 +36,7 @@ windowDown() {
 }
 
 windowLeft() {
-    test "$PFW" = "0x00000001" && {
+    test "$PFW" = "0x00000000" && {
         mouseX="$(wmp -r | cut -d\  -f 1)"
         lsw | (xargs wattr xi; printf '%s\n' "$mouseX") | sort -nr | \
             sed -n "/$mouseX/{n;p}" | cut -d\  -f 2
@@ -46,7 +46,7 @@ windowLeft() {
 }
 
 windowRight() {
-    test "$PFW" = "0x00000001" && {
+    test "$PFW" = "0x00000000" && {
         mouseX="$(wmp -r | cut -d\  -f 1)"
         lsw | (xargs wattr xi; printf '%s\n' "$mouseX") | sort -n | \
             sed -n "/$mouseX/{n;p}" | cut -d\  -f 2
@@ -57,7 +57,7 @@ windowRight() {
 
 
 main() {
-    PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000001")"
+    PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
 
     case "$1" in
         -u|--up|up)       focus --wid "$(windowUp)"    ;;

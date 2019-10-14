@@ -60,7 +60,7 @@ process() {
 
 # list windows on currently focused wid screen
 listcurrent() {
-    PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000001")"
+    PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
     SCR="$(mattr i $PFW)"
     mattr si $(lsw) | grep "$SCR" | cut -d\  -f 1
 }
@@ -75,7 +75,7 @@ wmenv() {
     movedir=${movedir:-$fwmdir/move}
     test ! -d "$movedir" && mkdir -p "$movedir"
 
-    PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000001")"
+    PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
     JUMP="$(grep "moveamount" ~/.cwmrc | cut -d\  -f 2)"
     BW="$(grep "borderwidth" ~/.cwmrc | cut -d\  -f 2)"
 }
