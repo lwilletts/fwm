@@ -20,12 +20,17 @@ menu() {
     X=$(($(wmp | cut -d\  -f 1) - $(mattr x $PRI) - 10))
     Y=$(($(wmp | cut -d\  -f 2) - $(mattr y $PRI) - 10))
 
-    wid="$(for window in $($LSWCMD); do
+    output="$(for window in $($LSWCMD); do
                printf '%s\n' "$window $(class $window) | $(wname $window)"
-           done | sort -k 2 | \
-           dmenu -name "wmenu" -f -l $nWindows -s 0 -i -fn $FONT -p "Window >" \
-           -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
-           -x $X -y $Y -w "400" -bw 1 | cut -d\  -f 1)"
+           done)"
+
+   char="$(printf '%s\n' "$output" | wc -L)"
+   W=$(echo "$char * 6.8" | bc)
+
+   wid="$(printf '%s\n' "$output" | sort -k 2 | \
+          dmenu -name "wmenu" -f -l $nWindows -s 0 -i -fn $FONT -p "Window >" \
+          -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
+          -x $X -y $Y -w $W -bw 1 | cut -d\  -f 1)"
 }
 
 bar() {
