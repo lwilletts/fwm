@@ -30,7 +30,7 @@ menu() {
    wid="$(printf '%s\n' "$output" | sort -k 2 | \
           dmenu -name "wmenu" -f -l $nWindows -s 0 -i -fn $FONT -p "Window >" \
           -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
-          -x $X -y $Y -w $W -bw 2 | cut -d\  -f 1)"
+          -x $X -y $Y -w $W -bw $BW | cut -d\  -f 1)"
 }
 
 bar() {
