@@ -1,4 +1,6 @@
-#!/bin/zsh
+#!/bin/sh
+#
+# pmenu
 
 usage() {
     base=$(basename $0)
@@ -32,14 +34,13 @@ obs"
     program=$(printf '%s\n' "$programs" | \
     dmenu -name "pmenu" -f -l 10 -s 0 -fn "$FONT" -p "Run >" \
     -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
-    -x $X -y $Y -w 120 -bw 1)
+    -x $X -y $Y -w 120 -bw 2)
 
     case "$program" in
-        urxvt) urxvtc ;;
+        urxvt)  urxvtc ;;
         pizero) urxvtc -e sh -c "mosh $program" ;;
-        *) $program ;;
-    esac \
-    | ${SHELL:-"/bin/sh"} & > /dev/null 2>&1
+        *)      $program ;;
+    esac | ${SHELL:-"/bin/sh"} & > /dev/null 2>&1
 }
 
 main "$@"
