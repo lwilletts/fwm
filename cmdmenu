@@ -20,17 +20,27 @@ select() {
     test "$wid" = "0x00000000" && exit 0
 
     case "$1" in
-        move)   chwso -r "$wid"; xmmv "$wid" ;;
-        resize) chwso -r "$wid"; xmrs "$wid" ;;
-        delete) killw "$wid"    ;;
-        stack)  chwso -r "$wid" ;;
-        floor)  chwso -l "$wid" ;;
+        move)   chwso -r "$wid"; wtp $(xrectmov $(wattr xywh $wid)) $wid ;;
+        resize) chwso -r "$wid"; wtp $(xrectsel '%x %y %w %h') $wid      ;;
+        delete) killw "$wid"  ;;
+        begone) killwa "$wid" ;;
     esac
 }
 
 new() {
     sleep 0.2
-    geometry="$(xrectsel)"
+
+    fw=8
+    fh=9
+    ib=10
+    ob=2
+
+    xrectsel '%w %h %x %y' | {
+            read w h x y
+            w=$(( ( w - (ib + ob)*2 ) / fw ))
+            h=$(( ( h - (ib + ob)*2 ) / fh ))
+            exec urxvtc -g ${w}x${h}+${x}+${y}
+    }
 }
 
 clip() {
@@ -56,8 +66,7 @@ main() {
 move
 resize
 delete
-stack
-floor
+begone
 clip
 load"
 
@@ -71,8 +80,7 @@ load"
         move)   select move   ;;
         resize) select resize ;;
         delete) select delete ;;
-        stack)  select stack  ;;
-        floor)  select floor  ;;
+        begone) select delete ;;
         clip)   clip          ;;
         open)   open          ;;
     esac

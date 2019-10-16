@@ -25,6 +25,11 @@ Adjusts position of window in a direction by the moveamount given in cwmrc.
 Focuses the closest window in a given direction. If no window is currently
 focused, uses mouse x y coordinates to find closest window.
 
+###### cmdmenu
+
+Mouse centric workflow menu, create new terminals, move, resize and delete
+windows and their processes. Control clipboard and load from clipboard.
+
 ###### focus
 
 Focus a window id, or cycle through the ordered stack of windows on screen.
