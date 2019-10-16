@@ -1,0 +1,81 @@
+#!/bin/sh
+#
+# cmdmenu
+
+usage() {
+    base=$(basename $0)
+
+    cat >&2 << EOF
+Usage:
+    $base
+EOF
+
+    test $# -eq 0 || exit $1
+}
+
+select() {
+    sleep 0.2
+    wid="$(slw)"
+
+    test "$wid" = "0x00000000" && exit 0
+
+    case "$1" in
+        move)   chwso -r "$wid"; xmmv "$wid" ;;
+        resize) chwso -r "$wid"; xmrs "$wid" ;;
+        delete) killw "$wid"    ;;
+        stack)  chwso -r "$wid" ;;
+        floor)  chwso -l "$wid" ;;
+    esac
+}
+
+new() {
+    sleep 0.2
+    geometry="$(xrectsel)"
+}
+
+clip() {
+    xsel -o | xsel -bi
+}
+
+open() {
+    load "$(xsel -ob)"
+}
+
+main() {
+    . fwmrc
+    wmgaps
+    wmcolours
+
+    # CWM-like right click
+    X=$(($(wmp | cut -d\  -f 1) - $(mattr x $PRI) - 10))
+    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y $PRI) - 10))
+
+    FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
+
+    programs="new
+move
+resize
+delete
+stack
+floor
+clip
+load"
+
+    program=$(printf '%s\n' "$programs" | \
+    dmenu -name "cmdmenu" -f -l 10 -s 0 -fn "$FONT" -p "Do >" \
+    -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
+    -x $X -y $Y -w 100 -bw 2)
+
+    case "$program" in
+        new)    new           ;;
+        move)   select move   ;;
+        resize) select resize ;;
+        delete) select delete ;;
+        stack)  select stack  ;;
+        floor)  select floor  ;;
+        clip)   clip          ;;
+        open)   open          ;;
+    esac
+}
+
+main "$@"
