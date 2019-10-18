@@ -30,8 +30,8 @@ select() {
 new() {
     sleep 0.2
 
-    fw=8
-    fh=9
+    fw=5
+    fh=10
     ib=10
     ob=2
 
