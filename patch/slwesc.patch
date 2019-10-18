@@ -1,0 +1,62 @@
+diff --git a/slw.c b/slw.c
+index abe24c5..6fe331f 100644
+--- a/slw.c
++++ b/slw.c
+@@ -18,12 +18,17 @@ static xcb_screen_t *scr;
+ static xcb_window_t
+ select_window(void)
+ {
+-	uint32_t val[] = { XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_BUTTON_RELEASE  };
++	uint32_t val[] = {
++		XCB_EVENT_MASK_BUTTON_PRESS
++		| XCB_EVENT_MASK_BUTTON_RELEASE
++		| XCB_EVENT_MASK_KEY_PRESS
++		| XCB_EVENT_MASK_KEY_RELEASE
++	};
+ 	xcb_window_t w = 0;
+ 	xcb_cursor_t p;
+ 	xcb_cursor_context_t *ctx;
+-	xcb_grab_pointer_cookie_t c;
+-	xcb_grab_pointer_reply_t *r;
++	xcb_grab_pointer_cookie_t cp;
++	xcb_grab_pointer_reply_t *rp;
+ 	xcb_generic_event_t *e;
+ 
+ 	if (xcb_cursor_context_new(conn, scr, &ctx) < 0)
+@@ -32,15 +37,21 @@ select_window(void)
+ 	p = xcb_cursor_load_cursor(ctx, XHAIR);
+ 	xcb_flush(conn);
+ 
+-	c = xcb_grab_pointer(conn, 0, scr->root,
++	cp = xcb_grab_pointer(conn, 1, scr->root,
+ 		XCB_EVENT_MASK_BUTTON_PRESS | XCB_EVENT_MASK_BUTTON_RELEASE,
+ 		XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC, XCB_NONE, p,
+ 		XCB_CURRENT_TIME);
+ 
+-	r = xcb_grab_pointer_reply(conn, c, NULL);
+-	if (!r || r->status != XCB_GRAB_STATUS_SUCCESS)
++	rp = xcb_grab_pointer_reply(conn, cp, NULL);
++	if (!rp || rp->status != XCB_GRAB_STATUS_SUCCESS)
+ 		errx(1, "couldn't grab pointer");
+ 
++	/*
++	 * would be best to not hardcode ESC value (9)... But damn that's so much
++	 * simpler that looking up keysyms!
++	 */
++	xcb_grab_key(conn, 1, scr->root, XCB_MOD_MASK_ANY, 9, XCB_GRAB_MODE_ASYNC, XCB_GRAB_MODE_ASYNC);
++	
+ 	xcb_change_window_attributes(conn, scr->root, XCB_CW_EVENT_MASK, val);
+ 	xcb_flush(conn);
+ 
+@@ -54,6 +65,11 @@ select_window(void)
+ 			xcb_cursor_context_free(ctx);
+ 			return w;
+ 			break; /* NOTREACHED */
++		case XCB_KEY_PRESS:
++		case XCB_KEY_RELEASE:
++			kill_xcb(&conn);
++			exit(0);
++			break; /* NOTREACHED */
+ 		}
+ 	}
+ }

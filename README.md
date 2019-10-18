@@ -29,6 +29,7 @@ focused, uses mouse x y coordinates to find closest window.
 
 Mouse centric workflow menu, create new terminals, move, resize and delete
 windows and their processes. Control clipboard and load from clipboard.
+Hardcoded font size for now.
 
 ###### focus
 
@@ -82,3 +83,7 @@ string.
 
 dmenu selection menu for visible windows. Functions either as a bar or floating
 window.
+
+###### patch
+
+Small wmutils and other util patches I have collected.
