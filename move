@@ -6,21 +6,23 @@ usage() {
     base="$(basename $0)"
 
     cat >&2 << EOF
-Usage:
-    $base -t  | top <wid> <screen>
-    $base -l  | left <wid> <screen>
-    $base -r  | right <wid> <screen>
-    $base -b  | bottom <wid> <screen>
-    $base -c  | center <wid> <screen>
-    $base -tl | topleft <wid> <screen>
-    $base -tr | topright <wid> <screen>
-    $base -bl | bottomleft <wid> <screen>
-    $base -br | bottomright <wid> <screen>
-    $base -m  | maximise <wid> <screen>
-    $base -vm | vmaximise <wid> <screen>
-    $base -hm | hmaximise <wid> <screen>
-    $base help | --help
-    $base reset | --reset
+Usage: $base [position] <wid> <screen|cycle>
+    -t  | top
+    -l  | left
+    -r  | right
+    -b  | bottom
+    -c  | center
+    -tl | topleft
+    -tr | topright
+    -bl | bottomleft
+    -br | bottomright
+    -m  | maximise
+    -vm | vmaximise
+    -hm | hmaximise
+    -dl | double
+    -hl | halve
+    help | --help
+    reset | --reset
 EOF
 
     test $# -eq 0 || exit $1
@@ -117,11 +119,26 @@ hmaximise() {
     H=$(wattr h "$wid")
 }
 
+double() {
+    X=$(wattr x "$wid")
+    Y=$(wattr y "$wid")
+    W=$(($(wattr w "$wid") * 2))
+    H=$(($(wattr h "$wid") * 2))
+}
+
+halve() {
+    X=$(wattr x "$wid")
+    Y=$(wattr y "$wid")
+    W=$(($(wattr w "$wid") / 2))
+    H=$(($(wattr h "$wid") / 2))
+}
+
 position() {
-    # save old window postion, new window position, and mode
+    # save old window postion, new window position, mode, and screen
     (wattr xywhi "$wid"; \
     printf '%s\n' "$X $Y $W $H"; \
-    printf '%s\n' "$mode") > "$movedir/$wid"
+    printf '%s\n' "$mode"
+    printf '%s\n' "$(mattr i $wid)") > "$movedir/$wid"
 
     # briefly hide mouse
     wmp -a $(wattr wh $(lsw -r))
@@ -159,10 +176,19 @@ main() {
             ;;
         3)
             widCheck "$2" && wid="$2" || usage 1
-            mattr "$3" && SCR="$3" || {
-                printf '%s\n' "$3 is not a connected screen."
-                exit 1
-            }
+
+            case "$3" in
+                cycle)
+                    # won't work for three screens currently
+                    SCR="$(lsm | grep -v $(mattr i $wid))"
+                    ;;
+                *)
+                    mattr "$3" && SCR="$3" || {
+                        printf '%s\n' "$3 is not a connected screen."
+                        exit 1
+                    }
+                    ;;
+            esac
             ;;
     esac
 
@@ -177,31 +203,34 @@ main() {
 
     # restore window position
     grep -qrw "$wid" "$movedir" 2> /dev/null && {
-        test "$(sed '3!d' "$movedir/$wid")" = "$mode" && {
-            case "$mode" in
-                vmaximise|hmaximise|maximise)
-                    # test if window has moved since last run
-                    test "$(sed '2!d' "$movedir/$wid")" != "$(wattr xywh $wid)" && {
-                        $mode
-                        position
-                    } || {
-                        # briefly hide mouse
-                        wmp -a $(wattr wh $(lsw -r))
+        # test if given screen matches new screen
+        test "$(sed '4!d' "$movedir/$wid")" = "$SCR" && {
+            test "$(sed '3!d' "$movedir/$wid")" = "$mode" && {
+                case "$mode" in
+                    vmaximise|hmaximise|maximise)
+                        # test if window has moved since last run
+                        test "$(sed '2!d' "$movedir/$wid")" != "$(wattr xywh $wid)" && {
+                            $mode
+                            position
+                        } || {
+                            # briefly hide mouse
+                            wmp -a $(wattr wh $(lsw -r))
 
-                        # restore position
-                        wtp $(sed '1!d' "$movedir/$wid")
+                            # restore position
+                            wtp $(sed '1!d' "$movedir/$wid")
 
-                        # move mouse to middle of window
-                        wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
-                               $(($(wattr y $wid) + $(wattr h $wid) / 2))
+                            # move mouse to middle of window
+                            wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
+                                   $(($(wattr y $wid) + $(wattr h $wid) / 2))
 
-                        # clean file
-                        rm "$movedir/$wid"
-                    }
+                            # clean file
+                            rm "$movedir/$wid"
+                        }
 
-                    exit 0
-                    ;;
-            esac
+                        exit 0
+                        ;;
+                esac
+            }
         }
     }
 
@@ -218,6 +247,8 @@ main() {
         -m|--maximise|maximise)         maximise    ; mode="maximise"    ;;
         -vm|--vmaximise|vmaximise)      vmaximise   ; mode="vmaximise"   ;;
         -hm|--hmaximise|hmaximise)      hmaximise   ; mode="hmaximise"   ;;
+        -dl|--double|double)            double      ; mode="double"      ;;
+        -hl|--halve|halve)              halve       ; mode="halve"       ;;
         -h|--help|help)                 usage 0     ;;
         *)                              usage 1     ;;
     esac
