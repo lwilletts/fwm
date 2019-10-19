@@ -22,8 +22,8 @@ select() {
     case "$1" in
         move)   chwso -r "$wid"; wtp $(xrectmov $(wattr xywh $wid)) $wid ;;
         resize) chwso -r "$wid"; wtp $(xrectsel '%x %y %w %h') $wid      ;;
-        delete) killw "$wid"  ;;
-        begone) killwa "$wid" ;;
+        delete) killw "$wid"              ;;
+        begone) kill -9 $(process) "$wid" ;;
     esac
 }
 
