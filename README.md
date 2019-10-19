@@ -1,20 +1,21 @@
 # fwm
 
-X11 & wmutils enhancer scripts for cwm. Can be used independently. I use cwm
-for sloppy focus, ewmh support, and groups.
+X11 & wmutils enhancer scripts for cwm. I use cwm for sloppy focus, ewmh
+support, and groups.
 
 Dependencies:
 
 - [core](https://github.com/wmutils/core)
 - [opt](https://github.com/wmutils/opt)
 - [mmutils](https://github.com/pockata/mmutils)
-- xprop
+- xorg-xprop
 
 Optional:
 
 - [cwm](https://tools.suckless.org/dmenu)
 - [dmenu](https://tools.suckless.org/dmenu)
 - [sxhkd](https://github.com/baskerville/sxhkd)
+- [xrectsel](https://github.com/lolilolicon/xrectsel)
 
 ###### adjust
 
