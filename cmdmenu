@@ -22,8 +22,9 @@ select() {
     case "$1" in
         move)   chwso -r "$wid"; wtp $(xrectmov $(wattr xywh $wid)) $wid ;;
         resize) chwso -r "$wid"; wtp $(xrectsel '%x %y %w %h') $wid      ;;
-        delete) killw "$wid"              ;;
-        begone) kill -9 $(process) "$wid" ;;
+        corner) chwso -r "$wid"; xmrs "$wid" ;;
+        delete) killw "$wid"                 ;;
+        begone) kill -9 $(process) "$wid"    ;;
     esac
 }
 
@@ -65,6 +66,7 @@ main() {
     programs="new
 move
 resize
+corner
 delete
 begone
 clip
@@ -79,6 +81,7 @@ load"
         new)    new           ;;
         move)   select move   ;;
         resize) select resize ;;
+        corner) select corner ;;
         delete) select delete ;;
         begone) select delete ;;
         clip)   clip          ;;
