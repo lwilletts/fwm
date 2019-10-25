@@ -47,6 +47,10 @@ Sets various environment variables and can be sourced by your shell for usage
 of custom xprop wrapper functions for retrieving window names, classes and
 process ids.
 
+###### group
+
+Basic group script for window mapping.
+
 ###### move
 
 Move and position windows on your multihead setup. Follows mouse pointer for

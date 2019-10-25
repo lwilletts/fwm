@@ -1,0 +1,196 @@
+#!/bin/sh
+#
+# group
+
+ARGS="$@"
+
+usage() {
+    base=$(basename $0)
+
+    cat >&2 << EOF
+Usage:
+    $ $base [-a|--add] [group] <wid>
+    $ $base [-f|--find] [wid]
+    $ $base [-m|--map] [group]
+    $ $base [-c|--clean] <wid>
+    $ $base [-u|--unmap] [group]
+    $ $base [-t|--toggle] [group]
+    $ $base [-r|--reset]
+    $ $base [-l|--list]
+    $ $base [-h|--help]
+EOF
+
+    test $# -eq 0 || exit $1
+}
+
+findWid() {
+    wid="$1"
+    widCheck "$wid" || usage 1
+
+    # if wid is found in a group, return the group
+    # might not function correctly if $groupdir is changed
+    grep -rw "$wid" "$groupdir" | awk -F '[/:]' '{print $5}'
+}
+
+cleanWid() {
+    test -n "$1" && wid="$1" || wid="$PFW"
+    widCheck "$wid" || usage 1
+
+    # test wid exists in a group
+    foundGroups="$(findWid "$wid")"
+    test -z "$foundGroups" && return 1
+
+    # remove wid from group
+    for group in $foundGroups; do
+        sed -i -n '/'"$wid"'/!p' "$groupdir/$group"
+        # remove group file if empty and perform cleanup
+        test ! -s "$groupdir/$group" && {
+            rm "$groupdir/$group"
+            test -f "$active" && sed -i -n '/'"$group"'/!p' "$active"
+            test -f "$inactive" && sed -i -n '/'"$group"'/!p' "$inactive"
+        }
+    done
+
+    # map the wid to the screen
+    mapw -m "$wid"
+}
+
+addWid() {
+    intCheck "$1" && grp="$1" || usage 1
+    test -n "$2" && wid="$2" || wid="$PFW"
+    widCheck "$wid" || usage 1
+
+    # test for no focused window
+    test "$wid" = "0x00000000" && return 1
+
+    # return if wid already exists in current group
+    foundGroup="$(findWid "$wid")"
+    test -n "$foundGroup" && test "$grp" -eq "$foundGroup" && return 0
+
+    # removes wid from all groups before adding to a new one
+    cleanWid "$wid"
+
+    # hide wid if group is found to be hidden
+    test -f "$inactive" && {
+        while read -r inactiveGroup; do
+            test $inactiveGroup -eq $grp && mapw -u "$wid" && break
+        done < "$inactive"
+    }
+
+    # add group to active if group does not exist and add wid to group
+    test ! -f "$groupdir/$grp" && printf '%s\n' "$grp" >> "$active"
+    printf '%s\n' "$wid" >> "$groupdir/$grp"
+}
+
+mapGroup() {
+    intCheck "$1" && grp="$1" || usage 1
+
+    # only continue if group exists
+    test -f "$groupdir/$grp" && {
+        # return if group is already active
+        test -f "$active" && grep -qw "$grp" "$active" && return 1
+
+        # add group to active file
+        printf '%s\n' "$grp" >> "$active"
+
+        # clean group from inactive file
+        test -f "$inactive" && sed -i -n '/'"$grp"'/!p' "$inactive"
+
+        # show all windows in group and put them on top of the stack
+        while read -r mapWid; do
+            chwso -r "$mapWid"
+            mapw -m "$mapWid";
+        done < "$groupdir/$grp"
+
+        # focus top wid in group
+        focus --wid "$(head -n 1 "$groupdir/$grp")"
+    } || return 1
+}
+
+unmapGroup() {
+    intCheck "$1" && grp="$1" || usage 1
+
+    # only continue if group exists
+    test -f "$groupdir/$grp" && {
+        # return if group is already inactive
+        test -f "$inactive" && grep -qw "$grp" "$inactive" && return 1
+
+        # add group to inactive file
+        printf '%s\n' "$grp" >> "$inactive"
+
+        # clean group from active file
+        test -f "$active" && sed -i -n '/'"$grp"'/!p' "$active"
+
+        # hide all windows in group
+        while read -r unmapWid; do
+            mapw -u "$unmapWid";
+        done < "$groupdir/$grp"
+    } || return 1
+}
+
+toggleGroup() {
+    intCheck "$1" && grp="$1" || usage 1
+
+    # only continue if active file exists
+    test -f "$active" && {
+        # unmap group if found active
+        while read -r activeGroup; do
+            test "$activeGroup" -eq "$grp" && {
+                toggle=true
+                break
+            }
+        done < "$active"
+    }
+
+    test "$toggle" = "true" && {
+        unmapGroup "$grp"
+    } || {
+        mapGroup "$grp"
+    }
+}
+
+listGroups() {
+    for group in $(find $groupdir/? 2> /dev/null); do
+        printf '%s\n' "group $(printf '%s' "$group" | rev | cut -d'/' -f 1 | rev):"
+        while read -r wid; do
+            printf '%s\n' "$wid: $(name $wid),$(class $wid)"
+        done < "$group"
+    done
+}
+
+resetGroups() {
+    # map all groups to the screen
+    test -f "$inactive" && {
+        while read -r resetGroupNum; do
+            mapGroup $resetGroupNum
+        done < "$inactive"
+    }
+
+    # clean the group directory
+    rm -f $groupdir/*
+
+    return 0
+}
+
+main() {
+    . fwmrc
+    wmenv
+
+    active="$groupdir/active"
+    inactive="$groupdir/inactive"
+
+    case "$1" in
+        -a|--add|add)       addWid "$2" "$3" ;;
+        -m|--map|map)       mapGroup "$2"    ;;
+        -l|--list|list)     listGroups       ;;
+        -f|--find|find)     findWid "$2"     ;;
+        -r|--reset|reset)   resetGroups      ;;
+        -c|--clean|clean)   cleanWid "$2"    ;;
+        -u|--unmap|unmap)   unmapGroup "$2"  ;;
+        -t|--toggle|toggle) toggleGroup "$2" ;;
+        -h|--help|help)     usage 0          ;;
+        *)                  usage 1          ;;
+    esac
+}
+
+main $ARGS

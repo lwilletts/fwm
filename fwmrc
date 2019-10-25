@@ -74,6 +74,8 @@ wmenv() {
     test ! -d "$tiledir" && mkdir -p "$tiledir"
     movedir=${movedir:-$fwmdir/move}
     test ! -d "$movedir" && mkdir -p "$movedir"
+    groupdir=${groupdir:-$fwmdir/group}
+    test ! -d "$groupdir" && mkdir -p "$groupdir"
 
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
     JUMP="$(grep "moveamount" ~/.cwmrc | cut -d\  -f 2)"
