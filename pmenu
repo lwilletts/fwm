@@ -7,7 +7,7 @@ usage() {
 
     cat >&2 << EOF
 Usage:
-    $base
+    $ $base
 EOF
 
     test $# -eq 0 || exit $1

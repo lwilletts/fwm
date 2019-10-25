@@ -4,12 +4,13 @@
 
 usage() {
     base="$(basename $0)"
+
     cat >&2 << EOF
 Usage:
-    $ $base up    | --up $(pfw))    Move $JUMP pixels up.
-    $ $base down  | --down $(pfw))  Move $JUMP pixels down.
-    $ $base left  | --left $(pfw))  Move $JUMP pixels left.
-    $ $base right | --right $(pfw)) Move $JUMP pixels right.
+    $ $base up    | --up $(pfw)    : Move $JUMP pixels up.
+    $ $base down  | --down $(pfw)  : Move $JUMP pixels down.
+    $ $base left  | --left $(pfw)  : Move $JUMP pixels left.
+    $ $base right | --right $(pfw) : Move $JUMP pixels right.
 EOF
 
     test $# -eq 0 || exit $1

@@ -7,22 +7,22 @@ usage() {
 
     cat >&2 << EOF
 Usage: $base [position] <wid> <screen|cycle>
-    -t  | top
-    -l  | left
-    -r  | right
-    -b  | bottom
-    -c  | center
-    -tl | topleft
-    -tr | topright
-    -bl | bottomleft
-    -br | bottomright
-    -m  | maximise
-    -vm | vmaximise
-    -hm | hmaximise
-    -dl | double
-    -hl | halve
-    help | --help
-    reset | --reset
+    $ $base -t    | top         : Move window to top of screen.
+    $ $base -l    | left        : Move window to left of screen.
+    $ $base -r    | right       : Move window to right of screen.
+    $ $base -b    | bottom      : Move window to bottom of screen.
+    $ $base -c    | center      : Move window to center of screen.
+    $ $base -tl   | topleft     : Move window to top left of screen.
+    $ $base -tr   | topright    : Move window to top right of screen.
+    $ $base -bl   | bottomleft  : Move window to bottom left of screen.
+    $ $base -br   | bottomright : Move window to bottom right of screen.
+    $ $base -hl   | halve       : Halve window in width and height.
+    $ $base -dl   | double      : Double window in width and height.
+    $ $base -m    | maximise    : Extend window to horizontal and vertical max.
+    $ $base -vm   | vmaximise   : Extend window to vertical max.
+    $ $base -hm   | hmaximise   : Extend window to horizontal max.
+    $ $base reset | --reset     : Delete all stored window positions.
+    $ $base help  | --help      : Show this help.
 EOF
 
     test $# -eq 0 || exit $1

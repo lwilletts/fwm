@@ -3,15 +3,15 @@
 # focus
 
 usage() {
-    base=$(basename $0)
+    base="$(basename $0)"
 
     cat >&2 << EOF
 Usage:
-    $base -w | wid:   Focus given window id.
-    $base -n | next:  Focus the next window in stack.
-    $base -c | cycle: Focus the next window in stack on the same screen.
-    $base -p | prev:  Focus the previous window in stack.
-    $base -h | help:  Show this help.
+    $ $base -w | wid   : Focus given window id.
+    $ $base -n | next  : Focus the next window in stack.
+    $ $base -c | cycle : Focus the next window in stack on the same screen.
+    $ $base -p | prev  : Focus the previous window in stack.
+    $ $base -h | help  : Show this help.
 EOF
 
     test $# -eq 0 || exit $1

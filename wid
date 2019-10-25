@@ -4,7 +4,7 @@
 
 usage() {
     cat >&2 << EOF
-Usage: $(basename $0) [Search String]
+Usage: $(basename $0) "search string"
 EOF
 
     test $# -eq 0 || exit $1

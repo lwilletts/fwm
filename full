@@ -3,14 +3,14 @@
 # full
 
 usage() {
-    base=$(basename $0)
+    base="$(basename $0)"
 
     cat >&2 << EOF
 Usage:
-    $ $base <wid> <screen>
-    $ $base [-c|--clean] <wid>
-    $ $base [-r|--reset]
-    $ $base [-h|--help]
+    $ $base <wid> <screen>     : Toggle window fullscreen status.
+    $ $base -c | --clean <wid> : Remove window from being fullscreen.
+    $ $base -r | --reset       : Reset all fullscreen windows.
+    $ $base -h | --help        : Show this help.
 EOF
 
     test $# -eq 0 || exit $1

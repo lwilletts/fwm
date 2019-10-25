@@ -3,13 +3,16 @@
 # tile
 
 usage() {
-    base=$(basename $0)
+    base="$(basename $0)"
 
     cat >&2 << EOF
 Usage:
-    $ $base split    : Horizontal split
-    $ $base vertical : Vertical split
-    $ $base focused  : Dwm-style
+    $ $base -s  | --split    : Tile windows horizontal.
+    $ $base -v  | --vertical : Tile windows vertically.
+    $ $base -m  | --middle   : Place window in the middle and tile windows either side.
+    $ $base -bl | --bigleft  : Place window on left and tile windows vertically right.
+    $ $base -br | --bigright : Place window on right and tile windows on horizontally left.
+    $ $base -h  | --help     : Show this help
 EOF
 
     test $# -eq 0 || exit $1

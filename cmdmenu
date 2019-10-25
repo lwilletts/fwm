@@ -7,7 +7,7 @@ usage() {
 
     cat >&2 << EOF
 Usage:
-    $base
+    $ $base
 EOF
 
     test $# -eq 0 || exit $1
@@ -56,6 +56,10 @@ main() {
     . fwmrc
     wmgaps
     wmcolours
+
+    case "$1" in
+        -h|--help|help) usage 0 ;;
+    esac
 
     # CWM-like right click
     X=$(($(wmp | cut -d\  -f 1) - $(mattr x $PRI) - 10))

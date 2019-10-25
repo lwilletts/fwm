@@ -3,13 +3,15 @@
 # closer
 
 usage() {
+    base="$(basename $0)"
+
     cat >&2 << EOF
-Usage: $(basename $0) [direction]
-    -u | up:    Focus next window up.
-    -l | left:  Focus next window left.
-    -d | down:  Focus next window down.
-    -r | right: Focus next window right.
-    -h | help:  Show this help.
+Usage:
+    $ $base -u | up    : Focus next window up.
+    $ $base -l | left  : Focus next window left.
+    $ $base -d | down  : Focus next window down.
+    $ $base -r | right : Focus next window right.
+    $ $base -h | help  : Show this help.
 EOF
 
     test $# -eq 0 || exit $1

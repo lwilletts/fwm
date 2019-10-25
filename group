@@ -5,21 +5,20 @@
 ARGS="$@"
 
 usage() {
-    base=$(basename $0)
+    base="$(basename $0)"
 
     cat >&2 << EOF
 Usage:
-    $ $base [-a|--add] [group] <wid>
-    $ $base [-f|--find] [wid]
-    $ $base [-m|--map] [group]
-    $ $base [-c|--clean] <wid>
-    $ $base [-u|--unmap] [group]
-    $ $base [-t|--toggle] [group]
-    $ $base [-r|--reset]
-    $ $base [-l|--list]
-    $ $base [-h|--help]
+    $ $base -a | --add [group] <wid> : Add window to group.
+    $ $base -f | --find [wid]        : Pass window to find its group.
+    $ $base -c | --clean <wid>       : Clean window from current group.
+    $ $base -m | --map [group]       : Map window to screen.
+    $ $base -u | --unmap [group]     : Unmap window from screen.
+    $ $base -t | --toggle [group]    : Toggle window visibility.
+    $ $base -r | --reset             : Map all windows and reset groups.
+    $ $base -l | --list              : List current windows in their groups.
+    $ $base -h | --help              : Show this help.
 EOF
-
     test $# -eq 0 || exit $1
 }
 

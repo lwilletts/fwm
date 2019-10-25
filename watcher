@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# ev
+# watcher
 
 event() {
     . fwmrc
