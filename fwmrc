@@ -77,23 +77,24 @@ wmenv() {
     groupdir=${groupdir:-$fwmdir/group}
     test ! -d "$groupdir" && mkdir -p "$groupdir"
 
+    BW=2
+    JUMP=20
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
-    JUMP="$(grep "moveamount" ~/.cwmrc | cut -d\  -f 2)"
-    BW="$(grep "borderwidth" ~/.cwmrc | cut -d\  -f 2)"
 }
 
 wmgaps() {
     PRI="$(lsm -p)"
-    SEC="$(lsm | grep -v "$PRI")"
-    TGAP="$(grep "gap" ~/.cwmrc | cut -d\  -f 2)"
-    BGAP="$(grep "gap" ~/.cwmrc | cut -d\  -f 3)"
-    LGAP="$(grep "gap" ~/.cwmrc | cut -d\  -f 4)"
-    RGAP="$(grep "gap" ~/.cwmrc | cut -d\  -f 5)"
-    IGAP="15"
+    PFM="$(pfm)"
+    ROOT="$(lsw -r)"
+    TGAP=10
+    BGAP=40
+    LGAP=10
+    RGAP=20
+    IGAP=15
 }
 
 wmcolours() {
-    ACTIVE="$(grep "color activeborder" ~/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
-    URGENT="$(grep "color urgencyborder" ~/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
-    INACTIVE="$(grep "color inactiveborder" ~/.cwmrc | cut -d\" -f 2 | sed 's/#//')"
+    ACTIVE="101010"
+    URGENT="B23450"
+    INACTIVE="EFEFEF"
 }
