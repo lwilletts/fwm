@@ -7,10 +7,10 @@ usage() {
 
     cat >&2 << EOF
 Usage:
-    $ $base up    | --up $(pfw)    : Move $JUMP pixels up.
-    $ $base down  | --down $(pfw)  : Move $JUMP pixels down.
-    $ $base left  | --left $(pfw)  : Move $JUMP pixels left.
-    $ $base right | --right $(pfw) : Move $JUMP pixels right.
+    $ $base -u | up $PFW    : Move $JUMP pixels up.
+    $ $base -l | left $PFW  : Move $JUMP pixels left.
+    $ $base -d | down $PFW  : Move $JUMP pixels down.
+    $ $base -r | right $PFW : Move $JUMP pixels right.
 EOF
 
     test $# -eq 0 || exit $1
@@ -26,12 +26,12 @@ main() {
     grep -qrw "$wid" "$fsdir" 2> /dev/null && return 1
 
     case "$1" in
-        up|--up)        wmv 0 -$JUMP $wid ;;
-        down|--down)    wmv 0 +$JUMP $wid ;;
-        left|--left)    wmv -$JUMP 0 $wid ;;
-        right|--right)  wmv +$JUMP 0 $wid ;;
-        -h|--help|help) usage 0           ;;
-        *)              usage 1           ;;
+        -u|--up|up)       wmv 0 -$JUMP $wid ;;
+        -d|--down|down)   wmv 0 +$JUMP $wid ;;
+        -l|--left|left)   wmv -$JUMP 0 $wid ;;
+        -r|--right|right) wmv +$JUMP 0 $wid ;;
+        -h|--help|help)   usage 0           ;;
+        *)                usage 1           ;;
     esac
 
     # move mouse to middle of window
