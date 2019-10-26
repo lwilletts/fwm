@@ -28,17 +28,20 @@ output() {
     done
 }
 
+selection() {
+    output | sort -k 2 | \
+        dmenu -name "wmenu" -f -l $nWindows -i -fn $FONT -p "$PROMPT" \
+        -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
+        -s "$(mattr d $PFM)" -x $X -y $Y -w $W -bw $BW | cut -d\  -f 1
+}
+
 menu() {
     width
 
     # CWM-like right click
-    X=$(($(wmp | cut -d\  -f 1) - $(mattr x $PRI) - 10))
-    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y $PRI) - 10))
+    X=$(($(wmp | cut -d\  -f 1) - $(mattr x $PFM) - 10))
+    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y $PFM) - 10))
 
-    wid="$(output | sort -k 2 | \
-           dmenu -name "wmenu" -f -l $nWindows -s 0 -i -fn $FONT -p "$PROMPT" \
-           -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
-           -x $X -y $Y -w $W -bw $BW | cut -d\  -f 1)"
 }
 
 center() {
@@ -46,20 +49,15 @@ center() {
     H=$(echo "($nWindows * 5) / 1" | bc)
 
     # finding x y cords for centering
-    X=$(($(mattr w $PRI)/2 - W/2 - 10))
-    Y=$(($(mattr h $PRI)/2 - H/2 - 10))
-
-    wid="$(output | sort -k 2 | \
-          dmenu -name "wmenu" -f -l $nWindows -s 0 -i -fn $FONT -p "$PROMPT" \
-          -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
-          -x $X -y $Y -w $W -bw $BW | cut -d\  -f 1)"
+    X=$(($(mattr w $PFM)/2 - W/2 - 10))
+    Y=$(($(mattr h $PFM)/2 - H/2 - 10))
 }
 
 bar() {
-    wid="$(output | sort -k 2 | \
-          dmenu -name "wmenu" -f -l $nWindows -s 0 -i -fn $FONT -p "$PROMPT" \
-          -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
-          -b -x -2 -y 2 -bw 1 | cut -d\  -f 1)"
+    X=-2
+    Y="$(($(mattr h $PFM) - $nWindows * 14 - 2))"
+    W="$(mattr w $PFM)"
+    BW=1
 }
 
 main() {
@@ -88,7 +86,7 @@ main() {
         *)         usage 1 ;;
     esac
 
-    focus -w "$wid"
+    focus -w "$(selection)"
 }
 
 main "$@"
