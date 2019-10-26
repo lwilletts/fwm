@@ -18,6 +18,7 @@ event() {
                 ;;
             17) # destroy window
                 full -c "$wid"
+                group -c "$wid"
                 grep -q "$wid" "$fwmdir/compton" && {
                     pgrep compton > /dev/null 2>&1 || compton &
                     cleaned="$(grep -v "$wid" "$fwmdir/compton")"

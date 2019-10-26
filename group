@@ -24,7 +24,6 @@ EOF
 
 findWid() {
     wid="$1"
-    widCheck "$wid" || usage 1
 
     # if wid is found in a group, return the group
     # might not function correctly if $groupdir is changed
@@ -33,7 +32,6 @@ findWid() {
 
 cleanWid() {
     test -n "$1" && wid="$1" || wid="$PFW"
-    widCheck "$wid" || usage 1
 
     # test wid exists in a group
     foundGroups="$(findWid "$wid")"
@@ -124,6 +122,9 @@ unmapGroup() {
         while read -r unmapWid; do
             mapw -u "$unmapWid";
         done < "$groupdir/$grp"
+
+        # focus prev wid on screen
+
     } || return 1
 }
 
