@@ -16,47 +16,47 @@ EOF
     test $# -eq 0 || exit $1
 }
 
+width() {
+    prompt=72
+    char="$(output | wc -L)"
+    W=$(echo "($prompt + $char * 4.7) / 1" | bc)
+}
+
+output() {
+    for window in $($LSWCMD); do
+        printf '%s\n' "$window $(class $window) | $(wname $window)"
+    done
+}
+
 menu() {
+    width
+
     # CWM-like right click
     X=$(($(wmp | cut -d\  -f 1) - $(mattr x $PRI) - 10))
     Y=$(($(wmp | cut -d\  -f 2) - $(mattr y $PRI) - 10))
 
-    output="$(for window in $($LSWCMD); do
-               printf '%s\n' "$window $(class $window) | $(wname $window)"
-           done)"
-
-   char="$(printf '%s\n' "$output" | wc -L)"
-   W=$(echo "$char * 6.5" | bc)
-
-   wid="$(printf '%s\n' "$output" | sort -k 2 | \
-          dmenu -name "wmenu" -f -l $nWindows -s 0 -i -fn $FONT -p "Window >" \
-          -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
-          -x $X -y $Y -w $W -bw $BW | cut -d\  -f 1)"
+    wid="$(output | sort -k 2 | \
+           dmenu -name "wmenu" -f -l $nWindows -s 0 -i -fn $FONT -p "Window >" \
+           -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
+           -x $X -y $Y -w $W -bw $BW | cut -d\  -f 1)"
 }
 
 center() {
-    output="$(for window in $($LSWCMD); do
-               printf '%s\n' "$window $(class $window) | $(wname $window)"
-           done)"
+    width
+    H=$(echo "($prompt + $nWindows * 4.7) / 1" | bc)
 
-    char="$(printf '%s\n' "$output" | wc -L)"
-    W=$(echo "($char * 6.5) / 1" | bc)
-    H=$(echo "($nWindows * 6.5) / 1" | bc)
-
-    # CWM-like right click
+    # finding x y cords for centering
     X=$(($(mattr w $PRI)/2 - W/2 - 10))
     Y=$(($(mattr h $PRI)/2 - H/2 - 10))
 
-    wid="$(printf '%s\n' "$output" | sort -k 2 | \
+    wid="$(output | sort -k 2 | \
           dmenu -name "wmenu" -f -l $nWindows -s 0 -i -fn $FONT -p "Window >" \
           -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
           -x $X -y $Y -w $W -bw $BW | cut -d\  -f 1)"
 }
 
 bar() {
-    wid="$(for window in $($LSWCMD); do
-               printf '%s\n' "$window $(class $window) | $(wname $window)"
-           done | sort -k 2 | \
+    wid="$(output | sort -k 2 | \
            dmenu -name "wmenu" -f -l $nWindows -s 0 -b -x -2 -y 2 -s 0 -i -fn $FONT -p "Window >" \
            -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
            -bw 1 | cut -d\  -f 1)"
@@ -69,6 +69,9 @@ main() {
     wmcolours
 
     FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
+
+    echo "$FONT"
+    txtw -f "$FONT" "Window >"
 
     case "$2" in
         -a|all) LSWCMD="lsw -a" ;;
