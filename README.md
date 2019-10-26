@@ -22,7 +22,7 @@ Optional:
 
 #### adjust
 
-Adjusts position of window in a direction by the moveamount given in cwmrc.
+Adjusts position of window in a direction by the $JUMP amount set in `fwmrc`.
 
 #### closer
 
@@ -31,7 +31,7 @@ focused, uses mouse x y coordinates to find closest window.
 
 #### cmdmenu
 
-Mouse centric workflow menu, create new terminals, move, resize and delete
+Mouse centric workflow menu. Create new terminals, move, resize and delete
 windows and their processes. Control clipboard and load from clipboard.
 Hardcoded font size for now.
 
@@ -43,20 +43,21 @@ Focus a window id, or cycle through the ordered stack of windows on screen.
 
 Fullscreen a given window id. Run the same command to reset the window back to
 its original position. Improved over cwm window-fullscreen by following mouse.
+Can set screen independantly.
 
 #### fwmrc
 
-Sets various environment variables and can be sourced by your shell for usage
-of custom xprop wrapper functions for retrieving window names, classes and
-process ids.
+Sets various environment variables like colours, gaps, borderwidth etc. Can be
+sourced by your shell for usage of custom xprop wrapper functions for
+retrieving window names, classes and process ids.
 
 #### group
 
-Basic group script for window mapping.
+Basic groups script for workspace management.
 
 #### move
 
-Move and position windows on your multihead setup. Follows mouse pointer for
+Move and position windows on a multihead setup. Follows mouse pointer for
 monitor information if no monitor given.
 
 #### under
@@ -79,8 +80,9 @@ development.
 
 #### watcher
 
-An window id event watcher wrapper around wew to provide added functionality.
-Recommend to add `watcher &` to your xinitrc to load on X11 start.
+A window id event watcher wrapper around wew to provide added functionality
+such as fullscreen and group window cleaning on deletion of windows. Recommend
+to add `watcher &` to your xinitrc to load on X11 start.
 
 #### wid
 
