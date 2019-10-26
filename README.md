@@ -1,7 +1,7 @@
 # fwm
 
-X11 & wmutils enhancer scripts for cwm. I use cwm for sloppy focus, ewmh
-support, and groups.
+wmutils scripts to be used with a simple window manager that doesn't get in the
+way.
 
 Dependencies:
 
@@ -10,53 +10,56 @@ Dependencies:
 - [mmutils](https://github.com/pockata/mmutils)
 - xorg-xprop
 
-Optional:
-
+Known good WMs:
 - [cwm](https://tools.suckless.org/dmenu)
+- [glazier](https://git.z3bra.org/glazier/log.html)
+
+Optional:
+- [txtw](https://github.com/baskerville/txtw)
 - [dmenu](https://tools.suckless.org/dmenu)
 - [sxhkd](https://github.com/baskerville/sxhkd)
 - [xrectsel](https://github.com/lolilolicon/xrectsel)
 
-###### adjust
+#### adjust
 
 Adjusts position of window in a direction by the moveamount given in cwmrc.
 
-###### closer
+#### closer
 
 Focuses the closest window in a given direction. If no window is currently
 focused, uses mouse x y coordinates to find closest window.
 
-###### cmdmenu
+#### cmdmenu
 
 Mouse centric workflow menu, create new terminals, move, resize and delete
 windows and their processes. Control clipboard and load from clipboard.
 Hardcoded font size for now.
 
-###### focus
+#### focus
 
 Focus a window id, or cycle through the ordered stack of windows on screen.
 
-###### full
+#### full
 
 Fullscreen a given window id. Run the same command to reset the window back to
 its original position. Improved over cwm window-fullscreen by following mouse.
 
-###### fwmrc
+#### fwmrc
 
 Sets various environment variables and can be sourced by your shell for usage
 of custom xprop wrapper functions for retrieving window names, classes and
 process ids.
 
-###### group
+#### group
 
 Basic group script for window mapping.
 
-###### move
+#### move
 
 Move and position windows on your multihead setup. Follows mouse pointer for
 monitor information if no monitor given.
 
-###### under
+#### under
 
 Prints the id of the window currently underneath the cursor. If no window is
 found and has an argument passed to it, the given command will be executed.
@@ -69,26 +72,27 @@ mouse:
     under wmenu
 ```
 
-###### tile
+#### tile
 
 Tile windows on a given screen in a variety of manners. Still under
 development.
 
-###### watcher
+#### watcher
 
 An window id event watcher wrapper around wew to provide added functionality.
 Recommend to add `watcher &` to your xinitrc to load on X11 start.
 
-###### wid
+#### wid
 
 Find any visible window id whose name or class properties fuzzy match a given
 string.
 
-###### wmenu
+#### wmenu
 
-dmenu selection menu for visible windows. Functions either as a bar or floating
-window.
+dmenu selection menu for visible windows. Functions either as a bar, floating
+window based on mouse location, or a floating window placed in the center of
+current screen.
 
-###### patch
+#### patch
 
 Small wmutils and other util patches I have collected.
