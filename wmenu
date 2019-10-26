@@ -17,9 +17,9 @@ EOF
 }
 
 width() {
-    prompt=72
+    ps=$(txtw -f "$FONT" "$PROMPT")
     char="$(output | wc -L)"
-    W=$(echo "($prompt + $char * 4.7) / 1" | bc)
+    W=$(echo "($ps + $char * 4.9) / 1" | bc)
 }
 
 output() {
@@ -36,30 +36,30 @@ menu() {
     Y=$(($(wmp | cut -d\  -f 2) - $(mattr y $PRI) - 10))
 
     wid="$(output | sort -k 2 | \
-           dmenu -name "wmenu" -f -l $nWindows -s 0 -i -fn $FONT -p "Window >" \
+           dmenu -name "wmenu" -f -l $nWindows -s 0 -i -fn $FONT -p "$PROMPT" \
            -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
            -x $X -y $Y -w $W -bw $BW | cut -d\  -f 1)"
 }
 
 center() {
     width
-    H=$(echo "($prompt + $nWindows * 4.7) / 1" | bc)
+    H=$(echo "($nWindows * 5) / 1" | bc)
 
     # finding x y cords for centering
     X=$(($(mattr w $PRI)/2 - W/2 - 10))
     Y=$(($(mattr h $PRI)/2 - H/2 - 10))
 
     wid="$(output | sort -k 2 | \
-          dmenu -name "wmenu" -f -l $nWindows -s 0 -i -fn $FONT -p "Window >" \
+          dmenu -name "wmenu" -f -l $nWindows -s 0 -i -fn $FONT -p "$PROMPT" \
           -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
           -x $X -y $Y -w $W -bw $BW | cut -d\  -f 1)"
 }
 
 bar() {
     wid="$(output | sort -k 2 | \
-           dmenu -name "wmenu" -f -l $nWindows -s 0 -b -x -2 -y 2 -s 0 -i -fn $FONT -p "Window >" \
-           -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
-           -bw 1 | cut -d\  -f 1)"
+          dmenu -name "wmenu" -f -l $nWindows -s 0 -i -fn $FONT -p "$PROMPT" \
+          -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
+          -b -x -2 -y 2 -bw 1 | cut -d\  -f 1)"
 }
 
 main() {
@@ -69,9 +69,7 @@ main() {
     wmcolours
 
     FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
-
-    echo "$FONT"
-    txtw -f "$FONT" "Window >"
+    PROMPT="Window >"
 
     case "$2" in
         -a|all) LSWCMD="lsw -a" ;;
