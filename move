@@ -167,11 +167,11 @@ main() {
             usage 1
             ;;
         1)
-            SCR="$(pfm)"
+            SCR="$PFM"
             wid="$PFW"
             ;;
         2)
-            SCR="$(pfm)"
+            SCR="$PFM"
             widCheck "$2" && wid="$2" || usage 1
             ;;
         3)
