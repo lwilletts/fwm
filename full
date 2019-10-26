@@ -56,7 +56,7 @@ main() {
                     ;;
                 1)
                     widCheck "$1" && wid="$1" || usage 1
-                    SCR="$PFM"
+                    SCR="$(pfm)"
                     ;;
                 2)
                     widCheck "$1" && wid="$1" || usage 1

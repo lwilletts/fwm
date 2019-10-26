@@ -44,12 +44,8 @@ new() {
     }
 }
 
-clip() {
-    xsel -o | xsel -bi
-}
-
 open() {
-    load "$(xsel -ob)"
+    load "$(xsel -o)"
 }
 
 main() {
@@ -73,8 +69,9 @@ resize
 corner
 delete
 begone
-clip
-load"
+load
+shot
+pfw"
 
     program=$(printf '%s\n' "$programs" | \
     dmenu -name "cmdmenu" -f -l 10 -s 0 -fn "$FONT" -p "Do >" \
@@ -88,8 +85,9 @@ load"
         corner) select corner ;;
         delete) select delete ;;
         begone) select delete ;;
-        clip)   clip          ;;
         open)   open          ;;
+        shot)   shot          ;;
+        pfw)    shot $(pfw)   ;;
     esac
 }
 
