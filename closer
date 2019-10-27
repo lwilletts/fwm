@@ -1,9 +1,10 @@
 #!/bin/sh
+# shellcheck disable=SC2015
 #
 # closer
 
 usage() {
-    base="$(basename $0)"
+    base="$(basename "$0")"
 
     cat >&2 << EOF
 Usage:
@@ -14,7 +15,7 @@ Usage:
     $ $base -h | help  : Show this help.
 EOF
 
-    test $# -eq 0 || exit $1
+    test $# -eq 0 || exit "$1"
 }
 
 windowUp() {

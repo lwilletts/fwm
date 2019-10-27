@@ -1,9 +1,10 @@
 #!/bin/sh
+# shellcheck disable=SC2015
 #
 # adjust
 
 usage() {
-    base="$(basename $0)"
+    base="$(basename "$0")"
 
     cat >&2 << EOF
 Usage:
@@ -13,7 +14,7 @@ Usage:
     $ $base -r | right $PFW : Move $JUMP pixels right.
 EOF
 
-    test $# -eq 0 || exit $1
+    test $# -eq 0 || exit "$1"
 }
 
 main() {
@@ -26,17 +27,17 @@ main() {
     grep -qrw "$wid" "$fsdir" 2> /dev/null && return 1
 
     case "$1" in
-        -u|--up|up)       wmv 0 -$JUMP $wid ;;
-        -d|--down|down)   wmv 0 +$JUMP $wid ;;
-        -l|--left|left)   wmv -$JUMP 0 $wid ;;
-        -r|--right|right) wmv +$JUMP 0 $wid ;;
+        -u|--up|up)       wmv 0 -$JUMP "$wid" ;;
+        -d|--down|down)   wmv 0 +$JUMP "$wid" ;;
+        -l|--left|left)   wmv -$JUMP 0 "$wid" ;;
+        -r|--right|right) wmv +$JUMP 0 "$wid" ;;
         -h|--help|help)   usage 0           ;;
         *)                usage 1           ;;
     esac
 
     # move mouse to middle of window
-    wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
-           $(($(wattr y $wid) + $(wattr h $wid) / 2))
+    wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2)) \
+           $(($(wattr y "$wid") + $(wattr h "$wid") / 2))
 }
 
 main "$@"

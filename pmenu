@@ -1,16 +1,17 @@
 #!/bin/sh
+# shellcheck disable=SC2015
 #
 # pmenu
 
 usage() {
-    base=$(basename $0)
+    base=$(basename "$0")
 
     cat >&2 << EOF
 Usage:
     $ $base
 EOF
 
-    test $# -eq 0 || exit $1
+    test $# -eq 0 || exit "$1"
 }
 
 main() {
@@ -19,8 +20,8 @@ main() {
     wmcolours
 
     # CWM-like right click
-    X=$(($(wmp | cut -d\  -f 1) - $(mattr x $PRI) - 10))
-    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y $PRI) - 10))
+    X=$(($(wmp | cut -d\  -f 1) - $(mattr x "$PRI") - 10))
+    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y "$PRI") - 10))
 
     FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
 

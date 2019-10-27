@@ -1,9 +1,10 @@
 #!/bin/sh
+# shellcheck disable=SC2015
 #
 # tile
 
 usage() {
-    base="$(basename $0)"
+    base="$(basename "$0")"
 
     cat >&2 << EOF
 Usage:
@@ -15,7 +16,7 @@ Usage:
     $ $base -h  | --help     : Show this help
 EOF
 
-    test $# -eq 0 || exit $1
+    test $# -eq 0 || exit "$1"
 }
 
 save() {
@@ -27,7 +28,6 @@ save() {
 
 # try our hardest to restore window position
 restore() {
-    echo $SCR
     test -e "$tiledir/$SCR" && {
         exit 0
     } || {
@@ -40,7 +40,7 @@ split() {
     X=$SX
     W=$(((SW + IGAP) / nWindows - IGAP))
     for wid in $windows; do
-        wtp $X $SY $W $SH $wid
+        wtp "$X" "$SY" "$W" "$SH" "$wid"
         X=$((X + W + IGAP))
     done
 }
@@ -49,7 +49,7 @@ vertical() {
     Y=$SY
     H=$(((SH + IGAP) / nWindows - IGAP))
     for wid in $windows; do
-        wtp $SX $Y $SW $H $wid
+        wtp "$SX" "$Y" "$SW" "$H" "$wid"
         Y=$((Y + H + IGAP))
     done
 }
@@ -68,12 +68,12 @@ bigLeft() {
     H=$(((SH + IGAP) / (nWindows - 1) - IGAP))
 
     for wid in $windows; do
-        wtp $X $Y $W $H $wid
+        wtp "$X" "$Y" "$W" "$H" "$wid"
         Y=$((Y + H + IGAP))
     done
 
     W=$((SW - W - IGAP))
-    wtp $SX $SY $W $SH $wid
+    wtp "$SX" "$SY" "$W" "$SH" "$wid"
 }
 
 # tile smaller windows on the left
@@ -83,13 +83,13 @@ bigRight() {
     H=$(((SH + IGAP) / (nWindows - 1) - IGAP))
 
     for wid in $windows; do
-        wtp $SX $Y $W $H $wid
+        wtp "$SX" "$Y" "$W" "$H" "$wid"
         Y=$((Y + H + IGAP))
     done
 
     X=$((SX + W + IGAP))
     W=$((SW - W - RGAP))
-    wtp $X $SY $W $SH $wid
+    wtp "$X" "$SY" "$W" "$SH" "$wid"
 }
 
 main() {
@@ -131,12 +131,12 @@ main() {
 
     # clean fullscreen
     cat "$fsdir/$SCR" > /dev/null 2>&1 && \
-        full --clean "$(cat "$fsdir/$SCR" | cut -d\  -f 5)"
+        full --clean "$(cut -d\  -f 5 "$fsdir/$SCR")"
 
-    SX=$(($(mattr x $SCR) + LGAP))
-    SY=$(($(mattr y $SCR) + TGAP))
-    SW=$(($(mattr w $SCR) - LGAP - RGAP))
-    SH=$(($(mattr h $SCR) - TGAP - BGAP))
+    SX=$(($(mattr x "$SCR") + LGAP))
+    SY=$(($(mattr y "$SCR") + TGAP))
+    SW=$(($(mattr w "$SCR") - LGAP - RGAP))
+    SH=$(($(mattr h "$SCR") - TGAP - BGAP))
 
     case "$1" in
         -s|--split|split)        split    ;;
@@ -149,8 +149,8 @@ main() {
     esac
 
     # move mouse to middle of window
-    wmp -a $(($(wattr x $PFW) + $(wattr w $PFW) / 2)) \
-           $(($(wattr y $PFW) + $(wattr h $PFW) / 2))
+    wmp -a $(($(wattr x "$PFW") + $(wattr w "$PFW") / 2)) \
+           $(($(wattr y "$PFW") + $(wattr h "$PFW") / 2))
 }
 
 main "$@"

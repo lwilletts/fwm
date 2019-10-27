@@ -1,13 +1,14 @@
 #!/bin/sh
+# shellcheck disable=SC2015
 #
 # wid
 
 usage() {
     cat >&2 << EOF
-Usage: $(basename $0) "search string"
+Usage: $(basename "$0") "search string"
 EOF
 
-    test $# -eq 0 || exit $1
+    test $# -eq 0 || exit "$1"
 }
 
 findName() {

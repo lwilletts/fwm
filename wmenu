@@ -1,9 +1,10 @@
 #!/bin/sh
+# shellcheck disable=SC2015
 #
 # wmenu
 
 usage() {
-    base="$(basename $0)"
+    base="$(basename "$0")"
 
     cat >&2 << EOF
 Usage:
@@ -13,7 +14,7 @@ Usage:
     $ $base -h | help           : Show this help.
 EOF
 
-    test $# -eq 0 || exit $1
+    test $# -eq 0 || exit "$1"
 }
 
 width() {
@@ -24,23 +25,23 @@ width() {
 
 output() {
     for window in $($LSWCMD); do
-        printf '%s\n' "$window $(class $window) | $(wname $window)"
+        printf '%s\n' "$window $(class "$window") | $(wname "$window")"
     done
 }
 
 selection() {
     output | sort -k 2 | \
-        dmenu -name "wmenu" -f -l $nWindows -i -fn $FONT -p "$PROMPT" \
+        dmenu -name "wmenu" -f -l "$nWindows" -i -fn "$FONT" -p "$PROMPT" \
         -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
-        -s "$(mattr d $PFM)" -x $X -y $Y -w $W -bw $BW | cut -d\  -f 1
+        -s "$(mattr d "$PFM")" -x "$X" -y "$Y" -w "$W" -bw "$BW" | cut -d\  -f 1
 }
 
 menu() {
     width
 
     # CWM-like right click
-    X=$(($(wmp | cut -d\  -f 1) - $(mattr x $PFM) - 10))
-    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y $PFM) - 10))
+    X=$(($(wmp | cut -d\  -f 1) - $(mattr x "$PFM") - 10))
+    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y "$PFM") - 10))
 
 }
 
@@ -49,14 +50,14 @@ center() {
     H=$(echo "($nWindows * 5) / 1" | bc)
 
     # finding x y cords for centering
-    X=$(($(mattr w $PFM)/2 - W/2 - 10))
-    Y=$(($(mattr h $PFM)/2 - H/2 - 10))
+    X=$(($(mattr w "$PFM")/2 - W/2 - 10))
+    Y=$(($(mattr h "$PFM")/2 - H/2 - 10))
 }
 
 bar() {
     X=-2
-    Y="$(($(mattr h $PFM) - $nWindows * 14 - 2))"
-    W="$(mattr w $PFM)"
+    Y="$(($(mattr h "$PFM") - nWindows * 14 - 2))"
+    W="$(mattr w "$PFM")"
     BW=1
 }
 
@@ -76,7 +77,7 @@ main() {
     esac
 
     nWindows=$($LSWCMD | wc -l)
-    test $nWindows -eq 0 && exit 1
+    test "$nWindows" -eq 0 && exit 1
 
     case "$1" in
         -b|bar)    bar     ;;

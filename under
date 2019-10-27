@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2015
 #
 # under
 
@@ -7,15 +8,15 @@ main() {
     pointY=$(wmp | cut -d\  -f 2)
 
     for wid in $(lsw | tac); do
-        windowX="$(wattr x $wid)"
-        windowY="$(wattr y $wid)"
+        windowX="$(wattr x "$wid")"
+        windowY="$(wattr y "$wid")"
 
         # no match if the left and top edges are greater than X or Y
         test "$windowX" -gt "$pointX" && continue
         test "$windowY" -gt "$pointY" && continue
 
-        windowW="$(wattr w $wid)"
-        windowH="$(wattr h $wid)"
+        windowW="$(wattr w "$wid")"
+        windowH="$(wattr h "$wid")"
 
         # no match if the right and bottom edges are less than X or Y
         test "$((windowX + windowW))" -lt "$pointX" && continue

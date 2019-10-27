@@ -1,11 +1,10 @@
 #!/bin/sh
+# shellcheck disable=SC2015
 #
 # group
 
-ARGS="$@"
-
 usage() {
-    base="$(basename $0)"
+    base="$(basename "$0")"
 
     cat >&2 << EOF
 Usage:
@@ -19,7 +18,7 @@ Usage:
     $ $base -l | --list              : List current windows in their groups.
     $ $base -h | --help              : Show this help.
 EOF
-    test $# -eq 0 || exit $1
+    test $# -eq 0 || exit "$1"
 }
 
 findWid() {
@@ -70,7 +69,7 @@ addWid() {
     # hide wid if group is found to be hidden
     test -f "$inactive" && {
         while read -r inactiveGroup; do
-            test $inactiveGroup -eq $grp && mapw -u "$wid" && break
+            test "$inactiveGroup" -eq "$grp" && mapw -u "$wid" && break
         done < "$inactive"
     }
 
@@ -153,7 +152,7 @@ listGroups() {
     for group in $(find $groupdir/? 2> /dev/null); do
         printf '%s\n' "group $(printf '%s' "$group" | rev | cut -d'/' -f 1 | rev):"
         while read -r wid; do
-            printf '%s\n' "$wid: $(name $wid),$(class $wid)"
+            printf '%s\n' "$wid: $(name "$wid"),$(class "$wid")"
         done < "$group"
     done
 }
@@ -162,12 +161,12 @@ resetGroups() {
     # map all groups to the screen
     test -f "$inactive" && {
         while read -r resetGroupNum; do
-            mapGroup $resetGroupNum
+            mapGroup "$resetGroupNum"
         done < "$inactive"
     }
 
     # clean the group directory
-    rm -f $groupdir/*
+    rm -f "$groupdir/*"
 
     return 0
 }
@@ -193,4 +192,4 @@ main() {
     esac
 }
 
-main $ARGS
+main "$@"

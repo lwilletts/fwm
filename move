@@ -1,9 +1,10 @@
 #!/bin/sh
+# shellcheck disable=SC2015
 #
 # move
 
 usage() {
-    base="$(basename $0)"
+    base="$(basename "$0")"
 
     cat >&2 << EOF
 Usage: $base [position] <wid> <screen|cycle>
@@ -25,11 +26,11 @@ Usage: $base [position] <wid> <screen|cycle>
     $ $base help  | --help      : Show this help.
 EOF
 
-    test $# -eq 0 || exit $1
+    test $# -eq 0 || exit "$1"
 }
 
 reset() {
-    rm $movedir/* 2> /dev/null
+    rm "$movedir/*" 2> /dev/null
     printf '%s\n' "move directory reset..."
     exit 0
 }
@@ -80,7 +81,7 @@ bottom() {
     X=$(wattr x "$wid")
     W=$(wattr w "$wid")
     H=$(wattr h "$wid")
-    Y=$(($SY + $SH - $H))
+    Y=$((SY + SH - H))
 }
 
 bottomleft() {
@@ -138,17 +139,17 @@ position() {
     (wattr xywhi "$wid"; \
     printf '%s\n' "$X $Y $W $H"; \
     printf '%s\n' "$mode"
-    printf '%s\n' "$(mattr i $wid)") > "$movedir/$wid"
+    printf '%s\n' "$(mattr i "$wid")") > "$movedir/$wid"
 
     # briefly hide mouse
-    wmp -a $(wattr wh $(lsw -r))
+    wmp -a "$(wattr wh "$(lsw -r)")"
 
     # position window
-    wtp $X $Y $W $H $wid
+    wtp "$X" "$Y" "$W" "$H" "$wid"
 
     # move mouse to middle of window
-    wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
-           $(($(wattr y $wid) + $(wattr h $wid) / 2))
+    wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2)) \
+           $(($(wattr y "$wid") + $(wattr h "$wid") / 2))
 }
 
 main() {
@@ -180,7 +181,7 @@ main() {
             case "$3" in
                 cycle)
                     # won't work for three screens currently
-                    SCR="$(lsm | grep -v $(mattr i $wid))"
+                    SCR="$(lsm | grep -v "$(mattr i "$wid")")"
                     ;;
                 *)
                     mattr "$3" && SCR="$3" || {
@@ -196,10 +197,10 @@ main() {
     grep -qrw "$wid" "$fsdir" 2> /dev/null && return 1
 
     # grab screen variables
-    SX=$(($(mattr x $SCR) + LGAP))
-    SY=$(($(mattr y $SCR) + TGAP))
-    SW=$(($(mattr w $SCR) - LGAP - RGAP))
-    SH=$(($(mattr h $SCR) - TGAP - BGAP))
+    SX=$(($(mattr x "$SCR") + LGAP))
+    SY=$(($(mattr y "$SCR") + TGAP))
+    SW=$(($(mattr w "$SCR") - LGAP - RGAP))
+    SH=$(($(mattr h "$SCR") - TGAP - BGAP))
 
     # restore window position
     grep -qrw "$wid" "$movedir" 2> /dev/null && {
@@ -209,19 +210,19 @@ main() {
                 case "$mode" in
                     vmaximise|hmaximise|maximise)
                         # test if window has moved since last run
-                        test "$(sed '2!d' "$movedir/$wid")" != "$(wattr xywh $wid)" && {
+                        test "$(sed '2!d' "$movedir/$wid")" != "$(wattr xywh "$wid")" && {
                             $mode
                             position
                         } || {
                             # briefly hide mouse
-                            wmp -a $(wattr wh $(lsw -r))
+                            wmp -a "$(wattr wh "$(lsw -r)")"
 
                             # restore position
-                            wtp $(sed '1!d' "$movedir/$wid")
+                            sh -c "wtp $(sed '1!d' "$movedir/$wid")"
 
                             # move mouse to middle of window
-                            wmp -a $(($(wattr x $wid) + $(wattr w $wid) / 2)) \
-                                   $(($(wattr y $wid) + $(wattr h $wid) / 2))
+                            wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2)) \
+                                   $(($(wattr y "$wid") + $(wattr h "$wid") / 2))
 
                             # clean file
                             rm "$movedir/$wid"

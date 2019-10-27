@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2015
 #
 # watcher
 
@@ -6,7 +7,7 @@ event() {
     . fwmrc
     wmenv
 
-    wew | while IFS=: read ev wid; do
+    wew | while IFS=: read -r ev wid; do
         case "$ev" in
             16) # create window
                 wattr o "$wid" | case "$(class "$wid")" in

@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2015
 #
 # fwmrc
 
@@ -7,8 +8,8 @@ test -z "$DISPLAY" && return 1
 
 # check if arg 1 is an integer
 intCheck() {
-    test $1 -ne 0 2> /dev/null
-    test $? -ne 2 || return 1
+    test "$1" -ne 0 2> /dev/null
+    test "$?" -ne 2 || return 1
 }
 
 widCheck() {
@@ -20,7 +21,7 @@ widCheck() {
 
 name() {
     test $# -eq 0 && return 1
-    for wid in $@; do
+    for wid in "$@"; do
         lsw -a | grep -q "$wid" && {
             xprop -id "$wid" WM_CLASS | cut -d\" -f 2
             unset -v wid
@@ -33,7 +34,7 @@ name() {
 
 class() {
     test $# -eq 0 && return 1
-    for wid in $@; do
+    for wid in "$@"; do
         lsw -a | grep -q "$wid" && {
             xprop -id "$wid" WM_CLASS | cut -d\" -f 4
             unset -v wid
@@ -46,7 +47,7 @@ class() {
 
 process() {
     test $# -eq 0 && return 1
-    for wid in $@; do
+    for wid in "$@"; do
         lsw -a | grep -q "$wid" && {
             xprop -id "$wid" _NET_WM_PID | cut -d\  -f 3
             unset -v wid
@@ -61,8 +62,8 @@ process() {
 # list windows on currently focused wid screen
 listcurrent() {
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
-    SCR="$(mattr i $PFW)"
-    mattr si $(lsw) | grep "$SCR" | cut -d\  -f 1
+    SCR="$(mattr i "$PFW")"
+    mattr si "$(lsw)" | grep "$SCR" | cut -d\  -f 1
 }
 
 wmenv() {
@@ -77,24 +78,18 @@ wmenv() {
     groupdir=${groupdir:-$fwmdir/group}
     test ! -d "$groupdir" && mkdir -p "$groupdir"
 
-    BW=2
-    JUMP=20
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
+    export PFW BW=2 JUMP=20
 }
 
 wmgaps() {
     PRI="$(lsm -p)"
     PFM="$(pfm)"
     ROOT="$(lsw -r)"
-    TGAP=10
-    BGAP=40
-    LGAP=10
-    RGAP=20
-    IGAP=15
+    export PRI PFM ROOT
+    export TGAP=10 BGAP=40 LGAP=10 RGAP=20 IGAP=15
 }
 
 wmcolours() {
-    ACTIVE="101010"
-    URGENT="B23450"
-    INACTIVE="EFEFEF"
+    export ACTIVE="101010" exportURGENT="B23450" INACTIVE="EFEFEF"
 }

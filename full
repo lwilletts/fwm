@@ -1,9 +1,10 @@
 #!/bin/sh
+# shellcheck disable=SC2015
 #
 # full
 
 usage() {
-    base="$(basename $0)"
+    base="$(basename "$0")"
 
     cat >&2 << EOF
 Usage:
@@ -13,7 +14,7 @@ Usage:
     $ $base -h | --help        : Show this help.
 EOF
 
-    test $# -eq 0 || exit $1
+    test $# -eq 0 || exit "$1"
 }
 
 clean() {
@@ -25,7 +26,7 @@ clean() {
 
         test ! -z "$cleanWid" && {
             chwb -s "$BW" -c "$ACTIVE" "$wid"
-            wtp $(grep -w "$wid" "$screenIdFile")
+            sh -c "wtp $(grep -w "$wid" "$screenIdFile")"
         }
 
         rm "$screenIdFile"
@@ -35,7 +36,7 @@ clean() {
 }
 
 reset() {
-    rm $fsdir/* 2> /dev/null
+    rm "$fsdir/*" 2> /dev/null
     exit 0
 }
 
@@ -77,7 +78,7 @@ main() {
 
     # focus fullwid if it exists
     test -e "$fsdir/$SCR" && {
-        focus wid $(cat "$fsdir/$SCR" | cut -d\  -f 5)
+        focus wid "$(cut -d\  -f 5 "$fsdir/$SCR")"
         return
     }
 
@@ -87,7 +88,7 @@ main() {
     # perform fullscreen operations
     chwb -s 0 "$wid"
     chwso -r "$wid"
-    sh -c "wtp $(mattr xywh $SCR) $wid"
+    sh -c "wtp $(mattr xywh "$SCR") $wid"
 }
 
 main "$@"
