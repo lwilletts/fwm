@@ -16,12 +16,13 @@ EOF
 
 main() {
     . fwmrc
+    wmenv
     wmgaps
     wmcolours
 
     # CWM-like right click
-    X=$(($(wmp | cut -d\  -f 1) - $(mattr x "$PRI") - 10))
-    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y "$PRI") - 10))
+    X=$(($(wmp | cut -d\  -f 1) - $(mattr x "$PFM") - 10))
+    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y "$PFM") - 10))
 
     FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
 
@@ -33,9 +34,9 @@ pizero
 obs"
 
     program=$(printf '%s\n' "$programs" | \
-    dmenu -name "pmenu" -f -l 10 -s 0 -fn "$FONT" -p "Run >" \
+    dmenu -name "pmenu" -f -l 10 -fn "$FONT" -p "Run >" \
     -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
-    -x $X -y $Y -w 120 -bw $BW)
+    -s "$(mattr d "$PFM")" -x "$X" -y "$Y" -w 120 -bw "$BW")
 
     case "$program" in
         urxvt)  urxvtc ;;
