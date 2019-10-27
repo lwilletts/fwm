@@ -5,8 +5,7 @@
 
 usage() {
     base="$(basename "$0")"
-
-    cat >&2 << EOF
+cat >&2 << EOF
 Usage: $base [position] <wid> <screen|cycle>
     $ $base -t    | top         : Move window to top of screen.
     $ $base -l    | left        : Move window to left of screen.
@@ -30,7 +29,7 @@ EOF
 }
 
 reset() {
-    rm "$movedir/*" 2> /dev/null
+    rm "$movedir"/* 2> /dev/null
     printf '%s\n' "move directory reset..."
     exit 0
 }

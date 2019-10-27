@@ -91,5 +91,5 @@ wmgaps() {
 }
 
 wmcolours() {
-    export ACTIVE="101010" exportURGENT="B23450" INACTIVE="EFEFEF"
+    export ACTIVE="101010" URGENT="B23450" INACTIVE="EFEFEF"
 }

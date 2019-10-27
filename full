@@ -36,7 +36,7 @@ clean() {
 }
 
 reset() {
-    rm "$fsdir/*" 2> /dev/null
+    rm "$fsdir"/* 2> /dev/null
     exit 0
 }
 
@@ -53,7 +53,7 @@ main() {
             case $# in
                 0)
                     widCheck "$PFW" && wid="$PFW" || usage 1
-                    SCR="$(mattr i $PFW)"
+                    SCR="$(mattr i "$PFW")"
                     ;;
                 1)
                     widCheck "$1" && wid="$1" || usage 1

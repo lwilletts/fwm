@@ -149,12 +149,13 @@ toggleGroup() {
 }
 
 listGroups() {
-    for group in $(find $groupdir/? 2> /dev/null); do
+    find "$groupdir"/? > "$groupdir/list"
+    while read -r group; do
         printf '%s\n' "group $(printf '%s' "$group" | rev | cut -d'/' -f 1 | rev):"
         while read -r wid; do
             printf '%s\n' "$wid: $(name "$wid"),$(class "$wid")"
         done < "$group"
-    done
+    done < "$groupdir/tmp"
 }
 
 resetGroups() {
@@ -166,7 +167,7 @@ resetGroups() {
     }
 
     # clean the group directory
-    rm -f "$groupdir/*"
+    rm -f "$groupdir"/*
 
     return 0
 }

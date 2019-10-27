@@ -1,31 +1,30 @@
 #!/bin/sh
-# shellcheck disable=SC2015
+# shellcheck disable=SC2015,SC2046
 #
 # cmdmenu
 
 usage() {
-    base=$(basename $0)
+    base=$(basename "$0")
 
     cat >&2 << EOF
 Usage:
     $ $base
 EOF
 
-    test $# -eq 0 || exit $1
+    test $# -eq 0 || exit "$1"
 }
 
-select() {
+sel() {
     sleep 0.2
     wid="$(slw)"
 
     test "$wid" = "0x00000000" && exit 0
 
     case "$1" in
-        move)   chwso -r "$wid"; wtp $(xrectmov $(wattr xywh $wid)) $wid ;;
-        resize) chwso -r "$wid"; wtp $(xrectsel '%x %y %w %h') $wid      ;;
-        corner) chwso -r "$wid"; xmrs "$wid" ;;
-        delete) killw "$wid"                 ;;
-        begone) kill -9 $(process) "$wid"    ;;
+        move)   chwso -r "$wid"; sh -c "wtp $(xrectmov $(wattr xywh "$wid")) $wid" ;;
+        resize) chwso -r "$wid"; sh -c "wtp $(xrectsel '%x %y %w %h') $wid"      ;;
+        delete) killw "$wid"                  ;;
+        begone) kill -9 "$(process "$wid")"   ;;
     esac
 }
 
@@ -38,10 +37,10 @@ new() {
     ob=2
 
     xrectsel '%w %h %x %y' | {
-            read w h x y
+            read -r w h x y
             w=$(( ( w - (ib + ob)*2 ) / fw ))
             h=$(( ( h - (ib + ob)*2 ) / fh ))
-            exec urxvtc -g ${w}x${h}+${x}+${y}
+            exec urxvtc -g "${w}x${h}+${x}+${y}"
     }
 }
 
@@ -59,15 +58,14 @@ main() {
     esac
 
     # CWM-like right click
-    X=$(($(wmp | cut -d\  -f 1) - $(mattr x $PRI) - 10))
-    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y $PRI) - 10))
+    X=$(($(wmp | cut -d\  -f 1) - $(mattr x "$PFM") - 10))
+    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y "$PFM") - 10))
 
     FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
 
     programs="new
 move
 resize
-corner
 delete
 begone
 load
@@ -75,20 +73,19 @@ shot
 pfw"
 
     program=$(printf '%s\n' "$programs" | \
-    dmenu -name "cmdmenu" -f -l 10 -s 0 -fn "$FONT" -p "Do >" \
+    dmenu -name "cmdmenu" -f -l 10 -fn "$FONT" -p "Do >" \
     -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
-    -x $X -y $Y -w 100 -bw 2)
+    -s "$(mattr d "$PFM")" -x $X -y $Y -w 100 -bw 2)
 
     case "$program" in
-        new)    new           ;;
-        move)   select move   ;;
-        resize) select resize ;;
-        corner) select corner ;;
-        delete) select delete ;;
-        begone) select delete ;;
-        open)   open          ;;
-        shot)   shot          ;;
-        pfw)    shot $(pfw)   ;;
+        new)    new         ;;
+        move)   sel move    ;;
+        resize) sel resize  ;;
+        delete) sel delete  ;;
+        begone) sel delete  ;;
+        open)   open        ;;
+        shot)   shot        ;;
+        pfw)    shot "$PFW" ;;
     esac
 }
 

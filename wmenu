@@ -42,7 +42,6 @@ menu() {
     # CWM-like right click
     X=$(($(wmp | cut -d\  -f 1) - $(mattr x "$PFM") - 10))
     Y=$(($(wmp | cut -d\  -f 2) - $(mattr y "$PFM") - 10))
-
 }
 
 center() {
