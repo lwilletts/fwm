@@ -46,7 +46,7 @@ menu() {
 
 center() {
     width
-    H=$(echo "($nWindows * 5) / 1" | bc)
+    H=$(echo "($nWindows * 11.5) / 1" | bc)
 
     # finding x y cords for centering
     X=$(($(mattr w "$PFM")/2 - W/2 - 10))
