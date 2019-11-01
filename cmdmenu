@@ -75,7 +75,7 @@ pfw"
     program=$(printf '%s\n' "$programs" | \
     dmenu -name "cmdmenu" -f -l 10 -fn "$FONT" -p "Do >" \
     -nf "#$ACTIVE" -sf "#$URGENT" -nb "#$INACTIVE" -sb "#$INACTIVE" -bc "#$ACTIVE" \
-    -s "$(mattr d "$PFM")" -x $X -y $Y -w 100 -bw 2)
+    -s "$(mattr d "$PFM")" -x $X -y $Y -w 100 -bw $BW)
 
     case "$program" in
         new)    new         ;;

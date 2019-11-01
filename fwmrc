@@ -79,7 +79,7 @@ wmenv() {
     test ! -d "$groupdir" && mkdir -p "$groupdir"
 
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
-    export PFW BW=2 JUMP=20
+    export PFW BW=1 JUMP=20
 }
 
 wmgaps() {
