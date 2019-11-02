@@ -59,11 +59,21 @@ process() {
     done
 }
 
-# list windows on currently focused wid screen
-listcurrent() {
-    PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
-    SCR="$(mattr i "$PFW")"
-    mattr si "$(lsw)" | grep "$SCR" | cut -d\  -f 1
+# list windows on focused screen or given screen
+listwindows() {
+    mattr "$1"
+
+    case "$?" in
+        0)
+            SCR="$1"
+            ;;
+        *)
+            PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
+            SCR="$(mattr i "$PFW")"
+            ;;
+    esac
+
+    mattr si $(lsw) | grep "$SCR" | cut -d\  -f 1
 }
 
 wmenv() {

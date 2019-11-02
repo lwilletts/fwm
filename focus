@@ -38,7 +38,7 @@ prev() {
 }
 
 cycle() {
-    wid="$(lsw | grep "$(listcurrent)" | head -n 1)"
+    wid="$(lsw | grep "$(listwindows)" | head -n 1)"
     focus
 }
 
