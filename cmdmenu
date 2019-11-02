@@ -50,6 +50,7 @@ open() {
 
 main() {
     . fwmrc
+    wmenv
     wmgaps
     wmcolours
 
