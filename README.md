@@ -95,6 +95,14 @@ dmenu selection menu for visible windows. Functions either as a bar, floating
 window based on mouse location, or a floating window placed in the center of
 current screen.
 
+## src
+
+A directory for small C programs and testing of ideas.
+
+#### xwait
+
+Infinite loop, used to hold X connection open.
+
 #### patch
 
 Small wmutils and other util patches I have collected.
