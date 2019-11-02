@@ -123,7 +123,7 @@ unmapGroup() {
         done < "$groupdir/$grp"
 
         # focus prev wid on screen
-
+        focus --wid "$(lsw | tail -n 1)"
     } || return 1
 }
 
@@ -141,10 +141,12 @@ toggleGroup() {
         done < "$active"
     }
 
+    test "$toggle" != "true" && {
+        mapGroup "$grp"
+    }
+
     test "$toggle" = "true" && {
         unmapGroup "$grp"
-    } || {
-        mapGroup "$grp"
     }
 }
 
@@ -155,7 +157,8 @@ listGroups() {
         while read -r wid; do
             printf '%s\n' "$wid: $(name "$wid"),$(class "$wid")"
         done < "$group"
-    done < "$groupdir/tmp"
+    done < "$groupdir/list"
+    rm "$groupdir/list"
 }
 
 resetGroups() {
@@ -180,16 +183,16 @@ main() {
     inactive="$groupdir/inactive"
 
     case "$1" in
-        -a|--add|add)       addWid "$2" "$3" ;;
-        -m|--map|map)       mapGroup "$2"    ;;
-        -l|--list|list)     listGroups       ;;
-        -f|--find|find)     findWid "$2"     ;;
-        -r|--reset|reset)   resetGroups      ;;
-        -c|--clean|clean)   cleanWid "$2"    ;;
-        -u|--unmap|unmap)   unmapGroup "$2"  ;;
-        -t|--toggle|toggle) toggleGroup "$2" ;;
-        -h|--help|help)     usage 0          ;;
-        *)                  usage 1          ;;
+        -a|--add|add)       addWid "$2" "$3"      ;;
+        -m|--map|map)       mapGroup "$2"         ;;
+        -l|--list|list)     listGroups            ;;
+        -f|--find|find)     findWid "$2"          ;;
+        -r|--reset|reset)   resetGroups           ;;
+        -c|--clean|clean)   cleanWid "$2"         ;;
+        -u|--unmap|unmap)   unmapGroup "$2"       ;;
+        -t|--toggle|toggle) toggleGroup "$2"      ;;
+        -h|--help|help)     usage 0               ;;
+        *)                  usage 1               ;;
     esac
 }
 
