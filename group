@@ -42,8 +42,8 @@ cleanWid() {
         # remove group file if empty and perform cleanup
         test ! -s "$groupdir/$group" && {
             rm "$groupdir/$group"
-            test -f "$active" && sed -i -n '/'"$group"'/!p' "$active"
-            test -f "$inactive" && sed -i -n '/'"$group"'/!p' "$inactive"
+            test -f "$activegrp" && sed -i -n '/'"$group"'/!p' "$activegrp"
+            test -f "$inactivegrp" && sed -i -n '/'"$group"'/!p' "$inactivegrp"
         }
     done
 
@@ -67,14 +67,14 @@ addWid() {
     cleanWid "$wid"
 
     # hide wid if group is found to be hidden
-    test -f "$inactive" && {
-        while read -r inactiveGroup; do
-            test "$inactiveGroup" -eq "$grp" && mapw -u "$wid" && break
-        done < "$inactive"
+    test -f "$inactivegrp" && {
+        while read -r inactivegrpGroup; do
+            test "$inactivegrpGroup" -eq "$grp" && mapw -u "$wid" && break
+        done < "$inactivegrp"
     }
 
-    # add group to active if group does not exist and add wid to group
-    test ! -f "$groupdir/$grp" && printf '%s\n' "$grp" >> "$active"
+    # add group to activegrp if group does not exist and add wid to group
+    test ! -f "$groupdir/$grp" && printf '%s\n' "$grp" >> "$activegrp"
     printf '%s\n' "$wid" >> "$groupdir/$grp"
 }
 
@@ -83,14 +83,14 @@ mapGroup() {
 
     # only continue if group exists
     test -f "$groupdir/$grp" && {
-        # return if group is already active
-        test -f "$active" && grep -qw "$grp" "$active" && return 1
+        # return if group is already activegrp
+        test -f "$activegrp" && grep -qw "$grp" "$activegrp" && return 1
 
-        # add group to active file
-        printf '%s\n' "$grp" >> "$active"
+        # add group to activegrp file
+        printf '%s\n' "$grp" >> "$activegrp"
 
-        # clean group from inactive file
-        test -f "$inactive" && sed -i -n '/'"$grp"'/!p' "$inactive"
+        # clean group from inactivegrp file
+        test -f "$inactivegrp" && sed -i -n '/'"$grp"'/!p' "$inactivegrp"
 
         # show all windows in group and put them on top of the stack
         while read -r mapWid; do
@@ -108,14 +108,14 @@ unmapGroup() {
 
     # only continue if group exists
     test -f "$groupdir/$grp" && {
-        # return if group is already inactive
-        test -f "$inactive" && grep -qw "$grp" "$inactive" && return 1
+        # return if group is already inactivegrp
+        test -f "$inactivegrp" && grep -qw "$grp" "$inactivegrp" && return 1
 
-        # add group to inactive file
-        printf '%s\n' "$grp" >> "$inactive"
+        # add group to inactivegrp file
+        printf '%s\n' "$grp" >> "$inactivegrp"
 
-        # clean group from active file
-        test -f "$active" && sed -i -n '/'"$grp"'/!p' "$active"
+        # clean group from activegrp file
+        test -f "$activegrp" && sed -i -n '/'"$grp"'/!p' "$activegrp"
 
         # hide all windows in group
         while read -r unmapWid; do
@@ -130,15 +130,15 @@ unmapGroup() {
 toggleGroup() {
     intCheck "$1" && grp="$1" || usage 1
 
-    # only continue if active file exists
-    test -f "$active" && {
-        # unmap group if found active
-        while read -r activeGroup; do
-            test "$activeGroup" -eq "$grp" && {
+    # only continue if activegrp file exists
+    test -f "$activegrp" && {
+        # unmap group if found activegrp
+        while read -r activegrpGroup; do
+            test "$activegrpGroup" -eq "$grp" && {
                 toggle=true
                 break
             }
-        done < "$active"
+        done < "$activegrp"
     }
 
     test "$toggle" != "true" && {
@@ -148,6 +148,14 @@ toggleGroup() {
     test "$toggle" = "true" && {
         unmapGroup "$grp"
     }
+}
+
+workspaceGroup() {
+    # test if group exists
+        # add all windows on current screen to group if no
+        # toggle status if yes
+
+    return 0
 }
 
 listGroups() {
@@ -163,10 +171,10 @@ listGroups() {
 
 resetGroups() {
     # map all groups to the screen
-    test -f "$inactive" && {
+    test -f "$inactivegrp" && {
         while read -r resetGroupNum; do
             mapGroup "$resetGroupNum"
-        done < "$inactive"
+        done < "$inactivegrp"
     }
 
     # clean the group directory
@@ -178,9 +186,7 @@ resetGroups() {
 main() {
     . fwmrc
     wmenv
-
-    active="$groupdir/active"
-    inactive="$groupdir/inactive"
+    wmgroup
 
     case "$1" in
         -a|--add|add)       addWid "$2" "$3"      ;;

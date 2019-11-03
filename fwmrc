@@ -103,3 +103,8 @@ wmgaps() {
 wmcolours() {
     export ACTIVE="101010" URGENT="B23450" INACTIVE="EFEFEF"
 }
+
+wmgroup() {
+    export activegrp="$groupdir/active"
+    export inactivegrp="$groupdir/inactive"
+}
