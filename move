@@ -179,8 +179,25 @@ main() {
 
             case "$3" in
                 cycle)
-                    # won't work for three screens currently
-                    SCR="$(lsm | grep -v "$(mattr i "$wid")")"
+                    # file to store the stack
+                    cycle="$movedir/cycle"
+
+                    # active screen
+                    CUR="$(mattr i "$wid")"
+
+                    # create FILO stack
+                    test -s "$cycle" || {
+                        lsm | grep -v "$CUR" > "$cycle"
+                        printf '%s\n' "$CUR" >> "$cycle"
+                    }
+
+                    # get the oldest screen that was not used.
+                    SCR="$(head -n 1 "$cycle")"
+
+                    # delete oldest screen
+                    sed -i -n '/'"$SCR"'/!p' "$cycle"
+                    # make it the active screen
+                    printf '%s\n' "$SCR" >> "$cycle"
                     ;;
                 *)
                     mattr "$3" && SCR="$3" || {
