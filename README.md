@@ -43,7 +43,7 @@ Focus a window id, or cycle through the ordered stack of windows on screen.
 
 Fullscreen a given window id. Run the same command to reset the window back to
 its original position. Improved over cwm window-fullscreen by following mouse.
-Can set screen independantly.
+Additionally, you can specify screen to fullscreen to.
 
 #### fwmrc
 
@@ -53,7 +53,9 @@ retrieving window names, classes and process ids.
 
 #### group
 
-Basic groups script for workspace management.
+Basic groups script for control window visibility. Add windows to a group
+individually. Separate calls for showing, hiding and toggling the groups can be
+used. See `watcher` for autogroup behaviour.
 
 #### move
 
@@ -82,7 +84,16 @@ development.
 
 A window id event watcher wrapper around wew to provide added functionality
 such as fullscreen and group window cleaning on deletion of windows. Recommend
-to add `watcher &` to your xinitrc to load on X11 start.
+to add `watcher &` to your xinitrc to load on X11 start. 
+
+Autogrouping is possible by populating `$HOME/.autogroup` with window name and
+a group e.g:
+
+```
+qutebrowser 2
+discord 3
+gl 4
+```
 
 #### wid
 
