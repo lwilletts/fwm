@@ -8,15 +8,15 @@ usage() {
 
     cat >&2 << EOF
 Usage:
-    $ $base -a | --add [group] <wid> : Add window to group.
-    $ $base -f | --find [wid]        : Pass window to find its group.
-    $ $base -c | --clean <wid>       : Clean window from current group.
-    $ $base -m | --map [group]       : Map window to screen.
-    $ $base -u | --unmap [group]     : Unmap window from screen.
-    $ $base -t | --toggle [group]    : Toggle window visibility.
-    $ $base -r | --reset             : Map all windows and reset groups.
-    $ $base -l | --list              : List current windows in their groups.
-    $ $base -h | --help              : Show this help.
+    $ $base -a | --add [group] <wid>      : Add window to group.
+    $ $base -f | --find [wid]             : Pass window to find its group.
+    $ $base -c | --clean <wid>            : Clean window from current group.
+    $ $base -m | --map [group]            : Map window to screen.
+    $ $base -u | --unmap [group]          : Unmap window from screen.
+    $ $base -t | --toggle [group] <focus> : Toggle window visibility.
+    $ $base -r | --reset                  : Map all windows and reset groups.
+    $ $base -l | --list                   : List current windows in groups.
+    $ $base -h | --help                   : Show this help.
 EOF
     test $# -eq 0 || exit "$1"
 }
@@ -99,7 +99,7 @@ mapGroup() {
         done < "$groupdir/$grp"
 
         # focus top wid in group
-        focus --wid "$(head -n 1 "$groupdir/$grp")"
+        test "$focus" != "false" && focus --wid "$(head -n 1 "$groupdir/$grp")"
     } || return 1
 }
 
@@ -123,12 +123,16 @@ unmapGroup() {
         done < "$groupdir/$grp"
 
         # focus prev wid on screen
-        focus --wid "$(lsw | tail -n 1)"
+        test "$focus" != "false" && focus --wid "$(lsw | tail -n 1)"
     } || return 1
 }
 
 toggleGroup() {
     intCheck "$1" && grp="$1" || usage 1
+
+    case "$2" in
+        f|focus) focus=false ;;
+    esac
 
     # only continue if activegrp file exists
     test -f "$activegrp" && {
@@ -196,7 +200,7 @@ main() {
         -r|--reset|reset)   resetGroups           ;;
         -c|--clean|clean)   cleanWid "$2"         ;;
         -u|--unmap|unmap)   unmapGroup "$2"       ;;
-        -t|--toggle|toggle) toggleGroup "$2"      ;;
+        -t|--toggle|toggle) toggleGroup "$2" "$3" ;;
         -h|--help|help)     usage 0               ;;
         *)                  usage 1               ;;
     esac
