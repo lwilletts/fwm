@@ -21,6 +21,8 @@ Usage: $base [position] <wid> <screen|cycle>
     $ $base -m    | maximise    : Extend window to horizontal and vertical max.
     $ $base -vm   | vmaximise   : Extend window to vertical max.
     $ $base -hm   | hmaximise   : Extend window to horizontal max.
+    $ $base -g    | grow        : Increase window size by $JUMP.
+    $ $base -s    | shrink      : Decrease window size by $JUMP.
     $ $base reset | --reset     : Delete all stored window positions.
     $ $base help  | --help      : Show this help.
 EOF
@@ -120,28 +122,42 @@ hmaximise() {
 }
 
 double() {
-    X=$(wattr x "$wid")
-    Y=$(wattr y "$wid")
     W=$(($(wattr w "$wid") * 2))
     H=$(($(wattr h "$wid") * 2))
+    X=$(($(wattr x "$wid") - W / 4))
+    Y=$(($(wattr y "$wid") - H / 4))
 }
 
 halve() {
-    X=$(wattr x "$wid")
-    Y=$(wattr y "$wid")
     W=$(($(wattr w "$wid") / 2))
     H=$(($(wattr h "$wid") / 2))
+    X=$(($(wattr x "$wid") + W / 2))
+    Y=$(($(wattr y "$wid") + H / 2))
+}
+
+grow() {
+    X=$(($(wattr x "$wid") - JUMP / 2))
+    Y=$(($(wattr y "$wid") - JUMP / 2))
+    W=$(($(wattr w "$wid") + JUMP))
+    H=$(($(wattr h "$wid") + JUMP))
+}
+
+shrink() {
+    X=$(($(wattr x "$wid") + JUMP / 2))
+    Y=$(($(wattr y "$wid") + JUMP / 2))
+    W=$(($(wattr w "$wid") - JUMP))
+    H=$(($(wattr h "$wid") - JUMP))
 }
 
 position() {
-    # save old window postion, new window position, mode, and screen
+    # save old window position, new window position, mode, and screen
     (wattr xywhi "$wid"; \
     printf '%s\n' "$X $Y $W $H"; \
     printf '%s\n' "$mode"
     printf '%s\n' "$(mattr i "$wid")") > "$movedir/$wid"
 
     # briefly hide mouse
-    wmp -a "$(wattr wh "$(lsw -r)")"
+    wmp -a $(wattr wh "$(lsw -r)")
 
     # position window
     wtp "$X" "$Y" "$W" "$H" "$wid"
@@ -264,8 +280,10 @@ main() {
         -m|--maximise|maximise)         maximise    ; mode="maximise"    ;;
         -vm|--vmaximise|vmaximise)      vmaximise   ; mode="vmaximise"   ;;
         -hm|--hmaximise|hmaximise)      hmaximise   ; mode="hmaximise"   ;;
-        -dl|--double|double)            double      ; mode="double"      ;;
-        -hl|--halve|halve)              halve       ; mode="halve"       ;;
+        -dl|--double|double)            double      ;;
+        -hl|--halve|halve)              halve       ;;
+        -g|--grow|grow)                 grow        ;;
+        -s|--shrink|shrink)             shrink      ;;
         -h|--help|help)                 usage 0     ;;
         *)                              usage 1     ;;
     esac
