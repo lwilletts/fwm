@@ -11,9 +11,11 @@ Usage:
     $ $base -a | --add [group] <wid>      : Add window to group.
     $ $base -f | --find [wid]             : Pass window to find its group.
     $ $base -c | --clean <wid>            : Clean window from current group.
+    $ $base -C | --cycle [next/prev]      : Cycle to next window in group.
     $ $base -m | --map [group]            : Map window to screen.
     $ $base -u | --unmap [group]          : Unmap window from screen.
     $ $base -t | --toggle [group] <focus> : Toggle window visibility.
+    $ $base -s | --smart [group] <focus>  : Smartly toggle windows.
     $ $base -r | --reset                  : Map all windows and reset groups.
     $ $base -l | --list                   : List current windows in groups.
     $ $base -h | --help                   : Show this help.
@@ -33,19 +35,17 @@ cleanWid() {
     test -n "$1" && wid="$1" || wid="$PFW"
 
     # test wid exists in a group
-    foundGroups="$(findWid "$wid")"
-    test -z "$foundGroups" && return 1
+    foundGroup="$(findWid "$wid")"
+    test -z "$foundGroup" && return 1
 
     # remove wid from group
-    for group in $foundGroups; do
-        sed -i -n '/'"$wid"'/!p' "$groupdir/$group"
-        # remove group file if empty and perform cleanup
-        test ! -s "$groupdir/$group" && {
-            rm "$groupdir/$group"
-            test -f "$activegrp" && sed -i -n '/'"$group"'/!p' "$activegrp"
-            test -f "$inactivegrp" && sed -i -n '/'"$group"'/!p' "$inactivegrp"
-        }
-    done
+    sed -i -n '/'"$wid"'/!p' "$groupdir/$foundGroup"
+    # remove group file if empty and perform cleanup
+    test ! -s "$groupdir/$foundGroup" && {
+        rm "$groupdir/$foundGroup"
+        test -f "$activegrp" && sed -i -n '/'"$foundGroup"'/!p' "$activegrp"
+        test -f "$inactivegrp" && sed -i -n '/'"$foundGroup"'/!p' "$inactivegrp"
+    }
 
     # map the wid to the screen
     mapw -m "$wid"
@@ -205,12 +205,24 @@ workspaceGroup() {
     return 0
 }
 
-cycleGroup() {
+cycleWid() {
+    # find group current window belongs to
+    foundGroup="$(findWid "$PFW")"
+
     case "$1" in
-        n|next) direction="next" ;;
-        p|prev) direction="prev" ;;
-        *)      usage 1 ;;
+        n|next)
+            # focus next window in group
+            wid="$(sed "0,/^$PFW$/d" < "$groupdir/$foundGroup")"
+            test -z "$wid" && wid="$(head -n 1 < "$groupdir/$foundGroup")"
+            ;;
+        p|prev)
+            wid="$(sed "$,/^$PFW$/d" < "$groupdir/$foundGroup")"
+            test -z "$wid" && wid="$(tail -n 1 < "$groupdir/$foundGroup")"
+            ;;
+        *) usage 1 ;;
     esac
+
+    focus --wid "$wid"
 }
 
 listGroups() {
@@ -234,8 +246,6 @@ resetGroups() {
 
     # clean the group directory
     rm -f "$groupdir"/*
-
-    return 0
 }
 
 main() {
@@ -248,6 +258,7 @@ main() {
         -m|--map|map)       mapGroup "$2"         ;;
         -l|--list|list)     listGroups            ;;
         -f|--find|find)     findWid "$2"          ;;
+        -C|--cycle|cycle)   cycleWid "$2"         ;;
         -r|--reset|reset)   resetGroups           ;;
         -c|--clean|clean)   cleanWid "$2"         ;;
         -u|--unmap|unmap)   unmapGroup "$2"       ;;
