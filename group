@@ -100,8 +100,9 @@ mapGroup() {
 
         # focus top wid in group
         test "$focus" != "false" && {
-            while read -r wid; do
-                test "$PFW" = "$wid" && {
+            # test if we are on a group window
+            while read -r groupWid; do
+                test "$PFW" = "$groupWid" && {
                     focus --wid "$(head -n 1 "$groupdir/$grp")"
                     break
                 }
@@ -131,8 +132,9 @@ unmapGroup() {
 
         # focus prev wid on screen
         test "$focus" != "false" && {
-            while read -r wid; do
-                test "$PFW" = "$wid" && {
+            # test if we are on a group window
+            while read -r groupWid; do
+                test "$PFW" = "$groupWid" && {
                     focus --wid "$(lsw | tail -n 1)"
                     break
                 }
@@ -159,13 +161,40 @@ toggleGroup() {
         done < "$activegrp"
     }
 
-    test "$toggle" != "true" && {
-        mapGroup "$grp"
+    test "$toggle" != "true" && mapGroup "$grp"
+    test "$toggle" = "true" && unmapGroup "$grp"
+}
+
+smartToggle() {
+    intCheck "$1" && grp="$1" || usage 1
+
+    case "$2" in
+        f|focus) focus=false ;;
+    esac
+
+    # only continue if activegrp file exists
+    test -f "$activegrp" && {
+        # find out if group is active
+        while read -r activegrpGroup; do
+            test "$activegrpGroup" -eq "$grp" && {
+                # test if we are on a group window
+                while read -r groupWid; do
+                    test "$PFW" = "$groupWid" && {
+                        toggle=true
+                    }
+                done < "$groupdir/$grp"
+                break
+            }
+        done < "$activegrp"
+
+        # map if group inactive
+        active=false
     }
 
-    test "$toggle" = "true" && {
-        unmapGroup "$grp"
-    }
+    test "$active" = "false" && mapGroup "$grp"
+    test "$toggle" = "true" && unmapGroup "$grp"
+    test "$toggle" != "true" && focus --wid "$(head -n 1 "$groupdir/$grp")"
+
 }
 
 workspaceGroup() {
@@ -174,6 +203,14 @@ workspaceGroup() {
         # toggle status if yes
 
     return 0
+}
+
+cycleGroup() {
+    case "$1" in
+        n|next) direction="next" ;;
+        p|prev) direction="prev" ;;
+        *)      usage 1 ;;
+    esac
 }
 
 listGroups() {
@@ -215,6 +252,7 @@ main() {
         -c|--clean|clean)   cleanWid "$2"         ;;
         -u|--unmap|unmap)   unmapGroup "$2"       ;;
         -t|--toggle|toggle) toggleGroup "$2" "$3" ;;
+        -s|--smart|smart)   smartToggle "$2" "$3" ;;
         -h|--help|help)     usage 0               ;;
         *)                  usage 1               ;;
     esac
