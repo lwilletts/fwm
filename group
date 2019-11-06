@@ -95,11 +95,18 @@ mapGroup() {
         # show all windows in group and put them on top of the stack
         while read -r mapWid; do
             chwso -r "$mapWid"
-            mapw -m "$mapWid";
+            mapw -m "$mapWid"
         done < "$groupdir/$grp"
 
         # focus top wid in group
-        test "$focus" != "false" && focus --wid "$(head -n 1 "$groupdir/$grp")"
+        test "$focus" != "false" && {
+            while read -r wid; do
+                test "$PFW" = "$wid" && {
+                    focus --wid "$(head -n 1 "$groupdir/$grp")"
+                    break
+                }
+            done < "$groupdir/$grp"
+        }
     } || return 1
 }
 
@@ -119,11 +126,18 @@ unmapGroup() {
 
         # hide all windows in group
         while read -r unmapWid; do
-            mapw -u "$unmapWid";
+            mapw -u "$unmapWid"
         done < "$groupdir/$grp"
 
         # focus prev wid on screen
-        test "$focus" != "false" && focus --wid "$(lsw | tail -n 1)"
+        test "$focus" != "false" && {
+            while read -r wid; do
+                test "$PFW" = "$wid" && {
+                    focus --wid "$(lsw | tail -n 1)"
+                    break
+                }
+            done < "$groupdir/$grp"
+        }
     } || return 1
 }
 
