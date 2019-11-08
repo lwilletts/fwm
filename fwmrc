@@ -52,7 +52,6 @@ process() {
             xprop -id "$wid" _NET_WM_PID | cut -d\  -f 3
             unset -v wid
         } || {
-            printf '%s\n' "Please enter a valid window id." >&2
             unset -v wid
             return 1
         }
@@ -87,6 +86,9 @@ wmenv() {
     test ! -d "$movedir" && mkdir -p "$movedir"
     groupdir=${groupdir:-$fwmdir/group}
     test ! -d "$groupdir" && mkdir -p "$groupdir"
+
+    xrect="$fwmdir/xrect"
+    export xrect
 
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
     export PFW BW=1 JUMP=20

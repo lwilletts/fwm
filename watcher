@@ -6,10 +6,22 @@ event() {
     . fwmrc
     wmenv
 
-    wew | while IFS=: read -r ev wid; do
+    wew | while read -r ev wid args; do
         case "$ev" in
-            16) # create window
+            CREATE)
                 wattr o "$wid" | {
+                    sleep 0.1
+                    lsw | grep -q "$wid" && {
+                        test ! -e "$xrect" && {
+                            X="$(($(wmp | cut -d\  -f 1) + BW))"
+                            Y="$(($(wmp | cut -d\  -f 2) + BW))"
+                            wmv -a "$X" "$Y" "$wid"
+                            focus -w "$wid"
+                        } || {
+                            rm "$xrect"
+                        }
+                    }
+
                     # wmgroups
                     while read -r line; do
                         name="$(name "$wid")"
@@ -23,26 +35,29 @@ event() {
 
                     case "$(class "$wid")" in
                         steam_app_*)
-                            pkill compton
-                            printf '%s\n' "$wid" >> "$fwmdir/compton"
+                            pkill picom
+                            printf '%s\n' "$wid" >> "$fwmdir/picom"
                             ;;
                     esac
                 }
                 ;;
-            17) # destroy window
+            DESTROY)
                 full -c "$wid"
                 group -c "$wid"
 
-                grep -q "$wid" "$fwmdir/compton" > /dev/null 2>&1 && {
-                    pgrep compton > /dev/null 2>&1 || compton &
-                    cleaned="$(grep -v "$wid" "$fwmdir/compton")"
-                    printf '%s' "$cleaned" > "$fwmdir/compton"
+                grep -q "$wid" "$fwmdir/picom" > /dev/null 2>&1 && {
+                    pgrep picom > /dev/null 2>&1 || compton &
+                    cleaned="$(grep -v "$wid" "$fwmdir/picom")"
+                    printf '%s' "$cleaned" > "$fwmdir/picom"
                 }
                 ;;
-            18) # unmap window
+            ENTER)
+                lsw | grep -q "$wid" && {
+                    focus -w "$wid" "disable"
+                }
                 ;;
-            19) # map window
-                ;;
+            MAP)   ;;
+            UNMAP) ;;
         esac
     done
 }
