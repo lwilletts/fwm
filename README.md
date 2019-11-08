@@ -1,10 +1,9 @@
 # fwm
 
-wmutils scripts to be used with a simple window manager that doesn't get in the
-way.
+wmutils scripts to be used by themselves or with a simple window manager that
+doesn't get in the way.
 
 Dependencies:
-
 - [core](https://github.com/wmutils/core)
 - [opt](https://github.com/wmutils/opt)
 - [mmutils](https://github.com/pockata/mmutils)
@@ -83,8 +82,15 @@ development.
 #### watcher
 
 A window id event watcher wrapper around wew to provide added functionality
-such as fullscreen and group window cleaning on deletion of windows. Recommend
-to add `watcher &` to your xinitrc to load on X11 start. 
+such as:
+
+- Sloppy focus.
+- Autogrouping of windows.
+- Window placement on their creation.
+- Compositor management for steam games.
+- Fullscreen and group window cleaning on deletion of windows.
+
+Recommend to add `watcher &` to your xinitrc to load on X11 start.
 
 Autogrouping is possible by populating `$HOME/.autogroup` with window name and
 a group e.g:
