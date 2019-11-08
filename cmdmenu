@@ -21,10 +21,11 @@ sel() {
     test "$wid" = "0x00000000" && exit 0
 
     case "$1" in
-        move)   chwso -r "$wid"; sh -c "wtp $(xrectmov $(wattr xywh "$wid")) $wid" ;;
-        resize) chwso -r "$wid"; sh -c "wtp $(xrectsel '%x %y %w %h') $wid"      ;;
-        delete) killw "$wid"                  ;;
-        begone) kill -9 "$(process "$wid")"   ;;
+        move)   chwso -r "$wid"; xmmv "$wid" ;;
+        resize) chwso -r "$wid"; xmrs "$wid" ;;
+        delete) killw "$wid"                 ;;
+        begone) kill -9 "$(process "$wid")"  ;;
+        place)  chwso -r "$wid"; sh -c "wtp $(xrectsel '%x %y %w %h') $wid" ;;
     esac
 }
 
@@ -35,6 +36,8 @@ new() {
     fh=10
     ib=10
     ob=2
+
+    touch "$xrect"
 
     xrectsel '%w %h %x %y' | {
             read -r w h x y
@@ -66,10 +69,11 @@ main() {
 
     programs="new
 move
+place
 resize
 delete
 begone
-load
+open
 shot
 pfw"
 
@@ -81,9 +85,10 @@ pfw"
     case "$program" in
         new)    new         ;;
         move)   sel move    ;;
+        place)  sel place   ;;
         resize) sel resize  ;;
         delete) sel delete  ;;
-        begone) sel delete  ;;
+        begone) sel begone  ;;
         open)   open        ;;
         shot)   shot        ;;
         pfw)    shot "$PFW" ;;
