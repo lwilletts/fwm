@@ -22,9 +22,7 @@ window() {
     wid="$1"
     widCheck "$wid" && {
         test "$wid" != "$PFW" && focus || exit 1
-    } || {
-        exit 1
-    }
+    } || exit 1
 }
 
 next() {
@@ -82,14 +80,20 @@ focus() {
     esac
 
     # move mouse to middle of window
-    wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2)) \
-           $(($(wattr y "$wid") + $(wattr h "$wid") / 2))
+    test "$disabled" != "true" && {
+        wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2)) \
+               $(($(wattr y "$wid") + $(wattr h "$wid") / 2))
+    }
 }
 
 main() {
     . fwmrc
     wmenv
     wmcolours
+
+    case "$3" in
+        disable) disabled=true ;;
+    esac
 
     case "$1" in
         -w|--wid|wid)     window "$2" ;;
