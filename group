@@ -147,7 +147,13 @@ toggleGroup() {
     intCheck "$1" && grp="$1" || usage 1
 
     case "$2" in
-        f|focus) focus=false ;;
+        f|focus)
+            focus=false
+            ;;
+        *)
+            # briefly hide mouse
+            wmp -a $(wattr wh $(lsw -r))
+            ;;
     esac
 
     # only continue if activegrp file exists
@@ -169,7 +175,13 @@ smartToggle() {
     intCheck "$1" && grp="$1" || usage 1
 
     case "$2" in
-        f|focus) focus=false ;;
+        f|focus)
+            focus=false
+            ;;
+        *)
+            # briefly hide mouse
+            wmp -a $(wattr wh $(lsw -r))
+            ;;
     esac
 
     # only continue if activegrp file exists
