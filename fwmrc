@@ -97,8 +97,7 @@ wmenv() {
 wmgaps() {
     PRI="$(lsm -p)"
     PFM="$(pfm)"
-    ROOT="$(lsw -r)"
-    export PRI PFM ROOT
+    export PRI PFM
     export TGAP=10 BGAP=40 LGAP=10 RGAP=20 IGAP=15
 }
 

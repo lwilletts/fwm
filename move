@@ -136,17 +136,27 @@ halve() {
 }
 
 grow() {
-    X=$(($(wattr x "$wid") - JUMP / 2))
-    Y=$(($(wattr y "$wid") - JUMP / 2))
-    W=$(($(wattr w "$wid") + JUMP))
-    H=$(($(wattr h "$wid") + JUMP))
+    W=$(wattr w "$wid")
+    H=$(wattr h "$wid")
+    jumpW=$(printf '%s\n' "$W / $H * 20" | bc -l | cut -d. -f 1)
+    jumpH=$(printf '%s\n' "$H / $W * 20" | bc -l | cut -d. -f 1)
+
+    X=$(($(wattr x "$wid") - jumpW / 2))
+    Y=$(($(wattr y "$wid") - jumpH / 2))
+    W=$((W + jumpW))
+    H=$((H + jumpH))
 }
 
 shrink() {
-    X=$(($(wattr x "$wid") + JUMP / 2))
-    Y=$(($(wattr y "$wid") + JUMP / 2))
-    W=$(($(wattr w "$wid") - JUMP))
-    H=$(($(wattr h "$wid") - JUMP))
+    W=$(wattr w "$wid")
+    H=$(wattr h "$wid")
+    jumpW=$(printf '%s\n' "$W / $H * 20" | bc -l | cut -d. -f 1)
+    jumpH=$(printf '%s\n' "$H / $W * 20" | bc -l | cut -d. -f 1)
+
+    X=$(($(wattr x "$wid") + jumpW / 2))
+    Y=$(($(wattr y "$wid") + jumpH / 2))
+    W=$((W - jumpW))
+    H=$((H - jumpH))
 }
 
 position() {
@@ -247,7 +257,7 @@ main() {
                             position
                         } || {
                             # briefly hide mouse
-                            wmp -a "$(wattr wh "$(lsw -r)")"
+                            wmp -a $(wattr wh $(lsw -r))
 
                             # restore position
                             sh -c "wtp $(sed '1!d' "$movedir/$wid")"
