@@ -10,48 +10,16 @@ event() {
     wew | while read -r ev wid args; do
         case "$ev" in
             CREATE)
-                # small delay to allow lsw to register window
-                sleep 0.1
 
                 # check window is visable and override_redirect equal to zero
-                lsw | grep -q "$wid" && wattr o "$wid" | {
-                        case "$(class "$wid")" in
-                            mpv)
-                                focus -w "$wid" "disable"
-                                ;;
-                            picom) ;;
-                            discord) ;;
-                            qutebrowser)
-                                test "$(class $(lsw) | grep -c "qutebrowser")" -gt 1 && {
-                                    move center "$wid" "$PRI"
-                                } || {
-                                    mattr HDMI-A-2 && {
-                                        move maximise "$wid" "HDMI-A-2"
-                                    } || {
-                                        move center "$wid" "$PRI"
-                                    }
-                                }
-
-                                focus -w "$wid"
-                                ;;
-                            # kill picom on game launches
-                            steam_app_*|Wine)
-                                pkill picom
-                                printf '%s\n' "$wid" >> "$fwmdir/picom"
-                                full "$wid" "$PRI"
-                                ;;
-                            *)
-                                # placement on mouse
-                                test ! -e "$xrect" && {
-                                    X="$(($(wmp | cut -d\  -f 1) + BW))"
-                                    Y="$(($(wmp | cut -d\  -f 2) + BW))"
-                                    wmv -a "$X" "$Y" "$wid"
-                                    focus -w "$wid"
-                                } || {
-                                    test -e "$xrect" && rm "$xrect"
-                                }
+                wattr o "$wid" || {
+                    case "$(class "$wid")" in
+                        steam_app_*|Wine)
+                            pkill picom 2> /dev/null
+                            printf '%s\n' "$wid" >> "$fwmdir/picom"
+                            full "$wid" "$PRI"
                             ;;
-                        esac
+                    esac
 
                     # wmgroups
                     while read -r line; do
@@ -74,12 +42,6 @@ event() {
                     pgrep picom > /dev/null 2>&1 || picom &
                     cleaned="$(grep -v "$wid" "$fwmdir/picom")"
                     printf '%s' "$cleaned" > "$fwmdir/picom"
-                }
-                ;;
-            ENTER)
-                # sloppy focus
-                lsw | grep -q "$wid" && {
-                    focus -w "$wid" "disable"
                 }
                 ;;
         esac

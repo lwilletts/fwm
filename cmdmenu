@@ -37,8 +37,6 @@ new() {
     ib=10
     ob=2
 
-    touch "$xrect"
-
     xrectsel '%w %h %x %y' | {
             read -r w h x y
             w=$(( ( w - (ib + ob)*2 ) / fw ))
