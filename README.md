@@ -7,7 +7,6 @@ Dependencies:
 - [core](https://github.com/wmutils/core)
 - [opt](https://github.com/wmutils/opt)
 - [mmutils](https://github.com/pockata/mmutils)
-- xorg-xprop
 
 Known good WMs:
 - [cwm](https://tools.suckless.org/dmenu)
@@ -46,9 +45,7 @@ Additionally, you can specify screen to fullscreen to.
 
 #### fwmrc
 
-Sets various environment variables like colours, gaps, borderwidth etc. Can be
-sourced by your shell for usage of custom xprop wrapper functions for
-retrieving window names, classes and process ids.
+Sets various environment variables like colours, gaps, borderwidth etc.
 
 #### group
 
@@ -85,15 +82,15 @@ A window id event watcher wrapper around wew to provide added functionality
 such as:
 
 - Sloppy focus.
-- Autogrouping of windows.
+- Auto-grouping of windows.
 - Window placement on their creation.
 - Compositor management for steam games.
 - Fullscreen and group window cleaning on deletion of windows.
 
 Recommend to add `watcher &` to your xinitrc to load on X11 start.
 
-Autogrouping is possible by populating `$HOME/.autogroup` with window name and
-a group e.g:
+Auto-grouping is possible by populating `$HOME/.autogroup` with WM_CLASS and a
+group:
 
 ```
 qutebrowser 2
@@ -103,8 +100,8 @@ gl 4
 
 #### wid
 
-Find any visible window id whose name or class properties fuzzy match a given
-string.
+Find any visible window id whose WM_NAME or WM_CLASS properties fuzzy match a
+given string.
 
 #### wmenu
 

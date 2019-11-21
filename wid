@@ -13,26 +13,20 @@ EOF
 
 findName() {
     for wid in $(lsw); do
-        printf '%s\n' "$wid $(name "$wid")"
+        printf '%s\n' "$wid $(atomx "$wid" WM_NAME)"
     done
 }
 
 findClass() {
     for wid in $(lsw); do
-        printf '%s\n' "$wid $(class "$wid")"
+        printf '%s\n' "$wid $(atomx "$wid" WM_CLASS)"
     done
 }
 
-findTitle() {
-    for wid in $(lsw); do
-        printf '%s\n' "$wid $(wname "$wid")"
-    done
-}
 
 showAll() {
     findName
     findClass
-    findTitle
 }
 
 main() {

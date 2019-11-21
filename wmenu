@@ -25,7 +25,7 @@ width() {
 
 output() {
     for window in $($LSWCMD); do
-        printf '%s\n' "$window $(class "$window") | $(wname "$window")"
+        printf '%s\n' "$window $(atomx "$window" WM_CLASS) | $(wname "$window")"
     done
 }
 

@@ -240,9 +240,9 @@ cycleWid() {
 listGroups() {
     find "$groupdir"/? > "$groupdir/list"
     while read -r group; do
-        printf '%s\n' "group $(printf '%s' "$group" | rev | cut -d'/' -f 1 | rev):"
+        GroupNum="$(printf '%s' "$group" | rev | cut -d'/' -f 1 | rev)"
         while read -r wid; do
-            printf '%s\n' "$wid: $(name "$wid"),$(class "$wid")"
+            printf '%s\n' "$GroupNum: $wid $(atomx "$wid" WM_CLASS) | $(atomx "$wid" WM_NAME)"
         done < "$group"
     done < "$groupdir/list"
     rm "$groupdir/list"

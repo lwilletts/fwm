@@ -10,10 +10,8 @@ event() {
     wew | while read -r ev wid args; do
         case "$ev" in
             CREATE)
-
-                # check window is visable and override_redirect equal to zero
                 wattr o "$wid" || {
-                    case "$(class "$wid")" in
+                    case "$(atomx "$wid" WM_CLASS)" in
                         steam_app_*|Wine)
                             pkill picom 2> /dev/null
                             printf '%s\n' "$wid" >> "$fwmdir/picom"
@@ -23,10 +21,10 @@ event() {
 
                     # wmgroups
                     while read -r line; do
-                        name="$(name "$wid")"
-                        class="$(printf '%s\n' "$line" | cut -d\  -f 1)"
+                        class="$(atomx "$wid" WM_CLASS)"
+                        matchedClass="$(printf '%s\n' "$line" | cut -d\  -f 1)"
 
-                        test "$name" = "$class" && {
+                        test "$class" = "$matchedClass" && {
                             group="$(printf '%s\n' "$line" | cut -d\  -f 2)"
                             group -a "$group" "$wid"
                         }
