@@ -12,14 +12,23 @@ event() {
             CREATE)
                 wattr o "$wid" || {
                     case "$(atomx "$wid" WM_CLASS)" in
+                        # kill compositing when game is running
                         steam_app_*|Wine)
                             pkill picom 2> /dev/null
                             printf '%s\n' "$wid" >> "$fwmdir/picom"
                             full "$wid" "$PRI"
                             ;;
+                        # fix for qutebrowser fixed position
+                        qutebrowser)
+                            for window in $(lsw | grep -v "$wid"); do
+                                atomx "$window" WM_CLASS
+                            done | grep -q "qutebrowser" && {
+                                wmv -a $(wmp -a) "$wid"
+                            }
+                            ;;
                     esac
 
-                    # wmgroups
+                    # autogroups
                     while read -r line; do
                         class="$(atomx "$wid" WM_CLASS)"
                         matchedClass="$(printf '%s\n' "$line" | cut -d\  -f 1)"

@@ -53,8 +53,8 @@ wmenv() {
 }
 
 wmgaps() {
-    PRI="$(lsm -p)"
     PFM="$(pfm)"
+    PRI="$(lsm -p)"
     export PRI PFM
     export TGAP=10 BGAP=40 LGAP=10 RGAP=20 IGAP=20
 }
