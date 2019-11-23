@@ -51,6 +51,9 @@ event() {
                     printf '%s' "$cleaned" > "$fwmdir/picom"
                 }
                 ;;
+            FOCUS_IN)
+                chwso -r "$wid"
+                ;;
         esac
     done
 }
