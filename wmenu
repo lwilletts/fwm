@@ -57,7 +57,6 @@ bar() {
     X=-2
     Y="$(($(mattr h "$PFM") - nWindows * 14 - 2))"
     W="$(mattr w "$PFM")"
-    BW=1
 }
 
 main() {
@@ -67,7 +66,7 @@ main() {
     wmcolours
 
     FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
-    PROMPT="Window >"
+    PROMPT="  Window >"
 
     case "$2" in
         -a|all) LSWCMD="lsw -a" ;;

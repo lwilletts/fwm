@@ -49,14 +49,14 @@ wmenv() {
     test ! -d "$groupdir" && mkdir -p "$groupdir"
 
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
-    export PFW BW=1 JUMP=20
+    export PFW BW=0 JUMP=20
 }
 
 wmgaps() {
     PFM="$(pfm)"
     PRI="$(lsm -p)"
     export PRI PFM
-    export TGAP=10 BGAP=40 LGAP=10 RGAP=20 IGAP=20
+    export TGAP=50 BGAP=30 LGAP=50 RGAP=50 IGAP=20
 }
 
 wmcolours() {
