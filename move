@@ -124,11 +124,18 @@ hmaximise() {
 double() {
     W=$(($(wattr w "$wid") * 2))
     H=$(($(wattr h "$wid") * 2))
-    X=$(($(wattr x "$wid") - W / 4))
-    Y=$(($(wattr y "$wid") - H / 4))
 
-    test $W -ge $(mattr w "$wid") && exit 1
-    test $H -ge $(mattr h "$wid") && exit 1
+    X=$(wattr x "$wid")
+    Y=$(wattr y "$wid")
+
+    test "$X" -le "$(mattr x "$wid")" && exit 1
+    test "$Y" -le "$(mattr y "$wid")" && exit 1
+
+    X=$((X - W / 4))
+    Y=$((Y - H / 4))
+
+    test "$W" -ge "$(mattr w "$wid")" && exit 1
+    test "$H" -ge "$(mattr h "$wid")" && exit 1
 }
 
 halve() {

@@ -31,8 +31,8 @@ main() {
         -d|--down|down)   wmv 0 +$JUMP "$wid" ;;
         -l|--left|left)   wmv -$JUMP 0 "$wid" ;;
         -r|--right|right) wmv +$JUMP 0 "$wid" ;;
-        -h|--help|help)   usage 0           ;;
-        *)                usage 1           ;;
+        -h|--help|help)   usage 0             ;;
+        *)                usage 1             ;;
     esac
 
     # move mouse to middle of window

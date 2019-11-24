@@ -60,7 +60,11 @@ wmgaps() {
 }
 
 wmcolours() {
-    export ACTIVE="EFEFEF" URGENT="B23450" INACTIVE="101010"
+    CLR="$(grep "#include" ~/.Xresources | cut -d\" -f 2)"
+    URGENT="$(grep -w "color1" "$CLR" | cut -d\# -f 2)"
+    ACTIVE="$(grep -w "foreground" "$CLR" | cut -d\# -f 2)"
+    INACTIVE="$(grep -w "background" "$CLR" | cut -d\# -f 2)"
+    export ACTIVE URGENT INACTIVE
 }
 
 wmgroup() {
