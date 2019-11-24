@@ -126,6 +126,9 @@ double() {
     H=$(($(wattr h "$wid") * 2))
     X=$(($(wattr x "$wid") - W / 4))
     Y=$(($(wattr y "$wid") - H / 4))
+
+    test $W -ge $(mattr w "$wid") && exit 1
+    test $H -ge $(mattr h "$wid") && exit 1
 }
 
 halve() {
