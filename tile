@@ -8,50 +8,95 @@ usage() {
 
     cat >&2 << EOF
 Usage:
-    $ $base -s  | --split    : Tile windows horizontal.
-    $ $base -v  | --vertical : Tile windows vertically.
-    $ $base -m  | --middle   : Place window in the middle and tile windows either side.
-    $ $base -bl | --bigleft  : Place window on left and tile windows vertically right.
-    $ $base -br | --bigright : Place window on right and tile windows on horizontally left.
-    $ $base -h  | --help     : Show this help
+    $ $base -g  | --grid   : Tile windows in a grid.
+    $ $base -s  | --split  : Tile windows horizontal.
+    $ $base -v  | --vert   : Tile windows vertically.
+    $ $base -m  | --middle : Place window in the middle and tile windows either side.
+    $ $base -b  | --left   : Place window on left and tile windows vertically right.
+    $ $base -b  | --right  : Place window on right and tile windows on horizontally left.
+    $ $base -h  | --help   : Show this help
 EOF
 
     test $# -eq 0 || exit "$1"
 }
 
 save() {
-    for wid in $(windows); do
-        wattr xywhi "$wid" >> "$tiledir/$SCR"
-    done
+    cp "$winlist" "$tiledir/$SCR"
 }
-
 
 # try our hardest to restore window position
 restore() {
     test -e "$tiledir/$SCR" && {
-        exit 0
-    } || {
-        exit 1
+        while read -r line; do
+            wid="$(printf '%s\n' "$line" | cut -d\  -f 5)"
+            wattr "$wid" && wtp $line
+        done < "$tiledir/$SCR"
+
+        focus -w "$(head -n 1 "$tiledir/$SCR" | cut -d\  -f 5)"
+
+        rm "$tiledir/$SCR"
     }
 
+    exit 0
+}
+
+# stolen logic from switch_grid from contrib
+# thanks z3bra & greduan (you do deserve credit bro)
+grid() {
+    case "$nWindows" in
+        1)           COLS=1 ;;
+        2|4|5|6|7)   COLS=2 ;;
+        3|8|9|10|11) COLS=3 ;;
+        12|13|14)    COLS=4 ;;
+        15|16|17)    COLS=5 ;;
+        *)
+            COLS="$(echo "sqrt($nWindows)" | bc)"
+            ;;
+    esac
+
+    ROWS="$((nWindows / COLS))"
+
+    row=1; while test "$row" -le "$ROWS"; do
+        test "$row" -eq "$ROWS" && {
+            test $((nWindows % COLS)) -gt 0 && COLS="$((nWindows - COLS))"
+        }
+
+        col=1; while test "$col" -le "$COLS"; do
+            W=$(((SW + IGAP)/COLS - IGAP - BW))
+            H=$(((SH + IGAP)/ROWS - IGAP - BW))
+
+            X=$((SX - IGAP + W * (col - 1) + col * (IGAP + BW)))
+            Y=$((SY - IGAP + H * (row - 1) + row * (IGAP + BW)))
+
+            wtp "$X" "$Y" "$W" "$H" \
+                "$(sed "$(((row - 1) * row + col))p;d" "$winlist" | cut -d\  -f 5)"
+
+            col=$((col + 1))
+        done
+
+        row=$((row + 1))
+    done
 }
 
 split() {
     X=$SX
     W=$(((SW + IGAP) / nWindows - IGAP))
-    for wid in $windows; do
+    while read -r line; do
+        wid="$(printf '%s\n' "$line" | cut -d\  -f 5)"
         wtp "$X" "$SY" "$W" "$SH" "$wid"
         X=$((X + W + IGAP))
-    done
+    done < "$winlist"
 }
 
 vertical() {
     Y=$SY
     H=$(((SH + IGAP) / nWindows - IGAP))
-    for wid in $windows; do
+
+    while read -r line; do
+        wid="$(printf '%s\n' "$line" | cut -d\  -f 5)"
         wtp "$SX" "$Y" "$SW" "$H" "$wid"
         Y=$((Y + H + IGAP))
-    done
+    done < "$winlist"
 }
 
 # tile minimum width terminals alternating on each side
@@ -61,28 +106,30 @@ middle() {
 }
 
 # tile smaller windows on the right
-bigLeft() {
+left() {
     Y=$SY
     W=$(echo "$SW / 100 * 33" | bc -l | cut -d. -f 1)
     X=$((SX + SW - W))
     H=$(((SH + IGAP) / (nWindows - 1) - IGAP))
 
-    for wid in $windows; do
+    while read -r line; do
+        wid="$(printf '%s\n' "$line" | cut -d\  -f 5)"
         wtp "$X" "$Y" "$W" "$H" "$wid"
         Y=$((Y + H + IGAP))
-    done
+    done < "$winlist"
 
     W=$((SW - W - IGAP))
     wtp "$SX" "$SY" "$W" "$SH" "$wid"
 }
 
 # tile smaller windows on the left
-bigRight() {
+right() {
     Y=$SY
     W=$(echo "$SW / 100 * 33" | bc -l | cut -d. -f 1)
     H=$(((SH + IGAP) / (nWindows - 1) - IGAP))
 
-    for wid in $windows; do
+    while read -r line; do
+        wid="$(printf '%s\n' "$line" | cut -d\  -f 5)"
         wtp "$SX" "$Y" "$W" "$H" "$wid"
         Y=$((Y + H + IGAP))
     done
@@ -96,8 +143,6 @@ main() {
     . fwmrc
     wmenv
     wmgaps
-
-    test "$PFW" = "0x00000000" && exit 0
 
     case $# in
         0)
@@ -118,16 +163,15 @@ main() {
         -r|--restore|restore) restore ;;
     esac
 
-    # grab screen variables
-    windows="$(listwindows)"
-    nWindows="$(printf '%s\n' "$windows" | wc -l)"
+    # save windows to tmp in window stack order
+    TMPDIR="$(mktemp -d)"
+    winlist="$(mktemp -p "$TMPDIR")"
+    wattr xywhi $(listwindows | tac) > "$winlist"
+    nWindows="$(wc -l < "$winlist")"
 
-    # test if possible to tile; revert to last wid if no focus
-    test "$nWindows" -eq 0 && {
-        exit 0
-    } || {
-        test "$PFW" = "0x00000000" && PFW="$(lsw | tail -n 1)"
-    }
+    # test if possible to tile
+    test "$nWindows" -eq 0 && exit 2
+    test "$PFW" = "0x00000000" && exit 0
 
     # clean fullscreen
     cat "$fsdir/$SCR" > /dev/null 2>&1 && \
@@ -139,18 +183,25 @@ main() {
     SH=$(($(mattr h "$SCR") - TGAP - BGAP))
 
     case "$1" in
-        -s|--split|split)        split    ;;
-        -v|--vertical|vertical)  vertical ;;
-        -m|--middle|middle)      middle   ;;
-        -bl|--bigleft|bigleft)   bigLeft  ;;
-        -br|--bigright|bigright) bigRight ;;
-        -h|--help|help)          usage 0  ;;
-        *)                       usage 1  ;;
+        -g|--grid|grid)      grid     ;;
+        -s|--split|split)    split    ;;
+        -v|--vert|vert)      vertical ;;
+        -m|--middle|middle)  middle   ;;
+        -l|--left|left)      left     ;;
+        -r|--right|right)    right    ;;
+        -h|--help|help)      usage 0  ;;
+        *)                   usage 1  ;;
     esac
+
+    # save previous location to disk
+    save
 
     # move mouse to middle of window
     wmp -a $(($(wattr x "$PFW") + $(wattr w "$PFW") / 2)) \
            $(($(wattr y "$PFW") + $(wattr h "$PFW") / 2))
+
+    # clean tmp directory
+    rm -rf "$TMPDIR"
 }
 
 main "$@"
