@@ -232,7 +232,7 @@ listGroups() {
     while read -r group; do
         GroupNum="$(printf '%s' "$group" | rev | cut -d'/' -f 1 | rev)"
         while read -r wid; do
-            printf '%s\n' "$GroupNum: $wid $(atomx "$wid" WM_CLASS) | $(atomx "$wid" WM_NAME)"
+            printf '%s\n' "$GroupNum: $wid $(atomx WM_CLASS "$wid") | $(atomx WM_NAME "$wid")"
         done < "$group"
     done < "$groupdir/list"
     rm "$groupdir/list"

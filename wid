@@ -11,22 +11,11 @@ EOF
     test $# -eq 0 || exit "$1"
 }
 
-findName() {
-    for wid in $(lsw); do
-        printf '%s\n' "$wid $(atomx "$wid" WM_NAME)"
-    done
-}
-
-findClass() {
-    for wid in $(lsw); do
-        printf '%s\n' "$wid $(atomx "$wid" WM_CLASS)"
-    done
-}
-
-
 showAll() {
-    findName
-    findClass
+    for wid in $(lsw); do
+        printf '%s\n' "$wid $(atomx WM_NAME "$wid")"
+        printf '%s\n' "$wid $(atomx WM_CLASS "$wid")"
+    done
 }
 
 main() {
