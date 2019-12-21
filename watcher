@@ -13,10 +13,9 @@ event() {
                 wattr o "$wid" || {
                     case "$(atomx WM_CLASS "$wid")" in
                         # kill compositing when game is running
-                        steam_app_*|Wine)
+                        midair*|Wine)
                             pkill picom 2> /dev/null
                             printf '%s\n' "$wid" >> "$fwmdir/picom"
-                            full "$wid" "$PRI"
                             ;;
                         # fix for qutebrowser fixed position
                         qutebrowser)
