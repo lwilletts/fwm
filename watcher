@@ -12,17 +12,12 @@ event() {
             CREATE)
                 wattr o "$wid" || {
                     case "$(atomx WM_CLASS "$wid")" in
-                        # kill compositing when game is running
-                        midair*|Wine)
-                            pkill picom 2> /dev/null
-                            printf '%s\n' "$wid" >> "$fwmdir/picom"
-                            ;;
                         # fix for qutebrowser fixed position
                         qutebrowser)
                             for window in $(lsw | grep -v "$wid"); do
                                 atomx WM_CLASS "$window"
                             done | grep -q "qutebrowser" && {
-                                wmv -a $(wmp -a) "$wid"
+                                move center "$(pfw)" "$PRI"
                             }
                             ;;
                     esac
@@ -42,16 +37,6 @@ event() {
             DESTROY)
                 full -c "$wid"
                 group -c "$wid"
-
-                # clean picom
-                grep -q "$wid" "$fwmdir/picom" > /dev/null 2>&1 && {
-                    pgrep picom > /dev/null 2>&1 || picom &
-                    cleaned="$(grep -v "$wid" "$fwmdir/picom")"
-                    printf '%s' "$cleaned" > "$fwmdir/picom"
-                }
-                ;;
-            FOCUS_IN)
-                chwso -r "$wid"
                 ;;
         esac
     done
