@@ -130,16 +130,11 @@ hmaximise() {
 double() {
     W=$(($(wattr w "$wid") * 2))
     H=$(($(wattr h "$wid") * 2))
-
-    X=$(wattr x "$wid")
-    Y=$(wattr y "$wid")
+    X=$(($(wattr x "$wid") - W / 4))
+    Y=$(($(wattr y "$wid") - H / 4))
 
     test "$X" -le "$SX" && exit 1
     test "$Y" -le "$SY" && exit 1
-
-    X=$((X - W / 4))
-    Y=$((Y - H / 4))
-
     test "$W" -ge "$SW" && exit 1
     test "$H" -ge "$SH" && exit 1
 }
@@ -173,10 +168,10 @@ shrink() {
 
 position() {
     # save old window position, new window position, mode, and screen
-    (wattr xywhi "$wid"; \
-    printf '%s\n' "$X $Y $W $H"; \
-    printf '%s\n' "$mode"
-    printf '%s\n' "$(mattr i "$wid")") > "$movedir/$wid"
+    atomx MODE="$mode" "$wid" > /dev/null
+    atomx NEW_POS="$X $Y $W $H" "$wid" > /dev/null
+    atomx SCR="$(mattr i "$wid")" "$wid" > /dev/null
+    atomx OLD_POS="$(wattr xywh "$wid")" "$wid" > /dev/null
 
     # briefly hide mouse
     wmp -a $(wattr wh "$(lsw -r)")
@@ -249,9 +244,6 @@ main() {
             ;;
     esac
 
-    # exit if wid is currently fullscreen
-    grep -qrw "$wid" "$fsdir" 2> /dev/null && return 1
-
     # grab screen variables
     SX=$(($(mattr x "$SCR") + LGAP))
     SY=$(($(mattr y "$SCR") + TGAP))
@@ -259,14 +251,13 @@ main() {
     SH=$(($(mattr h "$SCR") - TGAP - BGAP))
 
     # restore window position
-    grep -qrw "$wid" "$movedir" 2> /dev/null && {
-        # test if given screen matches new screen
-        test "$(sed '4!d' "$movedir/$wid")" = "$SCR" && {
-            test "$(sed '3!d' "$movedir/$wid")" = "$mode" && {
-                case "$mode" in
-                    full|maximise|hmaximise|vmaximise)
+    test -n "$(atomx OLD_POS "$wid")" && {
+        test "$(atomx SCR "$wid")" = "$SCR" && {
+            case "$mode" in
+                full|maximise|vmaximise|hmaximise)
+                    test "$(atomx MODE "$wid")" = "$mode" && {
                         # test if window has moved since last run
-                        test "$(sed '2!d' "$movedir/$wid")" != "$(wattr xywh "$wid")" && {
+                        test "$(atomx NEW_POS "$wid")" != "$(wattr xywh "$wid")" && {
                             $mode
                             position
                         } || {
@@ -274,20 +265,23 @@ main() {
                             wmp -a $(wattr wh $(lsw -r))
 
                             # restore position
-                            sh -c "wtp $(sed '1!d' "$movedir/$wid")"
+                            wtp $(atomx OLD_POS "$wid") "$wid"
 
                             # move mouse to middle of window
                             wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2)) \
                                    $(($(wattr y "$wid") + $(wattr h "$wid") / 2))
 
-                            # clean file
-                            rm "$movedir/$wid"
+                            # clean atoms
+                            atomx -d SCR "$wid"
+                            atomx -d MODE "$wid"
+                            atomx -d OLD_POS "$wid"
+                            atomx -d NEW_POS "$wid"
                         }
+                    }
 
-                        exit 0
-                        ;;
-                esac
-            }
+                exit 0
+                ;;
+            esac
         }
     }
 

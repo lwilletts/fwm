@@ -47,12 +47,6 @@ Additionally, you can specify screen to fullscreen to.
 
 Sets various environment variables like colours, gaps, borderwidth etc.
 
-#### group
-
-Basic groups script for control window visibility. Add windows to a group
-individually. Separate calls for showing, hiding and toggling the groups can be
-used. See `watcher` for autogroup behaviour.
-
 #### move
 
 Move and position windows on a multihead setup. Follows mouse pointer for
