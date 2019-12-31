@@ -54,9 +54,10 @@ center() {
 }
 
 bar() {
-    X=-2
-    Y="$(($(mattr h "$PFM") - nWindows * 14 - 2))"
-    W="$(mattr w "$PFM")"
+    X=$((LGAP + BW))
+    H=$((TGAP/2 + BW*2))
+    Y=$((H - TGAP/4))
+    W=$(($(mattr w $PRI) - LGAP - RGAP - BW*2))
 }
 
 main() {
