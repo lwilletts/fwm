@@ -20,7 +20,7 @@ EOF
 width() {
     ps=$(txtw -f "$FONT" "$PROMPT")
     char="$(output | wc -L)"
-    W=$(echo "($ps + $char * 4.9) / 1" | bc)
+    W=$(echo "($ps + $char * 4.9 + 8) / 1" | bc)
 }
 
 output() {
