@@ -20,26 +20,6 @@ EOF
     test $# -eq 0 || exit "$1"
 }
 
-save() {
-    cp "$winlist" "$tiledir/$SCR"
-}
-
-# try our hardest to restore window position
-restore() {
-    test -e "$tiledir/$SCR" && {
-        while read -r line; do
-            wid="$(printf '%s\n' "$line" | cut -d\  -f 5)"
-            wattr "$wid" && wtp $line
-        done < "$tiledir/$SCR"
-
-        focus -w "$(head -n 1 "$tiledir/$SCR" | cut -d\  -f 5)"
-
-        rm "$tiledir/$SCR"
-    }
-
-    exit 0
-}
-
 # stolen logic from switch_grid from contrib
 # thanks z3bra & greduan (you do deserve credit bro)
 grid() {
@@ -159,10 +139,6 @@ main() {
             ;;
     esac
 
-    case "$1" in
-        -r|--restore|restore) restore ;;
-    esac
-
     # save windows to tmp in window stack order
     TMPDIR="$(mktemp -d)"
     winlist="$(mktemp -p "$TMPDIR")"
@@ -172,10 +148,6 @@ main() {
     # test if possible to tile
     test "$nWindows" -eq 0 && exit 2
     test "$PFW" = "0x00000000" && exit 0
-
-    # clean fullscreen
-    cat "$fsdir/$SCR" > /dev/null 2>&1 && \
-        full --clean "$(cut -d\  -f 5 "$fsdir/$SCR")"
 
     SX=$(($(mattr x "$SCR") + LGAP))
     SY=$(($(mattr y "$SCR") + TGAP))
@@ -192,9 +164,6 @@ main() {
         -h|--help|help)      usage 0  ;;
         *)                   usage 1  ;;
     esac
-
-    # save previous location to disk
-    save
 
     # move mouse to middle of window
     wmp -a $(($(wattr x "$PFW") + $(wattr w "$PFW") / 2)) \

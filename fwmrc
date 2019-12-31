@@ -39,15 +39,6 @@ listwindows() {
 wmenv() {
     fwmdir=${fwmdir:-/tmp/fwm}
 
-    fsdir=${fsdir:-$fwmdir/fs}
-    test ! -d "$fsdir" && mkdir -p "$fsdir"
-    tiledir=${movedir:-$fwmdir/tile}
-    test ! -d "$tiledir" && mkdir -p "$tiledir"
-    movedir=${movedir:-$fwmdir/move}
-    test ! -d "$movedir" && mkdir -p "$movedir"
-    groupdir=${groupdir:-$fwmdir/group}
-    test ! -d "$groupdir" && mkdir -p "$groupdir"
-
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
     export PFW BW=0 JUMP=20
 }
