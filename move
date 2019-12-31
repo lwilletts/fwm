@@ -104,6 +104,8 @@ full() {
     Y=$(mattr y "$SCR")
     W=$(mattr w "$SCR")
     H=$(mattr h "$SCR")
+
+    chwb -s 0 "$wid"
 }
 
 maximise() {
@@ -190,6 +192,7 @@ main() {
     . fwmrc
     wmenv
     wmgaps
+    wmcolours
 
     mode="$1"
 
@@ -266,6 +269,9 @@ main() {
 
                             # restore position
                             wtp $(atomx OLD_POS "$wid") "$wid"
+
+                            # restore border
+                            chwb -s "$BW" -c "$ACTIVE" "$wid"
 
                             # move mouse to middle of window
                             wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2)) \
