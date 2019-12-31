@@ -30,7 +30,7 @@ output() {
 }
 
 selection() {
-    output | sort -k 2 | \
+    output | sort -rk 2 | \
         dmenu -name "wmenu" -f -l "$nWindows" -i -fn "$FONT" -p "$PROMPT" \
         -nf "#$ACTIVE" -sf "#$INACTIVE" -nb "#$INACTIVE" -sb "#$URGENT" -bc "#$ACTIVE" \
         -s "$(mattr d "$PFM")" -x "$X" -y "$Y" -w "$W" -bw "$BW" | cut -d\  -f 1

@@ -99,6 +99,13 @@ bottomright() {
     Y=$((SY + SH - H))
 }
 
+full() {
+    X=$(mattr x "$SCR")
+    Y=$(mattr y "$SCR")
+    W=$(mattr w "$SCR")
+    H=$(mattr h "$SCR")
+}
+
 maximise() {
     X=$SX
     Y=$SY
@@ -111,7 +118,6 @@ vmaximise() {
     Y=$SY
     W=$(wattr w "$wid")
     H=$SH
-
 }
 
 hmaximise() {
@@ -128,14 +134,14 @@ double() {
     X=$(wattr x "$wid")
     Y=$(wattr y "$wid")
 
-    test "$X" -le "$(mattr x "$wid")" && exit 1
-    test "$Y" -le "$(mattr y "$wid")" && exit 1
+    test "$X" -le "$SX" && exit 1
+    test "$Y" -le "$SY" && exit 1
 
     X=$((X - W / 4))
     Y=$((Y - H / 4))
 
-    test "$W" -ge "$(mattr w "$wid")" && exit 1
-    test "$H" -ge "$(mattr h "$wid")" && exit 1
+    test "$W" -ge "$SW" && exit 1
+    test "$H" -ge "$SH" && exit 1
 }
 
 halve() {
@@ -146,27 +152,23 @@ halve() {
 }
 
 grow() {
-    W=$(wattr w "$wid")
-    H=$(wattr h "$wid")
-    jumpW=$(printf '%s\n' "$W / $H * 20" | bc -l | cut -d. -f 1)
-    jumpH=$(printf '%s\n' "$H / $W * 20" | bc -l | cut -d. -f 1)
+    X=$(($(wattr x "$wid") - JUMP / 2))
+    Y=$(($(wattr y "$wid") - JUMP / 2))
+    W=$(($(wattr w "$wid") + JUMP))
+    H=$(($(wattr h "$wid") + JUMP))
 
-    X=$(($(wattr x "$wid") - jumpW / 2))
-    Y=$(($(wattr y "$wid") - jumpH / 2))
-    W=$((W + jumpW))
-    H=$((H + jumpH))
+    wtp "$X" "$Y" "$W" "$H" "$wid"
+    exit 0
 }
 
 shrink() {
-    W=$(wattr w "$wid")
-    H=$(wattr h "$wid")
-    jumpW=$(printf '%s\n' "$W / $H * 20" | bc -l | cut -d. -f 1)
-    jumpH=$(printf '%s\n' "$H / $W * 20" | bc -l | cut -d. -f 1)
+    X=$(($(wattr x "$wid") + JUMP / 2))
+    Y=$(($(wattr y "$wid") + JUMP / 2))
+    W=$(($(wattr w "$wid") - JUMP))
+    H=$(($(wattr h "$wid") - JUMP))
 
-    X=$(($(wattr x "$wid") + jumpW / 2))
-    Y=$(($(wattr y "$wid") + jumpH / 2))
-    W=$((W - jumpW))
-    H=$((H - jumpH))
+    wtp "$X" "$Y" "$W" "$H" "$wid"
+    exit 0
 }
 
 position() {
@@ -185,6 +187,8 @@ position() {
     # move mouse to middle of window
     wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2)) \
            $(($(wattr y "$wid") + $(wattr h "$wid") / 2))
+
+    chwso -r "$wid"
 }
 
 main() {
@@ -260,7 +264,7 @@ main() {
         test "$(sed '4!d' "$movedir/$wid")" = "$SCR" && {
             test "$(sed '3!d' "$movedir/$wid")" = "$mode" && {
                 case "$mode" in
-                    vmaximise|hmaximise|maximise)
+                    full|maximise|hmaximise|vmaximise)
                         # test if window has moved since last run
                         test "$(sed '2!d' "$movedir/$wid")" != "$(wattr xywh "$wid")" && {
                             $mode
@@ -297,6 +301,7 @@ main() {
         -tr|--topright|topright)        topright    ; mode="topright"    ;;
         -bl|--bottomleft|bottomleft)    bottomleft  ; mode="bottomleft"  ;;
         -br|--bottomright|bottomright)  bottomright ; mode="bottomright" ;;
+        -f|--full|full)                 full        ; mode="full"        ;;
         -m|--maximise|maximise)         maximise    ; mode="maximise"    ;;
         -vm|--vmaximise|vmaximise)      vmaximise   ; mode="vmaximise"   ;;
         -hm|--hmaximise|hmaximise)      hmaximise   ; mode="hmaximise"   ;;
