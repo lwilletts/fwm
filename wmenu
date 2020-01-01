@@ -54,9 +54,11 @@ center() {
 }
 
 bar() {
+    L=$(echo "($nWindows * 11.7) / 1" | bc)
+
     X=$((LGAP + BW))
-    H=$((TGAP/2 + BW*2))
-    Y=$((H - TGAP/4))
+    H=$((BGAP/2 + BW*2))
+    Y=$(($(mattr h $PRI) - L - H - BGAP/4))
     W=$(($(mattr w $PRI) - LGAP - RGAP - BW*2))
 }
 

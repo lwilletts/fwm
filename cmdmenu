@@ -22,8 +22,9 @@ sel() {
 
     case "$1" in
         delete) killw "$wid"                 ;;
-        # resize) chwso -r "$wid"; xmrs "$wid" ;;
-        # move)   chwso -r "$wid"; xmmv "$wid" ;;
+        term)   killw -p "$wid"              ;;
+        resize) chwso -r "$wid"; xmrs "$wid" ;;
+        move)   chwso -r "$wid"; xmmv "$wid" ;;
         place)  chwso -r "$wid"; sh -c "wtp $(xrectsel '%x %y %w %h') $wid" ;;
     esac
 }
@@ -69,6 +70,8 @@ move
 place
 resize
 delete
+terminate
+copy
 open
 shot
 pfw"
@@ -79,14 +82,16 @@ pfw"
     -s "$(mattr d "$PFM")" -x $X -y $Y -w 100 -bw $BW)
 
     case "$program" in
-        new)    new         ;;
-        move)   sel move    ;;
-        place)  sel place   ;;
-        resize) sel resize  ;;
-        delete) sel delete  ;;
-        open)   open        ;;
-        shot)   shot        ;;
-        pfw)    shot "$PFW" ;;
+        new)       new                ;;
+        move)      sel move           ;;
+        place)     sel place          ;;
+        resize)    sel resize         ;;
+        delete)    sel delete         ;;
+        terminate) sel term           ;;
+        copy)      xsel -ob | xsel -i ;;
+        open)      open               ;;
+        shot)      shot               ;;
+        pfw)       shot "$PFW"        ;;
     esac
 }
 
