@@ -18,22 +18,16 @@ Usage: $base [position] <wid> <screen|cycle>
     $ $base -br   | bottomright : Move window to bottom right of screen.
     $ $base -hl   | halve       : Halve window in width and height.
     $ $base -dl   | double      : Double window in width and height.
+    $ $base -f    | full        : Extend window to edges of the screen.
     $ $base -m    | maximise    : Extend window to horizontal and vertical max.
     $ $base -vm   | vmaximise   : Extend window to vertical max.
     $ $base -hm   | hmaximise   : Extend window to horizontal max.
     $ $base -g    | grow        : Increase window size by $JUMP.
     $ $base -s    | shrink      : Decrease window size by $JUMP.
-    $ $base reset | --reset     : Delete all stored window positions.
     $ $base help  | --help      : Show this help.
 EOF
 
     test $# -eq 0 || exit "$1"
-}
-
-reset() {
-    rm "$movedir"/* 2> /dev/null
-    printf '%s\n' "move directory reset..."
-    exit 0
 }
 
 center() {
@@ -173,10 +167,17 @@ position() {
     atomx MODE="$mode" "$wid" > /dev/null
     atomx NEW_POS="$X $Y $W $H" "$wid" > /dev/null
     atomx SCR="$(mattr i "$wid")" "$wid" > /dev/null
-    atomx OLD_POS="$(wattr xywh "$wid")" "$wid" > /dev/null
+
+    # don't overwrite the old window position
+    if [ -z "$(atomx OLD_POS "$wid")" ]; then
+        atomx OLD_POS="$(wattr xywh "$wid")" "$wid" > /dev/null
+    fi
 
     # briefly hide mouse
     wmp -a $(wattr wh "$(lsw -r)")
+
+    # raise window
+    chwso -r "$wid"
 
     # position window
     wtp "$X" "$Y" "$W" "$H" "$wid"
@@ -185,7 +186,6 @@ position() {
     wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2)) \
            $(($(wattr y "$wid") + $(wattr h "$wid") / 2))
 
-    chwso -r "$wid"
 }
 
 main() {
@@ -195,10 +195,6 @@ main() {
     wmcolours
 
     mode="$1"
-
-    case "$mode" in
-        --reset|reset) reset ;;
-    esac
 
     case $# in
         0)
@@ -217,25 +213,9 @@ main() {
 
             case "$3" in
                 cycle)
-                    # file to store the stack
-                    cycle="$movedir/cycle"
-
                     # active screen
                     CUR="$(mattr i "$wid")"
-
-                    # create FILO stack
-                    test -s "$cycle" || {
-                        lsm | grep -v "$CUR" > "$cycle"
-                        printf '%s\n' "$CUR" >> "$cycle"
-                    }
-
-                    # get the oldest screen that was not used.
-                    SCR="$(head -n 1 "$cycle")"
-
-                    # delete oldest screen
-                    sed -i -n '/'"$SCR"'/!p' "$cycle"
-                    # make it the active screen
-                    printf '%s\n' "$SCR" >> "$cycle"
+                    SCR="$(lsm | grep -v "$CUR")"
                     ;;
                 *)
                     mattr "$3" && SCR="$3" || {
@@ -255,37 +235,35 @@ main() {
 
     # restore window position
     test -n "$(atomx OLD_POS "$wid")" && {
-        test "$(atomx SCR "$wid")" = "$SCR" && {
+        test "$(atomx MODE "$wid")" = "$mode" && {
             case "$mode" in
                 full|maximise|vmaximise|hmaximise)
-                    test "$(atomx MODE "$wid")" = "$mode" && {
-                        # test if window has moved since last run
-                        test "$(atomx NEW_POS "$wid")" != "$(wattr xywh "$wid")" && {
-                            $mode
-                            position
-                        } || {
-                            # briefly hide mouse
-                            wmp -a $(wattr wh $(lsw -r))
+                    # test if window has moved since last run
+                    test "$(atomx NEW_POS "$wid")" != "$(wattr xywh "$wid")" && {
+                        $mode
+                        position
+                    } || {
+                        # briefly hide mouse
+                        wmp -a $(wattr wh $(lsw -r))
 
-                            # restore position
-                            wtp $(atomx OLD_POS "$wid") "$wid"
+                        # restore position
+                        wtp $(atomx OLD_POS "$wid") "$wid"
 
-                            # restore border
-                            chwb -s "$BW" -c "$ACTIVE" "$wid"
+                        # restore border
+                        chwb -s "$BW" -c "$ACTIVE" "$wid"
 
-                            # move mouse to middle of window
-                            wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2)) \
-                                   $(($(wattr y "$wid") + $(wattr h "$wid") / 2))
+                        # move mouse to middle of window
+                        wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2)) \
+                               $(($(wattr y "$wid") + $(wattr h "$wid") / 2))
 
-                            # clean atoms
-                            atomx -d SCR "$wid"
-                            atomx -d MODE "$wid"
-                            atomx -d OLD_POS "$wid"
-                            atomx -d NEW_POS "$wid"
-                        }
+                        # clean atoms
+                        atomx -d SCR "$wid"
+                        atomx -d MODE "$wid"
+                        atomx -d OLD_POS "$wid"
+                        atomx -d NEW_POS "$wid"
                     }
 
-                exit 0
+                    exit 0
                 ;;
             esac
         }

@@ -37,8 +37,6 @@ listwindows() {
 }
 
 wmenv() {
-    fwmdir=${fwmdir:-/tmp/fwm}
-
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
     export PFW BW=0 JUMP=20
 }
@@ -46,8 +44,9 @@ wmenv() {
 wmgaps() {
     PFM="$(pfm)"
     PRI="$(lsm -p)"
-    export PRI PFM
-    export TGAP=50 BGAP=30 LGAP=50 RGAP=50 IGAP=20
+    SEC="$(lsm | grep -v "$PRI" | head -n 1)"
+    export PFM PRI SEC
+    export TGAP=30 BGAP=50 LGAP=50 RGAP=50 IGAP=20
 }
 
 wmcolours() {
@@ -56,9 +55,4 @@ wmcolours() {
     ACTIVE="$(grep -w "foreground" "$CLR" | cut -d\# -f 2)"
     INACTIVE="$(grep -w "background" "$CLR" | cut -d\# -f 2)"
     export ACTIVE URGENT INACTIVE
-}
-
-wmgroup() {
-    export activegrp="$groupdir/active"
-    export inactivegrp="$groupdir/inactive"
 }
