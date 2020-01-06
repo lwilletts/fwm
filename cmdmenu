@@ -21,6 +21,7 @@ sel() {
     test "$wid" = "0x00000000" && exit 0
 
     case "$1" in
+        shot)   shot "$wid"                  ;;
         delete) killw "$wid"                 ;;
         term)   killw -p "$wid"              ;;
         resize) chwso -r "$wid"; xmrs "$wid" ;;
@@ -46,6 +47,7 @@ new() {
 }
 
 open() {
+    # use link handling program of your choosing
     load "$(xsel -o)"
 }
 
@@ -60,8 +62,8 @@ main() {
     esac
 
     # CWM-like right click
-    X=$(($(wmp | cut -d\  -f 1) - $(mattr x "$PFM") - 10))
-    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y "$PFM") - 10))
+    X=$(($(wmp | cut -d\  -f 1) - $(mattr x "$(pfm)") - 10))
+    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y "$(pfm)") - 10))
 
     FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
 
@@ -74,12 +76,13 @@ terminate
 copy
 open
 shot
-pfw"
+pfw
+off"
 
     program=$(printf '%s\n' "$programs" | \
-    dmenu -name "cmdmenu" -f -l 10 -fn "$FONT" -p " Do >" \
+    dmenu -name "cmdmenu" -f -l 50 -fn "$FONT" -p " Do >" \
     -nf "#$ACTIVE" -sf "#$INACTIVE" -nb "#$INACTIVE" -sb "#$URGENT" -bc "#$ACTIVE" \
-    -s "$(mattr d "$PFM")" -x $X -y $Y -w 100 -bw $BW)
+    -s "$(mattr d "$(pfm)")" -x $X -y $Y -w 100 -h 15 -bw $BW)
 
     case "$program" in
         new)       new                ;;
@@ -91,7 +94,8 @@ pfw"
         copy)      xsel -ob | xsel -i ;;
         open)      open               ;;
         shot)      shot               ;;
-        pfw)       shot "$PFW"        ;;
+        pfw)       sel shot           ;;
+        off)       poweroff           ;;
     esac
 }
 
