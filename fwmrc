@@ -24,13 +24,8 @@ listwindows() {
     mattr "$1"
 
     case "$?" in
-        0)
-            SCR="$1"
-            ;;
-        *)
-            PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
-            SCR="$(mattr i "$PFW")"
-            ;;
+        0) SCR="$1"     ;;
+        *) SCR="$(pfm)" ;;
     esac
 
     mattr si $(lsw) | grep "$SCR" | cut -d\  -f 1
@@ -42,7 +37,6 @@ wmenv() {
 }
 
 wmgaps() {
-    PFM="$(pfm)"
     PRI="$(lsm -p)"
     SEC="$(lsm | grep -v "$PRI" | head -n 1)"
     export PFM PRI SEC
