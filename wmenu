@@ -33,33 +33,33 @@ selection() {
     output | sort -rk 2 | \
         dmenu -name "wmenu" -f -l "$nWindows" -i -fn "$FONT" -p "$PROMPT" \
         -nf "#$ACTIVE" -sf "#$INACTIVE" -nb "#$INACTIVE" -sb "#$URGENT" -bc "#$ACTIVE" \
-        -s "$(mattr d "$PFM")" -x "$X" -y "$Y" -w "$W" -bw "$BW" | cut -d\  -f 1
+        -s "$(mattr d "$(pfm)")" -x "$X" -y "$Y" -w "$W" -h "$FH" -bw "$BW" | \
+        cut -d\  -f 1
 }
 
 menu() {
     width
 
     # CWM-like right click
-    X=$(($(wmp | cut -d\  -f 1) - $(mattr x "$PFM") - 10))
-    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y "$PFM") - 10))
+    X=$(($(wmp | cut -d\  -f 1) - $(mattr x "$(pfm)") - 10))
+    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y "$(pfm)") - 10))
 }
 
 center() {
     width
-    H=$(echo "($nWindows * 11.5) / 1" | bc)
+    H=$((nWindows * FH))
 
     # finding x y cords for centering
-    X=$(($(mattr w "$PFM")/2 - W/2 - 10))
-    Y=$(($(mattr h "$PFM")/2 - H/2 - 10))
+    X=$(($(mattr w "$(pfm)")/2 - W/2 - 10))
+    Y=$(($(mattr h "$(pfm)")/2 - H/2 - 10))
 }
 
 bar() {
-    L=$(echo "($nWindows * 11.7) / 1" | bc)
-
     X=$((LGAP + BW))
-    H=$((BGAP/2 + BW*2))
-    Y=$(($(mattr h $PRI) - L - H - BGAP/4))
-    W=$(($(mattr w $PRI) - LGAP - RGAP - BW*2))
+    W=$(($(mattr w "$PRI") - LGAP - RGAP - BW*2))
+    Y=$(($(mattr h "$PRI") - FH * (nWindows + 1) - BGAP - BW*2))
+
+    wmp -a "$((X + 40))" "$(($(mattr y "$PRI") + Y + 20))"
 }
 
 main() {
@@ -77,6 +77,7 @@ main() {
         *)      LSWCMD="lsw"    ;;
     esac
 
+    FH=15
     nWindows=$($LSWCMD | wc -l)
     test "$nWindows" -eq 0 && exit 1
 
