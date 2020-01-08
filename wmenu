@@ -26,7 +26,7 @@ width() {
 output() {
     for wid in $($LSWCMD); do
         printf '%s\n' "$wid $(atomx WM_CLASS "$wid") | $(wname "$wid")"
-    done
+    done | grep -v "$PFW"
 }
 
 selection() {
@@ -73,7 +73,7 @@ center() {
 bar() {
     X=$((LGAP + BW))
     W=$(($(mattr w "$PRI") - LGAP - RGAP - BW*2))
-    Y=$(($(mattr h "$PRI") - FH * (nWindows + 1) - BGAP - BW*2))
+    Y=$(($(mattr h "$PRI") - FH * nWindows - BGAP - BW*2))
 
     wmp -a "$((X + 40))" "$(($(mattr y "$PRI") + Y + 20))"
 }
