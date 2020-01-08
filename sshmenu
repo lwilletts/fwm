@@ -30,8 +30,10 @@ main() {
 
     # menu geometry fit to display
     SCR="$(pfm)"
-    X=$(($(wmp | cut -d\  -f 1) - $(mattr x "$SCR")))
-    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y "$SCR")))
+    X0="$(mattr x "$SCR")"
+    Y0="$(mattr y "$SCR")"
+    X=$(($(wmp | cut -d\  -f 1) - X0))
+    Y=$(($(wmp | cut -d\  -f 2) - Y0))
 
     W="150"
     FH="15"
@@ -47,7 +49,7 @@ main() {
     Yboundary="$(($(mattr h "$SCR") - H - BGAP))"
     test "$Y" -gt "$Yboundary" && Y=$Yboundary
 
-    wmp -a "$((X + 15))" "$((Y + 20))"
+    wmp -a "$((X + X0 + 15))" "$((Y + Y0 + 20))"
 
     host=$(printf '%s\n' "$hosts" | \
 dmenu -name "cmdmenu" -f -l "$L" -fn "$FONT" -p " To >" \

@@ -79,16 +79,18 @@ off"
 
     # menu geometry fit to display
     SCR="$(pfm)"
-    X=$(($(wmp | cut -d\  -f 1) - $(mattr x "$SCR")))
-    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y "$SCR")))
+    X0="$(mattr x "$SCR")"
+    Y0="$(mattr y "$SCR")"
+    X=$(($(wmp | cut -d\  -f 1) - X0))
+    Y=$(($(wmp | cut -d\  -f 2) - Y0))
 
     W="100"
     FH="15"
     L="$(printf '%s\n' "$programs" | wc -l)"
     H="$((FH * (L + 1)))"
 
-    test "$X" -lt "$LGAP" && X="$LGAP"
-    test "$Y" -lt "$TGAP" && Y="$TGAP"
+    test "$X" -lt "$LGAP" && X="$((LGAP + X0))"
+    test "$Y" -lt "$TGAP" && Y="$((TGAP + Y0))"
 
     Xboundary="$(($(mattr w "$SCR") - W - RGAP))"
     test "$X" -gt "$Xboundary" && X=$Xboundary
@@ -96,7 +98,7 @@ off"
     Yboundary="$(($(mattr h "$SCR") - H - BGAP))"
     test "$Y" -gt "$Yboundary" && Y=$Yboundary
 
-    wmp -a "$((X + 15))" "$((Y + 20))"
+    wmp -a "$((X + X0 + 15))" "$((Y + Y0 + 20))"
 
     program=$(printf '%s\n' "$programs" | \
 dmenu -name "cmdmenu" -f -l "$L" -fn "$FONT" -p " Do >" \
