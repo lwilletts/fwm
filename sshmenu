@@ -1,0 +1,60 @@
+#!/bin/sh
+# shellcheck disable=SC2015,SC2046
+#
+# sshmenu
+
+usage() {
+    base=$(basename "$0")
+
+    cat >&2 << EOF
+Usage:
+    $ $base
+EOF
+
+    test $# -eq 0 || exit "$1"
+}
+
+main() {
+    . fwmrc
+    wmenv
+    wmgaps
+    wmcolours
+
+    case "$1" in
+        -h|--help|help) usage 0 ;;
+    esac
+
+    FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
+
+    hosts="$(grep -w "host" ~/.ssh/config | cut -d\  -f 2)"
+
+    # menu geometry fit to display
+    SCR="$(pfm)"
+    X=$(($(wmp | cut -d\  -f 1) - $(mattr x "$SCR")))
+    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y "$SCR")))
+
+    W="150"
+    FH="15"
+    L="$(printf '%s\n' "$hosts" | wc -l)"
+    H="$((FH * (L + 1)))"
+
+    test "$X" -lt "$LGAP" && X="$LGAP"
+    test "$Y" -lt "$TGAP" && Y="$TGAP"
+
+    Xboundary="$(($(mattr w "$SCR") - W - RGAP))"
+    test "$X" -gt "$Xboundary" && X=$Xboundary
+
+    Yboundary="$(($(mattr h "$SCR") - H - BGAP))"
+    test "$Y" -gt "$Yboundary" && Y=$Yboundary
+
+    wmp -a "$((X + 15))" "$((Y + 20))"
+
+    host=$(printf '%s\n' "$hosts" | \
+dmenu -name "cmdmenu" -f -l "$L" -fn "$FONT" -p " To >" \
+-nf "#$ACTIVE" -sf "#$INACTIVE" -nb "#$INACTIVE" -sb "#$URGENT" -bc "#$ACTIVE" \
+-s "$(mattr d "$(pfm)")" -x $X -y $Y -w "$W" -h "$FH" -bw $BW)
+
+    urxvtc -g 85x22 -e sh -c "ssh $host"
+}
+
+main "$@"

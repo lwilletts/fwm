@@ -64,6 +64,7 @@ main() {
     FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
 
     programs="new
+ssh
 move
 place
 select
@@ -104,6 +105,7 @@ dmenu -name "cmdmenu" -f -l "$L" -fn "$FONT" -p " Do >" \
 
     case "$program" in
         new)       new                ;;
+        ssh)       sshmenu            ;;
         move)      sel move           ;;
         place)     sel place          ;;
         select)    wmenu -m           ;;
