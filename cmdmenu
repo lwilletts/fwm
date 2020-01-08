@@ -61,15 +61,12 @@ main() {
         -h|--help|help) usage 0 ;;
     esac
 
-    # CWM-like right click
-    X=$(($(wmp | cut -d\  -f 1) - $(mattr x "$(pfm)") - 10))
-    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y "$(pfm)") - 10))
-
     FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
 
     programs="new
 move
 place
+select
 resize
 delete
 terminate
@@ -79,15 +76,37 @@ shot
 pfw
 off"
 
+    # menu geometry fit to display
+    SCR="$(pfm)"
+    X=$(($(wmp | cut -d\  -f 1) - $(mattr x "$SCR")))
+    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y "$SCR")))
+
+    W="100"
+    FH="15"
+    L="$(printf '%s\n' "$programs" | wc -l)"
+    H="$((FH * (L + 1)))"
+
+    test "$X" -lt "$LGAP" && X="$LGAP"
+    test "$Y" -lt "$TGAP" && Y="$TGAP"
+
+    Xboundary="$(($(mattr w "$SCR") - W - RGAP))"
+    test "$X" -gt "$Xboundary" && X=$Xboundary
+
+    Yboundary="$(($(mattr h "$SCR") - H - BGAP))"
+    test "$Y" -gt "$Yboundary" && Y=$Yboundary
+
+    wmp -a "$((X + 15))" "$((Y + 20))"
+
     program=$(printf '%s\n' "$programs" | \
-    dmenu -name "cmdmenu" -f -l 50 -fn "$FONT" -p " Do >" \
-    -nf "#$ACTIVE" -sf "#$INACTIVE" -nb "#$INACTIVE" -sb "#$URGENT" -bc "#$ACTIVE" \
-    -s "$(mattr d "$(pfm)")" -x $X -y $Y -w 100 -h 15 -bw $BW)
+dmenu -name "cmdmenu" -f -l "$L" -fn "$FONT" -p " Do >" \
+-nf "#$ACTIVE" -sf "#$INACTIVE" -nb "#$INACTIVE" -sb "#$URGENT" -bc "#$ACTIVE" \
+-s "$(mattr d "$(pfm)")" -x $X -y $Y -w "$W" -h "$FH" -bw $BW)
 
     case "$program" in
         new)       new                ;;
         move)      sel move           ;;
         place)     sel place          ;;
+        select)    wmenu -m           ;;
         resize)    sel resize         ;;
         delete)    sel delete         ;;
         terminate) sel term           ;;

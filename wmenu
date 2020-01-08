@@ -40,9 +40,23 @@ selection() {
 menu() {
     width
 
-    # CWM-like right click
-    X=$(($(wmp | cut -d\  -f 1) - $(mattr x "$(pfm)") - 10))
-    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y "$(pfm)") - 10))
+    # menu geometry fit to display
+    SCR="$(pfm)"
+    X=$(($(wmp | cut -d\  -f 1) - $(mattr x "$SCR")))
+    Y=$(($(wmp | cut -d\  -f 2) - $(mattr y "$SCR")))
+
+    H="$((FH * (nWindows + 1)))"
+
+    test "$X" -lt "$LGAP" && X="$LGAP"
+    test "$Y" -lt "$TGAP" && Y="$TGAP"
+
+    Xboundary="$(($(mattr w "$SCR") - W - RGAP))"
+    test "$X" -gt "$Xboundary" && X=$Xboundary
+
+    Yboundary="$(($(mattr h "$SCR") - H - BGAP))"
+    test "$Y" -gt "$Yboundary" && Y=$Yboundary
+
+    wmp -a "$((X + 15))" "$((Y + 20))"
 }
 
 center() {
