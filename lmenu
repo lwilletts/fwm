@@ -18,6 +18,7 @@ main() {
     . fwmrc
     wmenv
     wmgaps
+    wmenus
     wmcolours
 
     case "$1" in

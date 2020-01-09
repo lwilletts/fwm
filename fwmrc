@@ -53,8 +53,8 @@ wmcolours() {
 
 wmenus() {
     processes="new
-connect
 launch
+connect
 move
 place
 select

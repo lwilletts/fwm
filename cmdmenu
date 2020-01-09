@@ -55,6 +55,7 @@ main() {
     . fwmrc
     wmenv
     wmgaps
+    wmenus
     wmcolours
 
     case "$1" in
@@ -93,10 +94,10 @@ dmenu -name "cmdmenu" -f -l "$L" -fn "$FONT" -p " Do >" \
 
     case "$process" in
         new)       new                ;;
-        ssh)       sshmenu            ;;
+        launch)    lmenu              ;;
+        connect)   sshmenu            ;;
         move)      sel move           ;;
         place)     sel place          ;;
-        launch)    lmenu              ;;
         select)    wmenu -m           ;;
         resize)    sel resize         ;;
         delete)    sel delete         ;;
