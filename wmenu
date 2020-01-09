@@ -73,7 +73,7 @@ center() {
 bar() {
     X=$((LGAP + BW))
     W=$(($(mattr w "$PRI") - LGAP - RGAP - BW*2))
-    Y=$(($(mattr h "$PRI") - FH * nWindows - BGAP - BW*2))
+    Y=$(($(mattr h "$PRI") - FH * (nWindows + 1) - BGAP - BW*2))
 
     wmp -a "$((X + 40))" "$(($(mattr y "$PRI") + Y + 20))"
 }
@@ -94,7 +94,7 @@ main() {
     esac
 
     FH=15
-    nWindows=$($LSWCMD | wc -l)
+    nWindows=$($LSWCMD | grep -cv "$PFW")
     test "$nWindows" -eq 0 && exit 1
 
     case "$1" in
