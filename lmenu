@@ -1,7 +1,7 @@
 #!/bin/sh
 # shellcheck disable=SC2015,SC2046
 #
-# sshmenu
+# programs
 
 usage() {
     base=$(basename "$0")
@@ -26,8 +26,6 @@ main() {
 
     FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
 
-    hosts="$(grep -w "host" ~/.ssh/config | cut -d\  -f 2)"
-
     # menu geometry fit to display
     SCR="$(pfm)"
     X0="$(mattr x "$SCR")"
@@ -37,7 +35,7 @@ main() {
 
     W="150"
     FH="15"
-    L="$(printf '%s\n' "$hosts" | wc -l)"
+    L="$(printf '%s\n' "$programs" | wc -l)"
     H="$((FH * (L + 1)))"
 
     test "$X" -lt "$LGAP" && X="$LGAP"
@@ -51,12 +49,10 @@ main() {
 
     wmp -a "$((X + X0 + 15))" "$((Y + Y0 + 20))"
 
-    host=$(printf '%s\n' "$hosts" | \
+    printf '%s\n' "$programs" | \
 dmenu -name "cmdmenu" -f -l "$L" -fn "$FONT" -p " To >" \
 -nf "#$ACTIVE" -sf "#$INACTIVE" -nb "#$INACTIVE" -sb "#$URGENT" -bc "#$ACTIVE" \
--s "$(mattr d "$(pfm)")" -x $X -y $Y -w "$W" -h "$FH" -bw $BW)
-
-    test -n "$host" && urxvtc -g 85x22 -e sh -c "mosh $host || ssh $host"
+-s "$(mattr d "$(pfm)")" -x $X -y $Y -w "$W" -h "$FH" -bw $BW | /bin/sh &
 }
 
 main "$@"

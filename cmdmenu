@@ -63,20 +63,6 @@ main() {
 
     FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
 
-    programs="new
-ssh
-move
-place
-select
-resize
-delete
-terminate
-copy
-open
-shot
-pfw
-off"
-
     # menu geometry fit to display
     SCR="$(pfm)"
     X0="$(mattr x "$SCR")"
@@ -86,7 +72,7 @@ off"
 
     W="100"
     FH="15"
-    L="$(printf '%s\n' "$programs" | wc -l)"
+    L="$(printf '%s\n' "$processes" | wc -l)"
     H="$((FH * (L + 1)))"
 
     test "$X" -lt "$LGAP" && X="$((LGAP + X0))"
@@ -100,16 +86,17 @@ off"
 
     wmp -a "$((X + X0 + 15))" "$((Y + Y0 + 20))"
 
-    program=$(printf '%s\n' "$programs" | \
+    process=$(printf '%s\n' "$processes" | \
 dmenu -name "cmdmenu" -f -l "$L" -fn "$FONT" -p " Do >" \
 -nf "#$ACTIVE" -sf "#$INACTIVE" -nb "#$INACTIVE" -sb "#$URGENT" -bc "#$ACTIVE" \
 -s "$(mattr d "$(pfm)")" -x $X -y $Y -w "$W" -h "$FH" -bw $BW)
 
-    case "$program" in
+    case "$process" in
         new)       new                ;;
         ssh)       sshmenu            ;;
         move)      sel move           ;;
         place)     sel place          ;;
+        launch)    lmenu              ;;
         select)    wmenu -m           ;;
         resize)    sel resize         ;;
         delete)    sel delete         ;;

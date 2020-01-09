@@ -50,3 +50,28 @@ wmcolours() {
     INACTIVE="$(grep -w "background" "$CLR" | cut -d\# -f 2)"
     export ACTIVE URGENT INACTIVE
 }
+
+wmenus() {
+    processes="new
+connect
+launch
+move
+place
+select
+resize
+delete
+terminate
+copy
+open
+shot
+pfw
+off"
+
+    programs="qutebrowser
+blender
+discord
+lutris
+steam"
+
+    export processes programs
+}
