@@ -52,7 +52,7 @@ main() {
 
     printf '%s\n' "$programs" | \
 dmenu -name "cmdmenu" -f -l "$L" -fn "$FONT" -p " To >" \
--nf "#$ACTIVE" -sf "#$INACTIVE" -nb "#$INACTIVE" -sb "#$URGENT" -bc "#$ACTIVE" \
+-nf "#$ACTIVE" -sf "#$INACTIVE" -nb "#$INACTIVE" -sb "#$ACTIVE" -bc "#$ACTIVE" \
 -s "$(mattr d "$(pfm)")" -x $X -y $Y -w "$W" -h "$FH" -bw $BW | /bin/sh &
 }
 
