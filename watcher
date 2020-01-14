@@ -2,41 +2,33 @@
 #
 # watcher
 
+nocomposite() {
+    pgrep picom > /dev/null 2>&1 && pkill picom 2> /dev/null
+    printf '%s\n' "$wid" >> "$nocomposite"
+    move full "$wid" "$PRI"
+}
+
 event() {
     . fwmrc
     wmenv
     wmgaps
 
-    wew | while read -r ev wid args; do
+    nocomposite="$(mktemp)"
+
+    wew | while read -r ev wid; do
         case "$ev" in
             CREATE)
                 wattr o "$wid" || {
                     case "$(atomx WM_CLASS "$wid")" in
-                        # fix for qutebrowser fixed position
-                        qutebrowser)
-                            for window in $(lsw | grep -v "$wid"); do
-                                atomx WM_CLASS "$window"
-                            done | grep -q "qutebrowser" && {
-                                move center "$(pfw)" "$PRI"
-                            }
-                            ;;
+                        midair-win64-test.exe) nocomposite ;;
                     esac
-
-                    # autogroups
-                    while read -r line; do
-                        class="$(atomx WM_CLASS "$wid")"
-                        matchedClass="$(printf '%s\n' "$line" | cut -d\  -f 1)"
-
-                        test "$class" = "$matchedClass" && {
-                            group="$(printf '%s\n' "$line" | cut -d\  -f 2)"
-                            group -a "$group" "$wid"
-                        }
-                    done < "$HOME/.autogroup"
                 }
                 ;;
             DESTROY)
-                full -c "$wid"
-                group -c "$wid"
+                grep -q "$wid" "$nocomposite" > /dev/null 2>&1 && {
+                    pgrep picom > /dev/null 2>&1 || picom &
+                    sed -i "/$wid/d" "$nocomposite"
+                }
                 ;;
         esac
     done
