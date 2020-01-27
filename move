@@ -16,18 +16,29 @@ Usage: $base [position] <wid> <screen|cycle>
     $ $base -tr   | topright    : Move window to top right of screen.
     $ $base -bl   | bottomleft  : Move window to bottom left of screen.
     $ $base -br   | bottomright : Move window to bottom right of screen.
-    $ $base -hl   | halve       : Halve window in width and height.
-    $ $base -dl   | double      : Double window in width and height.
     $ $base -f    | full        : Extend window to edges of the screen.
     $ $base -m    | maximise    : Extend window to horizontal and vertical max.
     $ $base -vm   | vmaximise   : Extend window to vertical max.
     $ $base -hm   | hmaximise   : Extend window to horizontal max.
     $ $base -g    | grow        : Increase window size by $JUMP.
+    $ $base -gd   | grow_down   : Increase window size down by $JUMP.
+    $ $base -gr   | grow_right  : Increase window size right by $JUMP.
     $ $base -s    | shrink      : Decrease window size by $JUMP.
+    $ $base -su   | shrink_up   : Decrease window size up by $JUMP.
+    $ $base -sl   | shrink_left : Decrease window size left by $JUMP.
+    $ $base -hl   | halve       : Halve window in width and height.
+    $ $base -dl   | double      : Double window in width and height.
     $ $base help  | --help      : Show this help.
 EOF
 
     test $# -eq 0 || exit "$1"
+}
+
+restore() {
+    X=$(wattr x "$wid")
+    Y=$(wattr y "$wid")
+    W=445
+    H=262
 }
 
 center() {
@@ -128,11 +139,6 @@ double() {
     H=$(($(wattr h "$wid") * 2))
     X=$(($(wattr x "$wid") - W / 4))
     Y=$(($(wattr y "$wid") - H / 4))
-
-    test "$X" -le "$SX" && exit 1
-    test "$Y" -le "$SY" && exit 1
-    test "$W" -ge "$SW" && exit 1
-    test "$H" -ge "$SH" && exit 1
 }
 
 halve() {
@@ -152,7 +158,47 @@ grow() {
     exit 0
 }
 
+grow_down() {
+    X=$(($(wattr x "$wid") - JUMP / 2))
+    Y=$(($(wattr y "$wid") - JUMP / 2))
+    W=$(($(wattr w "$wid") + JUMP))
+    H=$(($(wattr h "$wid") + JUMP))
+
+    wtp "$X" "$Y" "$W" "$H" "$wid"
+    exit 0
+}
+
+grow_right() {
+    X=$(($(wattr x "$wid") - JUMP / 2))
+    Y=$(($(wattr y "$wid") - JUMP / 2))
+    W=$(($(wattr w "$wid") + JUMP))
+    H=$(($(wattr h "$wid") + JUMP))
+
+    wtp "$X" "$Y" "$W" "$H" "$wid"
+    exit 0
+}
+
 shrink() {
+    X=$(($(wattr x "$wid") + JUMP / 2))
+    Y=$(($(wattr y "$wid") + JUMP / 2))
+    W=$(($(wattr w "$wid") - JUMP))
+    H=$(($(wattr h "$wid") - JUMP))
+
+    wtp "$X" "$Y" "$W" "$H" "$wid"
+    exit 0
+}
+
+shrink_up() {
+    X=$(($(wattr x "$wid") + JUMP / 2))
+    Y=$(($(wattr y "$wid") + JUMP / 2))
+    W=$(($(wattr w "$wid") - JUMP))
+    H=$(($(wattr h "$wid") - JUMP))
+
+    wtp "$X" "$Y" "$W" "$H" "$wid"
+    exit 0
+}
+
+shrink_left() {
     X=$(($(wattr x "$wid") + JUMP / 2))
     Y=$(($(wattr y "$wid") + JUMP / 2))
     W=$(($(wattr w "$wid") - JUMP))
@@ -283,10 +329,15 @@ main() {
         -m|--maximise|maximise)         maximise    ; mode="maximise"    ;;
         -vm|--vmaximise|vmaximise)      vmaximise   ; mode="vmaximise"   ;;
         -hm|--hmaximise|hmaximise)      hmaximise   ; mode="hmaximise"   ;;
+        -g|--grow|grow)                 grow        ;;
+        -gd|--grow_down|grow_down)      grow_down   ;;
+        -gr|--grow_right|grow_right)    grow_right  ;;
+        -s|--shrink|shrink)             shrink      ;;
+        -su|--shrink_up|shrink_up)      shrink_up   ;;
+        -sl|--shrink_left|shrink_left)  shrink_left ;;
         -dl|--double|double)            double      ;;
         -hl|--halve|halve)              halve       ;;
-        -g|--grow|grow)                 grow        ;;
-        -s|--shrink|shrink)             shrink      ;;
+        restore|--restore)              restore     ;;
         -h|--help|help)                 usage 0     ;;
         *)                              usage 1     ;;
     esac
