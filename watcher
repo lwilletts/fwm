@@ -16,7 +16,8 @@ EOF
 main() {
     wew | while read -r ev wid; do
         case "$ev" in
-            ENTER) chwso -r "$wid"
+            ENTER) chwso -r "$wid" ;;
+            FOCUS_IN) chwso -r "$wid" ;;
         esac
     done
 }
