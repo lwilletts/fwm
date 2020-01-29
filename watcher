@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# watcher
+
+usage() {
+    base=$(basename "$0")
+
+    cat >&2 << EOF
+Usage:
+    $base
+EOF
+
+    test $# -eq 0 || exit "$1"
+}
+
+main() {
+    wew | while read -r ev wid; do
+        case "$ev" in
+            ENTER) chwso -r "$wid"
+        esac
+    done
+}
+
+main "$@"
