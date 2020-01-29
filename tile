@@ -22,6 +22,9 @@ EOF
 # stolen logic from switch_grid from contrib
 # thanks z3bra & greduan (you do deserve credit bro)
 grid() {
+    # reverse window stack order
+    printf '%s\n' "$(tac "$winlist")" > "$winlist"
+
     case "$nWindows" in
         1)           COLS=1 ;;
         2|4|5|6|7)   COLS=2 ;;
@@ -134,7 +137,7 @@ main() {
 
     # save windows to tmp in window stack order
     winlist="$(mktemp)"
-    wattr xywhi $(listwindows "$SCR" | tac) > "$winlist"
+    wattr xywhi $(listwindows "$SCR") > "$winlist"
     nWindows="$(wc -l < "$winlist")"
 
     # test if possible to tile
@@ -158,6 +161,9 @@ main() {
     # move mouse to middle of window
     wmp -a $(($(wattr x "$PFW") + $(wattr w "$PFW") / 2)) \
            $(($(wattr y "$PFW") + $(wattr h "$PFW") / 2))
+
+    # clean widlist
+    rm -rf "$winlist"
 }
 
 main "$@"
