@@ -159,22 +159,12 @@ grow() {
 }
 
 grow_down() {
-    X=$(($(wattr x "$wid") - JUMP / 2))
-    Y=$(($(wattr y "$wid") - JUMP / 2))
-    W=$(($(wattr w "$wid") + JUMP))
-    H=$(($(wattr h "$wid") + JUMP))
-
-    wtp "$X" "$Y" "$W" "$H" "$wid"
+    wrs 0 $JUMP "$wid"
     exit 0
 }
 
 grow_right() {
-    X=$(($(wattr x "$wid") - JUMP / 2))
-    Y=$(($(wattr y "$wid") - JUMP / 2))
-    W=$(($(wattr w "$wid") + JUMP))
-    H=$(($(wattr h "$wid") + JUMP))
-
-    wtp "$X" "$Y" "$W" "$H" "$wid"
+    wrs $JUMP 0 "$wid"
     exit 0
 }
 
@@ -189,22 +179,12 @@ shrink() {
 }
 
 shrink_up() {
-    X=$(($(wattr x "$wid") + JUMP / 2))
-    Y=$(($(wattr y "$wid") + JUMP / 2))
-    W=$(($(wattr w "$wid") - JUMP))
-    H=$(($(wattr h "$wid") - JUMP))
-
-    wtp "$X" "$Y" "$W" "$H" "$wid"
+    wrs 0 -$JUMP "$wid"
     exit 0
 }
 
 shrink_left() {
-    X=$(($(wattr x "$wid") + JUMP / 2))
-    Y=$(($(wattr y "$wid") + JUMP / 2))
-    W=$(($(wattr w "$wid") - JUMP))
-    H=$(($(wattr h "$wid") - JUMP))
-
-    wtp "$X" "$Y" "$W" "$H" "$wid"
+    wrs -$JUMP 0 "$wid"
     exit 0
 }
 
