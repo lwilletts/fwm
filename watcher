@@ -16,7 +16,16 @@ EOF
 main() {
     wew | while read -r ev wid; do
         case "$ev" in
-            ENTER) chwso -r "$wid" ;;
+            CREATE)
+                wattr o "$wid" || {
+                    test "$(atomx WM_CLASS "$wid")" = "qutebrowser" && {
+                        test "$(wattr xywh "$wid")" = "50 50 800 600" && {
+                            move center "$wid" "$(lsm -p)"
+                        }
+                    }
+                }
+                ;;
+            ENTER)    chwso -r "$wid" ;;
             FOCUS_IN) chwso -r "$wid" ;;
         esac
     done

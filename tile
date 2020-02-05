@@ -48,7 +48,7 @@ grid() {
             Y=$((SY - IGAP + H * (row - 1) + row * (IGAP + BW)))
 
             wtp "$X" "$Y" "$W" "$H" \
-                "$(sed "$(((row - 1) * row + col))p;d" "$winlist" | cut -d\  -f 5)"
+            "$(sed "$(((row - 1) * row + col))p;d" "$winlist" | cut -d\  -f 5)"
 
             col=$((col + 1))
         done
@@ -112,6 +112,36 @@ right() {
     wtp "$X" "$SY" "$W" "$SH" "$wid"
 }
 
+browse() {
+    X=$SX
+    Y=$SY
+    W=$(((SW + IGAP) / 2 - IGAP))
+    H=$(echo "$SH / 100 * 60" | bc -l | cut -d. -f 1)
+
+    toplist="$(mktemp)"
+    botlist="$(mktemp)"
+
+    head -n 2 "$winlist" > "$toplist"
+    tail -n +3 "$winlist" > "$botlist"
+
+    while read -r line; do
+        wid="$(printf '%s\n' "$line" | cut -d\  -f 5)"
+        wtp "$X" "$Y" "$W" "$H" "$wid"
+        X=$((X + W + IGAP))
+    done < "$toplist"
+
+    X=$SX
+    Y=$((SY + H + IGAP))
+    W=$(((SW + IGAP) / $(wc -l < "$botlist") - IGAP))
+    H=$((SH - H - IGAP))
+
+    while read -r line; do
+        wid="$(printf '%s\n' "$line" | cut -d\  -f 5)"
+        wtp "$X" "$Y" "$W" "$H" "$wid"
+        X=$((X + W + IGAP))
+    done < "$botlist"
+}
+
 main() {
     . fwmrc
     wmenv
@@ -146,13 +176,14 @@ main() {
     SH=$(($(mattr h "$SCR") - TGAP - BGAP))
 
     case "$1" in
-        -g|--grid|grid)      grid     ;;
-        -s|--split|split)    split    ;;
-        -v|--vert|vert)      vertical ;;
-        -l|--left|left)      left     ;;
-        -r|--right|right)    right    ;;
-        -h|--help|help)      usage 0  ;;
-        *)                   usage 1  ;;
+        -g|--grid|grid)     grid    ;;
+        -s|--split|split)   split   ;;
+        -v|--vert|vert)     vertical;;
+        -l|--left|left)     left    ;;
+        -r|--right|right)   right   ;;
+        -b|--browse|browse) browse  ;;
+        -h|--help|help)     usage 0 ;;
+        *)                  usage 1 ;;
     esac
 
     # move mouse to middle of window
