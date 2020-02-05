@@ -8,9 +8,9 @@ usage() {
 
     cat >&2 << EOF
 Usage:
-    $ $base -b | bar <-a|-u>    : Show as a bar.
+    $ $base -b | bar <-a|-u>    : Show as a bar on primary screen.
     $ $base -m | menu <-a|-u>   : Show as a floating window.
-    $ $base -c | center <-a|-u> : Show as a floating window center of screen.
+    $ $base -c | center <-a|-u> : Show as a floating window center of primary screen.
     $ $base -h | help           : Show this help.
 EOF
 
@@ -33,7 +33,7 @@ selection() {
     output | sort -rk 2 | \
         dmenu -name "wmenu" -f -l "$nWindows" -i -fn "$FONT" -p "$PROMPT" \
         -nf "#$ACTIVE" -sf "#$INACTIVE" -nb "#$INACTIVE" -sb "#$ACTIVE" -bc "#$ACTIVE" \
-        -s "$(mattr d "$(pfm)")" -x "$X" -y "$Y" -w "$W" -h "$FH" -bw "$BW" | \
+        -s "$(mattr d "$PRI")" -x "$X" -y "$Y" -w "$W" -h "$FH" -bw "$BW" | \
         cut -d\  -f 1
 }
 
@@ -66,8 +66,8 @@ center() {
     H=$((nWindows * FH))
 
     # finding x y cords for centering
-    X=$(($(mattr w "$(pfm)")/2 - W/2 - 10))
-    Y=$(($(mattr h "$(pfm)")/2 - H/2 - 10))
+    X=$(($(mattr w "$PRI")/2 - W/2 - 10))
+    Y=$(($(mattr h "$PRI")/2 - H/2 - 10))
 }
 
 bar() {
@@ -85,7 +85,7 @@ main() {
     wmcolours
 
     FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
-    PROMPT="  Window >"
+    PROMPT=" Window >"
 
     case "$2" in
         -a|all) LSWCMD="lsw -a" ;;
