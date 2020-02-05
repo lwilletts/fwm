@@ -8,10 +8,10 @@ usage() {
 
     cat >&2 << EOF
 Usage:
-    $ $base -b | bar <-a|-u>    : Show as a bar.
-    $ $base -m | menu <-a|-u>   : Show as a floating window.
-    $ $base -c | center <-a|-u> : Show as a floating window center of screen.
-    $ $base -h | help           : Show this help.
+    $ $base -b | bar <-au>    : Show as a bar.
+    $ $base -m | menu <-au>   : Show as a floating window.
+    $ $base -c | center <-au> : Show as a floating window center of screen.
+    $ $base -h | help         : Show this help.
 EOF
 
     test $# -eq 0 || exit "$1"
