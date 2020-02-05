@@ -82,6 +82,8 @@ vertical() {
 left() {
     Y=$SY
     W=$(echo "$SW / 100 * 33" | bc -l | cut -d. -f 1)
+    test $W -lt 445 && W=445
+
     X=$((SX + SW - W))
     H=$(((SH + IGAP) / (nWindows - 1) - IGAP))
 
@@ -98,14 +100,15 @@ left() {
 # tile smaller windows on the left
 right() {
     Y=$SY
-    W=$(echo "$SW / 100 * 33" | bc -l | cut -d. -f 1)
     H=$(((SH + IGAP) / (nWindows - 1) - IGAP))
+    W=$(echo "$SW / 100 * 33" | bc -l | cut -d. -f 1)
+    test $W -lt 445 && W=445
 
     while read -r line; do
         wid="$(printf '%s\n' "$line" | cut -d\  -f 5)"
         wtp "$SX" "$Y" "$W" "$H" "$wid"
         Y=$((Y + H + IGAP))
-    done
+    done < "$winlist"
 
     X=$((SX + W + IGAP))
     W=$((SW - W - RGAP))
