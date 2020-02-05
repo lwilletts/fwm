@@ -21,10 +21,7 @@ main() {
     . fwmrc
     wmenv
 
-    widCheck "$2" && wid="$2" || usage 1
-
-    # exit if wid is currently fullscreen
-    grep -qrw "$wid" "$fsdir" 2> /dev/null && return 1
+    widCheck "$2" && wid="$2" || wid=$PFW
 
     case "$1" in
         -u|--up|up)       wmv 0 -$JUMP "$wid" ;;
