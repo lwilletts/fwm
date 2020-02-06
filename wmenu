@@ -31,34 +31,20 @@ output() {
 
 selection() {
     output | sort -rk 2 | \
-        dmenu -name "wmenu" -f -l "$nWindows" -i -fn "$FONT" -p "$PROMPT" \
+        dmenu -name "$(basename "$0")" -f -l "$nWindows" -i -fn "$FONT" -p "$PROMPT" \
         -nf "#$ACTIVE" -sf "#$INACTIVE" -nb "#$INACTIVE" -sb "#$ACTIVE" -bc "#$ACTIVE" \
-        -s "$(mattr d "$PRI")" -x "$X" -y "$Y" -w "$W" -h "$FH" -bw "$BW" | \
+        -s "$(mattr d "$PFM")" -x "$X" -y "$Y" -w "$W" -h "$FH" -bw "$BW" | \
         cut -d\  -f 1
 }
 
 menu() {
     width
 
-    # menu geometry fit to display
-    SCR="$(pfm)"
-    X0="$(mattr x "$SCR")"
-    Y0="$(mattr y "$SCR")"
-    X=$(($(wmp | cut -d\  -f 1) - X0))
-    Y=$(($(wmp | cut -d\  -f 2) - Y0))
-
-    H="$((FH * (nWindows + 1)))"
-
-    test "$X" -lt "$LGAP" && X="$LGAP"
-    test "$Y" -lt "$TGAP" && Y="$TGAP"
-
-    Xboundary="$(($(mattr w "$SCR") - W - RGAP))"
-    test "$X" -gt "$Xboundary" && X=$Xboundary
-
-    Yboundary="$(($(mattr h "$SCR") - H - BGAP))"
-    test "$Y" -gt "$Yboundary" && Y=$Yboundary
-
-    wmp -a "$((X + X0 + 15))" "$((Y + Y0 + 20))"
+    # menu geometry
+    X0="$(mattr x "$PFM")"
+    Y0="$(mattr y "$PFM")"
+    X=$(($(wmp | cut -d\  -f 1) - X0 - 25))
+    Y=$(($(wmp | cut -d\  -f 2) - Y0 - 25))
 }
 
 center() {
@@ -66,8 +52,19 @@ center() {
     H=$((nWindows * FH))
 
     # finding x y cords for centering
-    X=$(($(mattr w "$PRI")/2 - W/2 - 10))
-    Y=$(($(mattr h "$PRI")/2 - H/2 - 10))
+    if [ "$PFW" = "0x00000000" ]; then
+        X=$(($(mattr w "$PFM")/2 - W/2 - 10))
+        Y=$(($(mattr h "$PFM")/2 - H/2 - 10))
+    else
+        X0="$(mattr x "$PFM")"
+        Y0="$(mattr y "$PFM")"
+        X=$(($(wattr x "$PFW") + $(wattr w "$PFW")/2 - W/2 - 10 - X0))
+        Y=$(($(wattr y "$PFW") + $(wattr h "$PFW")/2 - H/2 - 10 - Y0))
+
+        # move mouse to middle of window
+        wmp -a $(($(wattr x "$PFW") + $(wattr w "$PFW") / 2)) \
+               $(($(wattr y "$PFW") + $(wattr h "$PFW") / 2))
+    fi
 }
 
 bar() {
@@ -84,7 +81,9 @@ main() {
     wmgaps
     wmcolours
 
+    PFM="$(pfm)"
     FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
+    FH=15
     PROMPT=" Window >"
 
     case "$2" in
@@ -93,7 +92,6 @@ main() {
         *)      LSWCMD="lsw"    ;;
     esac
 
-    FH=15
     nWindows=$($LSWCMD | grep -cv "$PFW")
     test "$nWindows" -eq 0 && exit 1
 

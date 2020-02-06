@@ -51,6 +51,14 @@ open() {
     load "$(xsel -o)"
 }
 
+menu() {
+    # menu geometry
+    X0="$(mattr x "$PFM")"
+    Y0="$(mattr y "$PFM")"
+    X=$(($(wmp | cut -d\  -f 1) - X0 - 25))
+    Y=$(($(wmp | cut -d\  -f 2) - Y0 - 25))
+}
+
 main() {
     . fwmrc
     wmenv
@@ -58,44 +66,28 @@ main() {
     wmenus
     wmcolours
 
+    PFM="$(pfm)"
+    FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
+    FH="15"
+    W="100"
+    PROMPT=" Do >"
+
     case "$1" in
         -h|--help|help) usage 0 ;;
+        *)              menu    ;;
     esac
 
-    FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
-
-    # menu geometry fit to display
-    SCR="$(pfm)"
-    X0="$(mattr x "$SCR")"
-    Y0="$(mattr y "$SCR")"
-    X=$(($(wmp | cut -d\  -f 1) - X0))
-    Y=$(($(wmp | cut -d\  -f 2) - Y0))
-
-    W="100"
-    FH="15"
     L="$(printf '%s\n' "$processes" | wc -l)"
-    H="$((FH * (L + 1)))"
-
-    test "$X" -lt "$LGAP" && X="$((LGAP + X0))"
-    test "$Y" -lt "$TGAP" && Y="$((TGAP + Y0))"
-
-    Xboundary="$(($(mattr w "$SCR") - W - RGAP))"
-    test "$X" -gt "$Xboundary" && X=$Xboundary
-
-    Yboundary="$(($(mattr h "$SCR") - H - BGAP))"
-    test "$Y" -gt "$Yboundary" && Y=$Yboundary
-
-    wmp -a "$((X + X0 + 15))" "$((Y + Y0 + 20))"
 
     process=$(printf '%s\n' "$processes" | \
-dmenu -name "cmdmenu" -f -l "$L" -fn "$FONT" -p " Do >" \
+dmenu -name "$(basename "$0")" -f -l "$L" -fn "$FONT" -p "$PROMPT" \
 -nf "#$ACTIVE" -sf "#$INACTIVE" -nb "#$INACTIVE" -sb "#$ACTIVE" -bc "#$ACTIVE" \
--s "$(mattr d "$(pfm)")" -x $X -y $Y -w "$W" -h "$FH" -bw $BW)
+-s "$(mattr d "$PFM")" -x $X -y $Y -w "$W" -h "$FH" -bw $BW)
 
     case "$process" in
         new)       new                ;;
-        launch)    lmenu              ;;
-        connect)   sshmenu            ;;
+        launch)    lmenu -m           ;;
+        connect)   sshmenu -m         ;;
         move)      sel move           ;;
         place)     sel place          ;;
         select)    wmenu -m           ;;

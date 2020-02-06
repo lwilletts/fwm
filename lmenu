@@ -14,6 +14,40 @@ EOF
     test $# -eq 0 || exit "$1"
 }
 
+width() {
+    ps=$(txtw -f "$FONT" "$PROMPT")
+    char="$(printf '%s\n' "$programs" | wc -L)"
+    W=$(echo "($ps + $char * 4.9 + 8) / 1" | bc)
+}
+
+menu() {
+    # menu geometry
+    X0="$(mattr x "$PFM")"
+    Y0="$(mattr y "$PFM")"
+    X=$(($(wmp | cut -d\  -f 1) - X0 - 25))
+    Y=$(($(wmp | cut -d\  -f 2) - Y0 - 25))
+}
+
+center() {
+    width
+    H=$((nPrograms * FH))
+
+    # finding x y cords for centering
+    if [ "$PFW" = "0x00000000" ]; then
+        X=$(($(mattr w "$PFM")/2 - W/2 - 10))
+        Y=$(($(mattr h "$PFM")/2 - H/2 - 10))
+    else
+        X0="$(mattr x "$PFM")"
+        Y0="$(mattr y "$PFM")"
+        X=$(($(wattr x "$PFW") + $(wattr w "$PFW")/2 - W/2 - 10 - X0))
+        Y=$(($(wattr y "$PFW") + $(wattr h "$PFW")/2 - H/2 - 10 - Y0))
+
+        # move mouse to middle of window
+        wmp -a $(($(wattr x "$PFW") + $(wattr w "$PFW") / 2)) \
+               $(($(wattr y "$PFW") + $(wattr h "$PFW") / 2))
+    fi
+}
+
 main() {
     . fwmrc
     wmenv
@@ -21,39 +55,25 @@ main() {
     wmenus
     wmcolours
 
+    PFM="$(pfm)"
+    FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
+    FH="15"
+    W="150"
+    PROMPT=" Load >"
+
+    nPrograms="$(printf '%s\n' "$programs" | wc -l)"
+    test "$nPrograms" -eq 0 && exit 1
+
     case "$1" in
+        -m|menu)        menu    ;;
+        -c|center)      center  ;;
         -h|--help|help) usage 0 ;;
     esac
 
-    FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
-
-    # menu geometry fit to display
-    SCR="$(pfm)"
-    X0="$(mattr x "$SCR")"
-    Y0="$(mattr y "$SCR")"
-    X=$(($(wmp | cut -d\  -f 1) - X0))
-    Y=$(($(wmp | cut -d\  -f 2) - Y0))
-
-    W="150"
-    FH="15"
-    L="$(printf '%s\n' "$programs" | wc -l)"
-    H="$((FH * (L + 1)))"
-
-    test "$X" -lt "$LGAP" && X="$LGAP"
-    test "$Y" -lt "$TGAP" && Y="$TGAP"
-
-    Xboundary="$(($(mattr w "$SCR") - W - RGAP))"
-    test "$X" -gt "$Xboundary" && X=$Xboundary
-
-    Yboundary="$(($(mattr h "$SCR") - H - BGAP))"
-    test "$Y" -gt "$Yboundary" && Y=$Yboundary
-
-    wmp -a "$((X + X0 + 15))" "$((Y + Y0 + 20))"
-
     printf '%s\n' "$programs" | \
-dmenu -name "cmdmenu" -f -l "$L" -fn "$FONT" -p " To >" \
+dmenu -name "$(basename "$0") " -f -l "$nPrograms" -fn "$FONT" -p "$PROMPT" \
 -nf "#$ACTIVE" -sf "#$INACTIVE" -nb "#$INACTIVE" -sb "#$ACTIVE" -bc "#$ACTIVE" \
--s "$(mattr d "$(pfm)")" -x $X -y $Y -w "$W" -h "$FH" -bw $BW | /bin/sh &
+-s "$(mattr d "$PFM")" -x $X -y $Y -w "$W" -h "$FH" -bw $BW | /bin/sh &
 }
 
 main "$@"
