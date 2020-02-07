@@ -51,6 +51,18 @@ wmcolours() {
     export ACTIVE URGENT INACTIVE
 }
 
+dcolours() {
+    wmcolours
+
+    NF="$INACTIVE"
+    SF="$ACTIVE"
+    NB="$ACTIVE"
+    SB="$INACTIVE"
+    BC="$INACTIVE"
+
+    export NF SF NB SB BC
+}
+
 wmenus() {
     processes="new
 launch

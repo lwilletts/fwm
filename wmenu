@@ -32,7 +32,7 @@ output() {
 selection() {
     output | sort -rk 2 | \
         dmenu -name "$(basename "$0")" -f -l "$nWindows" -i -fn "$FONT" -p "$PROMPT" \
-        -nf "#$ACTIVE" -sf "#$INACTIVE" -nb "#$INACTIVE" -sb "#$ACTIVE" -bc "#$ACTIVE" \
+        -nf "#$NF" -sf "#$SF" -nb "#$NB" -sb "#$SB" -bc "#$BC" \
         -s "$(mattr d "$PFM")" -x "$X" -y "$Y" -w "$W" -h "$FH" -bw "$BW" | \
         cut -d\  -f 1
 }
@@ -79,7 +79,7 @@ main() {
     . fwmrc
     wmenv
     wmgaps
-    wmcolours
+    dcolours
 
     PFM="$(pfm)"
     FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
