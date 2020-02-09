@@ -1,0 +1,70 @@
+#!/bin/sh
+#
+# group
+
+usage() {
+    base=$(basename "$0")
+
+    cat >&2 << EOF
+Usage:
+    $base
+EOF
+
+    test $# -eq 0 || exit "$1"
+}
+
+list_groups() {
+    for wid in $(lsw -a); do
+        wg="$(atomx GROUP "$wid")"
+        [ -n "$wg" ] && printf 'GROUP_%s\t%s %s\n' \
+                        "$wg" "$wid" "$(atomx WM_CLASS "$wid")"
+    done | sort
+}
+
+show_group() {
+    for wid in $(lsw -u); do
+        wg=$(atomx GROUP "$wid")
+        [ -z "$wg" ] && continue
+        [ "$wg" -eq "$1" ] && {
+            mapw -m "$wid"
+            chwso -r "$wid"
+        }
+    done
+
+    atomx GROUP_"$1"=on "$ROOT" > /dev/null
+    focus -w "$wid"
+}
+
+hide_group() {
+    for wid in $(lsw); do
+        wg=$(atomx GROUP "$wid")
+        echo "$wg"
+        [ -z "$wg" ] && continue
+        [ "$wg" -eq "$1" ] && mapw -u "$wid"
+    done
+
+    atomx GROUP_"$1"=off "$ROOT" > /dev/null
+}
+
+toggle_group() {
+    case $(atomx GROUP_"$1" "$ROOT") in
+        on)  hide_group "$1" ;;
+        off) show_group "$1" ;;
+        *)   atomx GROUP_"$1"=on "$ROOT" > /dev/null ;;
+    esac
+}
+
+main() {
+    ROOT="$(lsw -r)"
+
+    case $1 in
+        -a|--add|add)   show_group "$2"; atomx GROUP="$2" "$3" > /dev/null ;;
+        -d|--del|del)   atomx -d GROUP "$2"   ;;
+        -t|--tog|tog)   toggle_group "$2"     ;;
+        -l|--list|list) list_groups           ;;
+        -h|--help|help) usage 0               ;;
+        *)              usage 1               ;;
+    esac
+}
+
+main "$@"
