@@ -41,18 +41,9 @@ cycle() {
 }
 
 focus() {
-    # map group window belongs to if not visible
-    type group > /dev/null 2>&1 && {
-        grp="$(group -f "$wid")"
-        intCheck "$grp" && group -m "$grp"
-    } || {
-        wattr m "$wid" || mapw -m "$wid"
-    }
-
     # be as responsive as possible to user input
     wtf "$wid"
     chwso -r "$wid"
-
 
     # no border when wid is found to be fullscreen
     test "$(atomx MODE "$wid")" = "full" && {
@@ -71,20 +62,14 @@ focus() {
     }
 
     # move mouse to middle of window
-    test "$disabled" != "true" && {
-        wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2)) \
-               $(($(wattr y "$wid") + $(wattr h "$wid") / 2))
-    }
+    wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2)) \
+           $(($(wattr y "$wid") + $(wattr h "$wid") / 2))
 }
 
 main() {
     . fwmrc
     wmenv
     wmcolours
-
-    case "$3" in
-        disable) disabled=true ;;
-    esac
 
     case "$1" in
         -w|--wid|wid)     window "$2" ;;
