@@ -37,20 +37,27 @@ Hardcoded font size for now.
 
 Focus a window id, or cycle through the ordered stack of windows on screen.
 
-#### full
-
-Fullscreen a given window id. Run the same command to reset the window back to
-its original position. Improved over cwm window-fullscreen by following mouse.
-Additionally, you can specify screen to fullscreen to.
-
 #### fwmrc
 
 Sets various environment variables like colours, gaps, borderwidth etc.
+
+#### group
+
+Group script to hide and show windows.
+
+#### lmenu
+
+Dmenu populated list of chosen programs, set in fwmrc.
 
 #### move
 
 Move and position windows on a multihead setup. Follows mouse pointer for
 monitor information if no monitor given.
+
+#### sshmenu
+
+Dmenu populated list of hostnames to connect to. Defaults to using mosh, with
+ssh as backup.
 
 #### under
 
@@ -72,24 +79,21 @@ development.
 
 #### watcher
 
-A window id event watcher wrapper around wew to provide added functionality
-such as:
+A window id event watcher wrapper around wew to provide added functionality:
 
-- Sloppy focus.
-- Auto-grouping of windows.
-- Window placement on their creation.
-- Compositor management for steam games.
-- Fullscreen and group window cleaning on deletion of windows.
+- sloppy focus
+- window placement
+- autogrouping of windows
 
-Recommend to add `watcher &` to your xinitrc to load on X11 start.
+Add `watcher &` to your xinitrc to load on X11 start.
 
-Auto-grouping is possible by populating `$HOME/.autogroup` with WM_CLASS and a
+Autogrouping is possible by populating `$HOME/.autogroup` with WM_CLASS and a
 group:
 
 ```
-qutebrowser 2
-discord 3
-gl 4
+2 qutebrowser
+3 discord
+4 gl
 ```
 
 #### wid
