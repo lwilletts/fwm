@@ -31,14 +31,7 @@ Usage: $base [position] <wid> <screen|cycle>
     $ $base help  | --help      : Show this help.
 EOF
 
-    test $# -eq 0 || exit "$1"
-}
-
-restore() {
-    X=$(wattr x "$wid")
-    Y=$(wattr y "$wid")
-    W=445
-    H=262
+    [ $# -eq 0 ] || exit "$1"
 }
 
 center() {
@@ -190,14 +183,7 @@ shrink_left() {
 
 position() {
     # save old window position, new window position, mode, and screen
-    atomx MODE="$mode" "$wid" > /dev/null
-    atomx NEW_POS="$X $Y $W $H" "$wid" > /dev/null
-    atomx SCR="$(mattr i "$wid")" "$wid" > /dev/null
-
-    # don't overwrite the old window position
-    if [ -z "$(atomx OLD_POS "$wid")" ]; then
-        atomx OLD_POS="$(wattr xywh "$wid")" "$wid" > /dev/null
-    fi
+    save_atom "$wid" "$mode"
 
     # briefly hide mouse
     wmp -a $(wattr wh "$(lsw -r)")
@@ -260,12 +246,12 @@ main() {
     SH=$(($(mattr h "$SCR") - TGAP - BGAP))
 
     # restore window position
-    test -n "$(atomx OLD_POS "$wid")" && {
-        test "$(atomx MODE "$wid")" = "$mode" && {
+    [ -n "$(atomx OLD_POS "$wid")" ] && {
+        [ "$(atomx MODE "$wid")" = "$mode" ] && {
             case "$mode" in
                 full|maximise|vmaximise|hmaximise)
                     # test if window has moved since last run
-                    test "$(atomx NEW_POS "$wid")" != "$(wattr xywh "$wid")" && {
+                    [ "$(atomx NEW_POS "$wid")" != "$(wattr xywh "$wid")" ] && {
                         $mode
                         position
                     } || {
@@ -276,17 +262,14 @@ main() {
                         wtp $(atomx OLD_POS "$wid") "$wid"
 
                         # restore border
-                        chwb -s "$BW" -c "$ACTIVE" "$wid"
+                        [ "$mode" = "full" ] && chwb -s "$BW" -c "$ACTIVE" "$wid"
 
                         # move mouse to middle of window
                         wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2)) \
                                $(($(wattr y "$wid") + $(wattr h "$wid") / 2))
 
                         # clean atoms
-                        atomx -d SCR "$wid"
-                        atomx -d MODE "$wid"
-                        atomx -d OLD_POS "$wid"
-                        atomx -d NEW_POS "$wid"
+                        del_atom "$wid"
                     }
 
                     exit 0
@@ -317,7 +300,6 @@ main() {
         -sl|--shrink_left|shrink_left)  shrink_left ;;
         -dl|--double|double)            double      ;;
         -hl|--halve|halve)              halve       ;;
-        restore|--restore)              restore     ;;
         -h|--help|help)                 usage 0     ;;
         *)                              usage 1     ;;
     esac

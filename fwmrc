@@ -19,6 +19,29 @@ widCheck() {
     esac
 }
 
+save_atom() {
+    widCheck "$1" && wid="$1" || return 1
+    mode="$2"
+
+    atomx MODE="$mode" "$wid" > /dev/null
+    atomx NEW_POS="$X $Y $W $H" "$wid" > /dev/null
+    atomx SCR="$(mattr i "$wid")" "$wid" > /dev/null
+
+    # don't overwrite the old window position
+    if [ -z "$(atomx OLD_POS "$wid")" ]; then
+        atomx OLD_POS="$(wattr xywh "$wid")" "$wid" > /dev/null
+    fi
+}
+
+del_atom() {
+    widCheck "$1" && wid="$1" || return 1
+
+    atomx -d SCR "$wid"
+    atomx -d MODE "$wid"
+    atomx -d OLD_POS "$wid"
+    atomx -d NEW_POS "$wid"
+}
+
 # list windows on focused screen or given screen
 listwindows() {
     mattr "$1"
