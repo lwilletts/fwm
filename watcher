@@ -14,19 +14,39 @@ EOF
 }
 
 main() {
+    autogroup="$HOME/.autogroup"
+
     wew | while read -r ev wid; do
         case "$ev" in
             CREATE)
                 wattr o "$wid" || {
-                    test "$(atomx WM_CLASS "$wid")" = "qutebrowser" && {
-                        test "$(wattr xywh "$wid")" = "50 50 800 600" && {
-                            move center "$wid" "$(lsm -p)"
-                        }
-                    }
+                    CLASS="$(atomx WM_CLASS "$wid")"
+                    case "$CLASS" in
+                        qutebrowser)
+                            [ "$(wattr xywh "$wid")" = "50 50 800 600" ] && {
+                                move center "$wid" "$(lsm -p)"
+                            }
+                            ;;
+                        discord|obs)            ;;
+                        steam|steam_app*)       ;;
+                        *) wmv -a $(wmp) "$wid" ;;
+                    esac
+
+                    # autogroups
+                    while read -r line; do
+                        group="$(printf '%s\n' "$line" | cut -d\  -f 1)"
+                        class="$(printf '%s\n' "$line" | cut -d\  -f 2)"
+
+                        [ "$class" = "$CLASS" ] && group -a "$group" "$wid"
+                    done < "$autogroup"
+
                 }
                 ;;
-            ENTER)    chwso -r "$wid" ;;
-            FOCUS_IN) chwso -r "$wid" ;;
+            FOCUS_IN|ENTER)
+                pgrep cwm > /dev/null || {
+                    wtf "$wid"
+                }
+                ;;
         esac
     done
 }
