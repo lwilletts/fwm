@@ -98,6 +98,7 @@ dmenu -name "$(basename "$0")" -f -l "$L" -fn "$FONT" -p "$PROMPT" \
         open)      open               ;;
         shot)      shot               ;;
         pfw)       sel shot           ;;
+        reset)     reboot             ;;
         off)       poweroff           ;;
     esac
 }
