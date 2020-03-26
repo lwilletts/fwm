@@ -12,7 +12,7 @@ EOF
 }
 
 showAll() {
-    for wid in $(lsw); do
+    for wid in $($LSWCMD); do
         printf '%s\n' "$wid $(atomx WM_NAME "$wid")"
         printf '%s\n' "$wid $(atomx WM_CLASS "$wid")"
     done
@@ -21,13 +21,26 @@ showAll() {
 main() {
     test $# -eq 0 && usage 1
 
-    case "$1" in
-        -h|--help|help) usage 0 ;;
-    esac
-
     . fwmrc
 
-    showAll | grep -i "$@" | cut -d\  -f 1 | sort | uniq
+    case "$1" in
+        -h|--help|help)
+            usage 0
+            ;;
+        -a|all)
+            LSWCMD="lsw -a"
+            shift
+            ;;
+        -u|hid)
+            LSWCMD="lsw -u"
+            shift
+            ;;
+        *)
+            LSWCMD="lsw"
+            ;;
+    esac
+
+    showAll | grep -i "$@" | cut -d\  -f 1 | sort | uniq | sed 1d
 }
 
 main "$@"
