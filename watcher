@@ -10,7 +10,7 @@ Usage:
     $base
 EOF
 
-    test $# -eq 0 || exit "$1"
+    [ $# -eq 0 ] || exit "$1"
 }
 
 main() {
@@ -20,16 +20,23 @@ main() {
         case "$ev" in
             CREATE)
                 wattr o "$wid" || {
+                    NAME="$(atomx WM_NAME "$wid")"
                     CLASS="$(atomx WM_CLASS "$wid")"
+
                     case "$CLASS" in
                         qutebrowser)
                             [ "$(wattr xywh "$wid")" = "50 50 800 600" ] && {
                                 move center "$wid" "$(lsm -p)"
                             }
                             ;;
-                        discord|obs)            ;;
-                        steam|steam_app*)       ;;
-                        *) wmv -a $(wmp) "$wid" ;;
+                        obs)              ;;
+                        discord|Steam)    ;;
+                        midair*)
+                            move full "$wid"
+                            ;;
+                        kdenlive)
+                            move center "$wid"
+                            ;;
                     esac
 
                     # autogroups
@@ -37,14 +44,21 @@ main() {
                         group="$(printf '%s\n' "$line" | cut -d\  -f 1)"
                         class="$(printf '%s\n' "$line" | cut -d\  -f 2)"
 
-                        [ "$class" = "$CLASS" ] && group -a "$group" "$wid"
-                    done < "$autogroup"
+                        [ "$class" = "$CLASS" ] && {
+                            case "$CLASS" in
+                                obs)
+                                    case "$NAME" in
+                                        OBS*)    ;;
+                                        *) break ;;
+                                    esac
+                                    ;;
+                                Steam) break ;;
+                            esac
 
-                }
-                ;;
-            FOCUS_IN|ENTER)
-                pgrep cwm > /dev/null || {
-                    wtf "$wid"
+                            group -a "$group" "$wid"
+                            break
+                        }
+                    done < "$autogroup"
                 }
                 ;;
         esac
