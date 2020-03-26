@@ -127,11 +127,31 @@ hmaximise() {
     H=$(wattr h "$wid")
 }
 
+obs() {
+    SX=$(($(mattr x "$PRI") + LGAP))
+    SY=$(($(mattr y "$PRI") + TGAP))
+
+    X=$SX
+    Y=$SY
+    W=1280
+    H=720
+}
+
+
 double() {
     W=$(($(wattr w "$wid") * 2))
     H=$(($(wattr h "$wid") * 2))
     X=$(($(wattr x "$wid") - W / 4))
     Y=$(($(wattr y "$wid") - H / 4))
+
+    test "$W" -gt "$SW" && W=$SW
+    test "$H" -gt "$SH" && H=$SH
+
+    test "$X" -lt "$SX" && X=$SX
+    test "$Y" -lt "$SY" && Y=$SY
+
+    test "$((X + W))" -gt "$((SX + SW))" && X=$((SX + SW - W))
+    test "$((Y + H))" -gt "$((SY + SH))" && Y=$((SY + SH - H))
 }
 
 halve() {
@@ -139,6 +159,9 @@ halve() {
     H=$(($(wattr h "$wid") / 2))
     X=$(($(wattr x "$wid") + W / 2))
     Y=$(($(wattr y "$wid") + H / 2))
+
+    test "$W" -lt 222 && exit 0
+    test "$H" -lt 131 && exit 0
 }
 
 grow() {
@@ -249,7 +272,7 @@ main() {
     [ -n "$(atomx OLD_POS "$wid")" ] && {
         [ "$(atomx MODE "$wid")" = "$mode" ] && {
             case "$mode" in
-                full|maximise|vmaximise|hmaximise)
+                full|maximise|vmaximise|hmaximise|obs)
                     # test if window has moved since last run
                     [ "$(atomx NEW_POS "$wid")" != "$(wattr xywh "$wid")" ] && {
                         $mode
@@ -292,6 +315,7 @@ main() {
         -m|--maximise|maximise)         maximise    ; mode="maximise"    ;;
         -vm|--vmaximise|vmaximise)      vmaximise   ; mode="vmaximise"   ;;
         -hm|--hmaximise|hmaximise)      hmaximise   ; mode="hmaximise"   ;;
+        -o|--obs|obs)                   obs         ; mode="obs"         ;;
         -g|--grow|grow)                 grow        ;;
         -gd|--grow_down|grow_down)      grow_down   ;;
         -gr|--grow_right|grow_right)    grow_right  ;;
