@@ -21,40 +21,40 @@ EOF
 windowUp() {
     test "$PFW" = "0x00000000" && {
         mouseY="$(wmp -r | cut -d\  -f 2)"
-        printf '%s\n' "$slsw" | (xargs wattr yi; printf '%s\n' "$mouseY") | sort -nr | \
+        printf '%s\n' "$root" | (xargs wattr yi; printf '%s\n' "$mouseY") | sort -nr | \
             sed -n "/$mouseY/{n;p}" | cut -d\  -f 2
     } || {
-        printf '%s\n' "$slsw" | xargs wattr yi | sort -nr | sed -n "/$PFW/{n;p}" | cut -d\  -f 2
+        printf '%s\n' "$root" | xargs wattr yi | sort -nr | sed -n "/$PFW/{n;p}" | cut -d\  -f 2
     }
 }
 
 windowDown() {
     test "$PFW" = "0x00000000" && {
         mouseY="$(wmp -r | cut -d\  -f 2)"
-        printf '%s\n' "$slsw" | (xargs wattr yi; printf '%s\n' "$mouseY") | sort -n | \
+        printf '%s\n' "$root" | (xargs wattr yi; printf '%s\n' "$mouseY") | sort -n | \
             sed -n "/$mouseY/{n;p}" | cut -d\  -f 2
     } || {
-        printf '%s\n' "$slsw" | xargs wattr yi | sort -n | sed -n "/$PFW/{n;p}" | cut -d\  -f 2
+        printf '%s\n' "$root" | xargs wattr yi | sort -n | sed -n "/$PFW/{n;p}" | cut -d\  -f 2
     }
 }
 
 windowLeft() {
     test "$PFW" = "0x00000000" && {
         mouseX="$(wmp -r | cut -d\  -f 1)"
-        printf '%s\n' "$slsw" | (xargs wattr xi; printf '%s\n' "$mouseX") | sort -nr | \
+        printf '%s\n' "$root" | (xargs wattr xi; printf '%s\n' "$mouseX") | sort -nr | \
             sed -n "/$mouseX/{n;p}" | cut -d\  -f 2
     } || {
-        printf '%s\n' "$slsw" | xargs wattr xi | sort -nr | sed -n "/$PFW/{n;p}" | cut -d\  -f 2
+        printf '%s\n' "$root" | xargs wattr xi | sort -nr | sed -n "/$PFW/{n;p}" | cut -d\  -f 2
     }
 }
 
 windowRight() {
     test "$PFW" = "0x00000000" && {
         mouseX="$(wmp -r | cut -d\  -f 1)"
-        printf '%s\n' "$slsw" | (xargs wattr xi; printf '%s\n' "$mouseX") | sort -n | \
+        printf '%s\n' "$root" | (xargs wattr xi; printf '%s\n' "$mouseX") | sort -n | \
             sed -n "/$mouseX/{n;p}" | cut -d\  -f 2
     } || {
-        printf '%s\n' "$slsw" | xargs wattr xi | sort -n | sed -n "/$PFW/{n;p}" | cut -d\  -f 2
+        printf '%s\n' "$root" | xargs wattr xi | sort -n | sed -n "/$PFW/{n;p}" | cut -d\  -f 2
     }
 }
 
@@ -64,7 +64,14 @@ main() {
 
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
 
-    slsw="$(listwindows)"
+    case "$2" in
+        -s|--screen|screen)
+            root="$(listwindows)"
+            ;;
+        *)
+            root="$(lsw)"
+            ;;
+    esac
 
     case "$1" in
         -u|--up|up)       focus --wid "$(windowUp)"    ;;
