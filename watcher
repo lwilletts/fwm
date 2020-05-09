@@ -14,8 +14,6 @@ EOF
 }
 
 main() {
-    autogroup="$HOME/.autogroup"
-
     wew | while read -r ev wid; do
         case "$ev" in
             CREATE)
@@ -31,11 +29,20 @@ main() {
                             ;;
                         obs)              ;;
                         discord|Steam)    ;;
-                        midair*)
-                            move full "$wid"
+                        ?idair*)
+                            move full "$wid" "$(lsm -p)"
                             ;;
-                        kdenlive)
+                        python3|DiscordCanary)
                             move center "$wid"
+                            ;;
+                        tribes.exe)
+                            move full "$wid" "$(lsm -p)"
+                            ;;
+                        gl)
+                            sleep 0.2
+                            ;;
+                        *)
+                            wmv -a $(wmp) "$wid"
                             ;;
                     esac
 
@@ -59,10 +66,24 @@ main() {
                             break
                         }
                     done < "$autogroup"
+
+                    chwso -r "$wid"
+                    wtf "$wid"
+                }
+                ;;
+            DESTROY)
+                under > /dev/null && focus -w $(under)
+                ;;
+
+            ENTER)
+                pgrep cwm 2> /dev/null || {
+                    wattr o "$wid" || wtf "$wid"
                 }
                 ;;
         esac
     done
 }
+
+autogroup="$HOME/.autogroup"
 
 main "$@"
