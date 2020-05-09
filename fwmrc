@@ -63,7 +63,7 @@ wmgaps() {
     PRI="$(lsm -p)"
     SEC="$(lsm | grep -v "$PRI" | head -n 1)"
     export PRI SEC
-    export TGAP=30 BGAP=50 LGAP=30 RGAP=30 IGAP=20
+    export TGAP=50 BGAP=30 LGAP=30 RGAP=30 IGAP=10
 }
 
 wmcolours() {

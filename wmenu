@@ -1,5 +1,4 @@
 #!/bin/sh
-# shellcheck disable=SC2015
 #
 # wmenu
 
@@ -10,7 +9,7 @@ usage() {
 Usage:
     $ $base -b | bar <-au>    : Show as a bar on primary screen.
     $ $base -m | menu <-au>   : Show as a window.
-    $ $base -c | center <-au> : Show as a window center of primary screen.
+    $ $base -c | center <-au> : Show as a window centered above focused window.
     $ $base -h | help         : Show this help.
 EOF
 
@@ -70,7 +69,13 @@ center() {
 bar() {
     X=$((LGAP + BW))
     W=$(($(mattr w "$PRI") - LGAP - RGAP - BW*2))
-    Y=$(($(mattr h "$PRI") - FH * (nWindows + 1) - BGAP - BW*2))
+
+    # top bar
+    H=$((TGAP/2 + BW*2))
+    Y=$((H - TGAP/4))
+
+    # bottom bar
+    # Y=$(($(mattr h "$PRI") - FH * (nWindows + 1) - BGAP - BW*2))
 
     wmp -a "$((X + 40))" "$(($(mattr y "$PRI") + Y + 20))"
 }
