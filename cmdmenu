@@ -1,5 +1,4 @@
 #!/bin/sh
-# shellcheck disable=SC2015,SC2046
 #
 # cmdmenu
 

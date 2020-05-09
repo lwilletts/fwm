@@ -1,5 +1,4 @@
 #!/bin/sh
-# shellcheck disable=SC2015,SC2046
 #
 # programs
 
@@ -8,7 +7,9 @@ usage() {
 
     cat >&2 << EOF
 Usage:
-    $ $base
+    $ $base -m | menu   : Show as a window.
+    $ $base -c | center : Show as a window centered above focused window.
+    $ $base -h | help   : Show this help.
 EOF
 
     test $# -eq 0 || exit "$1"
@@ -68,6 +69,7 @@ main() {
         -m|menu)        menu    ;;
         -c|center)      center  ;;
         -h|--help|help) usage 0 ;;
+        *)              usage 1 ;;
     esac
 
     printf '%s\n' "$programs" | \
