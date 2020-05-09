@@ -158,10 +158,17 @@ main() {
             SCR="$(mattr i "$PFW" || pfm)"
             ;;
         2)
-            mattr "$2" && SCR="$2" || {
-                printf '%s\n' "$3 is not a connected screen."
-                exit 1
-            }
+            case "$2" in
+                "SEC")
+                    SCR="$(printf '%s\n' "$SEC" | head -n 1)"
+                    ;;
+                *)
+                    mattr "$2" && SCR="$2" || {
+                        printf '%s\n' "$3 is not a connected screen."
+                        exit 1
+                    }
+                    ;;
+            esac
             ;;
     esac
 
