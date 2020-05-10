@@ -1,5 +1,4 @@
 #!/bin/sh
-# shellcheck disable=SC2015
 #
 # fwmrc
 
@@ -102,11 +101,6 @@ shot
 pfw
 reset
 off"
-
-    programs="qutebrowser
-blender
-discord
-steam"
 
     export processes programs
 }

@@ -33,6 +33,15 @@ Mouse centric workflow menu. Create new terminals, move, resize and delete
 windows and their processes. Control clipboard and load from clipboard.
 Hardcoded font size for now.
 
+#### envreact
+
+Dynamic program launching / stopping based on other programs. Example config:
+
+```
+MidairCE picom_end
+obs cwm_run snip_run
+```
+
 #### focus
 
 Focus a window id, or cycle through the ordered stack of windows on screen.
@@ -44,10 +53,6 @@ Sets various environment variables like colours, gaps, borderwidth etc.
 #### group
 
 Group script to hide and show windows.
-
-#### lmenu
-
-Dmenu populated list of chosen programs, set in fwmrc.
 
 #### move
 
