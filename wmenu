@@ -77,6 +77,7 @@ bar() {
     # bottom bar
     # Y=$(($(mattr h "$PRI") - FH * (nWindows + 1) - BGAP - BW*2))
 
+    # position mouse
     wmp -a "$((X + 40))" "$(($(mattr y "$PRI") + Y + 20))"
 }
 
@@ -100,6 +101,8 @@ main() {
     nWindows=$($LSWCMD | grep -cv "$PFW")
     test "$nWindows" -eq 0 && exit 1
 
+    MOUSE="$(wmp)"
+
     case "$1" in
         -b|bar)    bar     ;;
         -m|menu)   menu    ;;
@@ -108,7 +111,7 @@ main() {
         *)         usage 1 ;;
     esac
 
-    focus -w "$(selection)"
+    focus -w "$(selection)" || wmp $MOUSE
 }
 
 main "$@"
