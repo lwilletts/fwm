@@ -1,0 +1,57 @@
+#!/bin/sh
+#
+# envreact
+
+usage() {
+    base=$(basename "$0")
+
+    cat >&2 << EOF
+Usage:
+    $base
+EOF
+
+    [ $# -eq 0 ] || exit "$1"
+}
+
+react() {
+    while read -r line; do
+        cmd="$(printf '%s\n' "$line" | cut -d\  -f 1)"
+        bin="$(printf '%s\n' "$cmd" | cut -d'_' -f 1)"
+        opt="$(printf '%s\n' "$cmd" | cut -d'_' -f 2)"
+
+        prgs="$(printf '%s\n' "$line" | cut -d\  -f 2-)"
+
+        # test strings to see if program is running
+        for prg in $prgs; do
+            pgrep -f "$prg" > /dev/null && prg_alive=1
+        done
+
+        case "$prg_alive" in
+            1)
+                case "$opt" in
+                    run) pgrep "$bin" > /dev/null || "$bin" & ;;
+                    end) pkill "$bin" 2> /dev/null            ;;
+                esac
+                ;;
+            *)
+                case "$opt" in
+                    end) pgrep "$bin" > /dev/null || "$bin" & ;;
+                    run) pkill "$bin" 2> /dev/null            ;;
+                esac
+                ;;
+        esac
+
+        unset prg_alive
+    done < "$autoreact"
+}
+
+main() {
+    autoreact="$HOME/.autoreact"
+
+    while :; do
+        react
+        sleep 1
+    done
+}
+
+main "$@"

@@ -1,7 +1,7 @@
 # fwm
 
-wmutils scripts to be used by themselves or with a simple window manager that
-doesn't get in the way.
+wmutils scripts to be used by themselves to provide a full environment or with
+a simple window manager that doesn't get in the way.
 
 Dependencies:
 - [core](https://github.com/wmutils/core)
@@ -9,14 +9,14 @@ Dependencies:
 - [mmutils](https://github.com/pockata/mmutils)
 
 Known good WMs:
-- [cwm](https://tools.suckless.org/dmenu)
+- [cwm](hhttps://github.com/leahneukirchen/cwm)
 - [glazier](https://git.z3bra.org/glazier/log.html)
 
 Optional:
 - [txtw](https://github.com/baskerville/txtw)
 - [dmenu](https://tools.suckless.org/dmenu)
 - [sxhkd](https://github.com/baskerville/sxhkd)
-- [xrectsel](https://github.com/lolilolicon/xrectsel)
+- [xrectsl](https://github.com/lolilolicon/xrectsel)
 
 #### adjust
 
@@ -25,21 +25,23 @@ Adjusts position of window in a direction by the $JUMP amount set in `fwmrc`.
 #### closer
 
 Focuses the closest window in a given direction. If no window is currently
-focused, uses mouse x y coordinates to find closest window.
+focused, mouse x y coordinates to find closest window.
 
 #### cmdmenu
 
 Mouse centric workflow menu. Create new terminals, move, resize and delete
 windows and their processes. Control clipboard and load from clipboard.
-Hardcoded font size for now.
+Hardcoded wm font size for now.
 
 #### envreact
 
-Dynamic program launching / stopping based on other programs. Example config:
+Dynamic program launching / stopping based on other programs. Reads
+`$HOME/.autoreact`. Example configuration file:
 
 ```
-MidairCE picom_end
-obs cwm_run snip_run
+cwm_run MidairCE
+snip_run obs
+picom_end MidairCE Tribes.exe DOOM ShadowOfTheTombRaider
 ```
 
 #### focus
@@ -52,7 +54,15 @@ Sets various environment variables like colours, gaps, borderwidth etc.
 
 #### group
 
-Group script to hide and show windows.
+Group script to hide and show windows. Reads `$HOME/.autogroup`. Example
+configuration file:
+
+```
+2 qutebrowser
+3 discord
+5 midair-win64-test.exe
+7 obs
+```
 
 #### move
 
