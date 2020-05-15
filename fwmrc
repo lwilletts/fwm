@@ -22,11 +22,18 @@ save_atom() {
     widCheck "$1" && wid="$1" || return 1
     mode="$2"
 
+    OLD_MODE="$(atomx MODE "$wid")"
+
     atomx MODE="$mode" "$wid" > /dev/null
     atomx NEW_POS="$X $Y $W $H" "$wid" > /dev/null
     atomx SCR="$(mattr i "$wid")" "$wid" > /dev/null
 
-    # don't overwrite the old window position
+    # overwrite old window position when mode is different
+    if [ "$mode" != "$OLD_MODE" ]; then
+        atomx OLD_POS="$(wattr xywh "$wid")" "$wid" > /dev/null
+    fi
+
+    # overwrite old window position if position has changed
     if [ -z "$(atomx OLD_POS "$wid")" ]; then
         atomx OLD_POS="$(wattr xywh "$wid")" "$wid" > /dev/null
     fi
@@ -87,7 +94,6 @@ dcolours() {
 
 wmenus() {
     processes="new
-launch
 connect
 move
 place

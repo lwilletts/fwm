@@ -35,9 +35,6 @@ main() {
                         python3|DiscordCanary)
                             move center "$wid"
                             ;;
-                        tribes.exe)
-                            move full "$wid" "$(lsm -p)"
-                            ;;
                         gl)
                             sleep 0.2
                             ;;

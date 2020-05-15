@@ -85,7 +85,6 @@ dmenu -name "$(basename "$0")" -f -l "$L" -fn "$FONT" -p "$PROMPT" \
 
     case "$process" in
         new)       new                ;;
-        launch)    lmenu -m           ;;
         connect)   sshmenu -m         ;;
         move)      sel move           ;;
         place)     sel place          ;;

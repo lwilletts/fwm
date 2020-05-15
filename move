@@ -272,7 +272,7 @@ main() {
     [ -n "$(atomx OLD_POS "$wid")" ] && {
         [ "$(atomx MODE "$wid")" = "$mode" ] && {
             case "$mode" in
-                full|maximise|vmaximise|hmaximise|obs)
+                center|full|maximise|vmaximise|hmaximise|obs)
                     # test if window has moved since last run
                     [ "$(atomx NEW_POS "$wid")" != "$(wattr xywh "$wid")" ] && {
                         $mode

@@ -32,13 +32,11 @@ show_group() {
     done
 
     atomx GROUP_"$1"=on "$ROOT" > /dev/null
-    focus -w "$wid"
 }
 
 hide_group() {
     for wid in $(lsw); do
         wg=$(atomx GROUP "$wid")
-        echo "$wg"
         [ -z "$wg" ] && continue
         [ "$wg" -eq "$1" ] && mapw -u "$wid"
     done
