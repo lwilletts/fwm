@@ -22,6 +22,10 @@ Optional:
 
 Adjusts position of window in a direction by the $JUMP amount set in `fwmrc`.
 
+#### autotile
+
+Quick and dirty script to autotile a monitor in a particular way.
+
 #### closer
 
 Focuses the closest window in a given direction. If no window is currently

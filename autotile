@@ -1,0 +1,58 @@
+#!/bin/sh
+#
+# autotile
+
+usage() {
+    base=$(basename "$0")
+
+    cat >&2 << EOF
+Usage:
+    $base [tile method] [monitor]
+EOF
+
+    [ $# -eq 0 ] || exit "$1"
+}
+
+main() {
+    . fwmrc
+    wmgaps
+
+    case "$1" in
+        -g|--grid|grid)     METHOD="grid"   ;;
+        -s|--split|split)   METHOD="split"  ;;
+        -v|--vert|vert)     METHOD="vert"   ;;
+        -l|--left|left)     METHOD="left"   ;;
+        -r|--right|right)   METHOD="right"  ;;
+        -b|--browse|browse) METHOD="browse" ;;
+        -h|--help|help)     usage 0  ;;
+        *)                  usage 1  ;;
+    esac
+
+    mattr "$2" && SCR="$2" || {
+        printf '%s\n\n' "$2 is not a connected screen."
+        usage 1
+    }
+
+    # init var
+    nWindowsOld=0
+
+
+    while :; do
+        nWindows="$(listwindows "$SEC" | wc -l)"
+
+        # compare number of current windows vs number of old windows
+        if [ "$nWindows" -ne "$nWindowsOld" ]; then
+            # kill xmmv when windows are dragged on to the screen
+            pkill xmmv 2> /dev/null
+
+            # autotile given monitor
+            tile "$METHOD" "$SCR"
+        fi
+
+        nWindowsOld="$nWindows"
+
+        sleep 0.25
+    done
+}
+
+main "$@"

@@ -164,8 +164,8 @@ main() {
                     ;;
                 *)
                     mattr "$2" && SCR="$2" || {
-                        printf '%s\n' "$3 is not a connected screen."
-                        exit 1
+                        printf '%s\n\n' "$2 is not a connected screen."
+                        usage 1
                     }
                     ;;
             esac
@@ -186,19 +186,21 @@ main() {
     SH=$(($(mattr h "$SCR") - TGAP - BGAP))
 
     case "$1" in
-        -g|--grid|grid)     grid    ;;
-        -s|--split|split)   split   ;;
-        -v|--vert|vert)     vertical;;
-        -l|--left|left)     left    ;;
-        -r|--right|right)   right   ;;
-        -b|--browse|browse) browse  ;;
-        -h|--help|help)     usage 0 ;;
-        *)                  usage 1 ;;
+        -g|--grid|grid)     grid     ;;
+        -s|--split|split)   split    ;;
+        -v|--vert|vert)     vertical ;;
+        -l|--left|left)     left     ;;
+        -r|--right|right)   right    ;;
+        -b|--browse|browse) browse   ;;
+        -h|--help|help)     usage 0  ;;
+        *)                  usage 1  ;;
     esac
 
     # move mouse to middle of window
-    wmp -a $(($(wattr x "$PFW") + $(wattr w "$PFW") / 2)) \
-           $(($(wattr y "$PFW") + $(wattr h "$PFW") / 2))
+    widCheck "$PFW" && {
+        wmp -a $(($(wattr x "$PFW") + $(wattr w "$PFW") / 2)) \
+               $(($(wattr y "$PFW") + $(wattr h "$PFW") / 2))
+    }
 }
 
 main "$@"
