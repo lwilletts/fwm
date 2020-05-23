@@ -8,6 +8,8 @@ usage() {
     cat >&2 << EOF
 Usage:
     $base
+
+$autoreact must exist and be populated.
 EOF
 
     [ $# -eq 0 ] || exit "$1"
@@ -47,6 +49,8 @@ react() {
 
 main() {
     autoreact="$HOME/.autoreact"
+
+    [ -f "$autoreact" ] || usage 1
 
     while :; do
         react
