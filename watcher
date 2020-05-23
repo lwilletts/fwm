@@ -17,10 +17,16 @@ main() {
     wew | while read -r ev wid; do
         case "$ev" in
             CREATE)
-                wattr o "$wid" || {
-                    NAME="$(atomx WM_NAME "$wid")"
-                    CLASS="$(atomx WM_CLASS "$wid")"
+                NAME="$(atomx WM_NAME "$wid")"
+                CLASS="$(atomx WM_CLASS "$wid")"
 
+                wattr o "$wid" && {
+                    case "$CLASS" in
+                        lemonbar)
+                            chwso -l "$wid"
+                            ;;
+                    esac
+                } || {
                     case "$CLASS" in
                         qutebrowser)
                             [ "$(wattr xywh "$wid")" = "50 50 800 600" ] && {
@@ -44,36 +50,40 @@ main() {
                     esac
 
                     # autogroups
-                    while read -r line; do
-                        group="$(printf '%s\n' "$line" | cut -d\  -f 1)"
-                        class="$(printf '%s\n' "$line" | cut -d\  -f 2)"
+                    [ -f "$autogroup" ] && {
+                        while read -r line; do
+                            group="$(printf '%s\n' "$line" | cut -d\  -f 1)"
+                            class="$(printf '%s\n' "$line" | cut -d\  -f 2)"
 
-                        [ "$class" = "$CLASS" ] && {
-                            case "$CLASS" in
-                                obs)
-                                    case "$NAME" in
-                                        OBS*)    ;;
-                                        *) break ;;
-                                    esac
-                                    ;;
-                                Steam) break ;;
-                            esac
+                            [ "$class" = "$CLASS" ] && {
+                                case "$CLASS" in
+                                    obs)
+                                        case "$NAME" in
+                                            OBS*)    ;;
+                                            *) break ;;
+                                        esac
+                                        ;;
+                                    Steam) break ;;
+                                esac
 
-                            group -a "$group" "$wid"
-                            break
-                        }
-                    done < "$autogroup"
+                                group -a "$group" "$wid"
+                                break
+                            }
+                        done < "$autogroup"
+                    }
 
                     chwso -r "$wid"
                     wtf "$wid"
                 }
                 ;;
             DESTROY)
+                # focus window underneath pointer if window is deleted
                 under > /dev/null && focus -w $(under)
                 ;;
 
             ENTER)
-                pgrep cwm 2> /dev/null || {
+                # only provide sloppy focus when cwm is not running
+                pgrep cwm > /dev/null 2>&1 || {
                     wattr o "$wid" || wtf "$wid"
                 }
                 ;;
