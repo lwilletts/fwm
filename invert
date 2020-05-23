@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+# invert
+
+usage() {
+    base=$(basename "$0")
+
+    cat >&2 << EOF
+Usage:
+    $base "search string"
+EOF
+
+    [ $# -eq 0 ] || exit "$1"
+}
+
+main() {
+    [ -z "$*" ] && usage 1
+
+    winlist="$(mktemp)"
+    wid -a "$@" > "$winlist"
+
+    while read -r wid; do
+        chwso -i "$wid"
+    done < "$winlist"
+
+    rm -rf "$winlist"
+}
+
+main "$@"
