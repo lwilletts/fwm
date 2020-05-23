@@ -165,12 +165,9 @@ halve() {
 }
 
 grow() {
-    X=$(($(wattr x "$wid") - JUMP / 2))
-    Y=$(($(wattr y "$wid") - JUMP / 2))
-    W=$(($(wattr w "$wid") + JUMP))
-    H=$(($(wattr h "$wid") + JUMP))
+    wmv -$(($JUMP / 2)) -$((JUMP / 2)) "$wid"
+    wrs $JUMP $JUMP "$wid"
 
-    wtp "$X" "$Y" "$W" "$H" "$wid"
     exit 0
 }
 
@@ -185,12 +182,9 @@ grow_right() {
 }
 
 shrink() {
-    X=$(($(wattr x "$wid") + JUMP / 2))
-    Y=$(($(wattr y "$wid") + JUMP / 2))
-    W=$(($(wattr w "$wid") - JUMP))
-    H=$(($(wattr h "$wid") - JUMP))
+    wmv $(($JUMP / 2)) $((JUMP / 2)) "$wid"
+    wrs -$JUMP -$JUMP "$wid"
 
-    wtp "$X" "$Y" "$W" "$H" "$wid"
     exit 0
 }
 
