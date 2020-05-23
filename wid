@@ -31,6 +31,10 @@ main() {
             LSWCMD="lsw -a"
             shift
             ;;
+        -o|ovr)
+            LSWCMD="lsw -o"
+            shift
+            ;;
         -u|hid)
             LSWCMD="lsw -u"
             shift
@@ -40,7 +44,7 @@ main() {
             ;;
     esac
 
-    showAll | grep -i "$@" | cut -d\  -f 1 | sort | uniq | sed 1d
+    showAll | grep -Fi "$@" | grep -v "wid" | cut -d\  -f 1 | sort | uniq
 }
 
 main "$@"
