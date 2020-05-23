@@ -36,12 +36,20 @@ main() {
     # init var
     nWindowsOld=0
 
-
     while :; do
         nWindows="$(listwindows "$SEC" | wc -l)"
 
         # compare number of current windows vs number of old windows
         if [ "$nWindows" -ne "$nWindowsOld" ]; then
+
+            # readjust counter
+            nWindowsOld="$nWindows"
+
+            # exceptions to autotiling
+            case "$(atomx WM_CLASS "$(lsw | tail -n 1)")" in
+                python3|DiscordCanary) continue ;;
+            esac
+
             # kill xmmv when windows are dragged on to the screen
             pkill xmmv 2> /dev/null
 
@@ -49,9 +57,8 @@ main() {
             tile "$METHOD" "$SCR"
         fi
 
-        nWindowsOld="$nWindows"
 
-        sleep 0.25
+        sleep 0.20
     done
 }
 
