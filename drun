@@ -1,0 +1,82 @@
+#!/bin/zsh
+
+usage() {
+    base="$(basename "$0")"
+
+    cat >&2 << EOF
+Usage:
+    $ $base -b | bar    : Show as a bar on primary screen.
+    $ $base -c | center : Show as a window centered above focused window.
+    $ $base -h | help   : Show this help.
+EOF
+
+    [  $# -eq 0 ] || exit "$1"
+}
+
+bar() {
+    L=0
+
+    X=$((LGAP + BW))
+    W=$(($(mattr w "$PFM") - LGAP - RGAP - BW*2))
+
+    # top bar
+    H=$((TGAP/2 + BW*2))
+    Y=$((H - TGAP/4))
+
+    # bottom bar
+    # Y=$(($(mattr h "$PRI") - FH * (nWindows + 1) - BGAP - BW*2))
+}
+
+center() {
+    W="150"
+    H=$((L * FH))
+
+    # finding x y cords for centering
+    [ "$PFW" = "0x00000000" ] && {
+        X=$(($(mattr w "$PFM")/2 - W/2 - 10))
+        Y=$(($(mattr h "$PFM")/2 - H/2 - 10))
+    } || {
+        X0="$(mattr x "$PFM")"
+        Y0="$(mattr y "$PFM")"
+        X=$(($(wattr x "$PFW") + $(wattr w "$PFW")/2 - W/2 - X0))
+        Y=$(($(wattr y "$PFW") + $(wattr h "$PFW")/2 - H/2 - Y0))
+
+        # move mouse to middle of window
+        wmp -a $(($(wattr x "$PFW") + $(wattr w "$PFW") / 2)) \
+               $(($(wattr y "$PFW") + $(wattr h "$PFW") / 2))
+    }
+
+    H=$L
+}
+
+main() {
+    . fwmrc
+    wmenv
+    wmgaps
+    dcolours
+
+    PFM="$(pfm)"
+    FONT=$(awk '/font/ {print $3}' < ~/.Xresources | cut -d',' -f 1)
+    FH=15
+    L=10
+    PROMPT=" Run >"
+
+    case "$1" in
+        -b|bar)    bar     ;;
+        -c|center) center  ;;
+        -h|help)   usage 0 ;;
+        *)         usage 1 ;;
+    esac
+
+    printf '%s\n' "$PATH" | sed 's/:/\n/g' | while read -r dir; do
+        printf '%s\n' "$(find -L $dir/* -type f -executable)" | \
+            rev | cut -d/ -f 1 | rev
+    done | sort -u | \
+    dmenu -name "drun" -f -i -fn "$FONT" -p "$PROMPT" \
+    -nf "#$NF" -sf "#$SF" -nb "#$NB" -sb "#$SB" -bc "#$BC" \
+    -s "$(mattr d "$PFM")" -x $X -y $Y -w $W -h "$H" -bw $BW -l $L \
+    | ${SHELL:-"/bin/sh"} &
+}
+
+main "$@"
+

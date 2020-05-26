@@ -37,6 +37,11 @@ Mouse centric workflow menu. Create new terminals, move, resize and delete
 windows and their processes. Control clipboard and load from clipboard.
 Hardcoded wm font size for now.
 
+#### drun
+
+Open programs using dmenu either as a bar or as a floating window placed in the
+center of current screen.
+
 #### envreact
 
 Dynamic program launching / stopping based on other programs. Reads
@@ -123,7 +128,7 @@ given string.
 #### wmenu
 
 dmenu selection menu for visible windows. Functions either as a bar, floating
-window based on mouse location, or a floating window placed in the center of
+window based on mouse location, or as a floating window placed in the center of
 current screen.
 
 ## src
