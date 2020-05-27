@@ -30,6 +30,7 @@ main() {
                     case "$CLASS" in
                         qutebrowser)
                             [ "$(wattr xywh "$wid")" = "50 50 800 600" ] && {
+                                wrs 200 200 "$wid"
                                 move center "$wid" "$(lsm -p)"
                             }
                             ;;

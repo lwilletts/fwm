@@ -201,6 +201,9 @@ main() {
         wmp -a $(($(wattr x "$PFW") + $(wattr w "$PFW") / 2)) \
                $(($(wattr y "$PFW") + $(wattr h "$PFW") / 2))
     }
+
+    # clean temp file
+    rm "$winlist"
 }
 
 main "$@"

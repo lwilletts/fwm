@@ -57,7 +57,7 @@ listwindows() {
         *) SCR="$(pfm)" ;;
     esac
 
-    mattr si $(lsw) | grep "$SCR" | cut -d\  -f 1
+    lsw | xargs -n 1 mattr si 2> /dev/null | grep -F "$SCR" | cut -d\  -f 1
 }
 
 wmenv() {
