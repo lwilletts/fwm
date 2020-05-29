@@ -24,14 +24,16 @@ main() {
         -l|--left|left)     METHOD="left"   ;;
         -r|--right|right)   METHOD="right"  ;;
         -b|--browse|browse) METHOD="browse" ;;
-        -h|--help|help)     usage 0  ;;
-        *)                  usage 1  ;;
+        -h|--help|help)     usage 0         ;;
+        *)                  usage 1         ;;
     esac
 
-    mattr "$2" && SCR="$2" || {
+    if mattr "$2"; then
+        SCR="$2"
+    else
         printf '%s\n\n' "$2 is not a connected screen."
         usage 1
-    }
+    fi
 
     # init var
     nWindowsOld=0
@@ -41,24 +43,24 @@ main() {
 
         # compare number of current windows vs number of old windows
         if [ "$nWindows" -ne "$nWindowsOld" ]; then
-
-            # readjust counter
-            nWindowsOld="$nWindows"
-
             # exceptions to autotiling
             case "$(atomx WM_CLASS "$(lsw | tail -n 1)")" in
                 python3|DiscordCanary) continue ;;
             esac
 
-            # kill xmmv when windows are dragged on to the screen
-            pkill xmmv 2> /dev/null
+            # kill xmmv only when a window is dragged to the screen
+            if [ "$nWindows" -gt "$nWindowsOld" ]; then
+                pkill xmmv 2> /dev/null
+            fi
 
             # autotile given monitor
             tile "$METHOD" "$SCR"
+
+            # re-adjust counter
+            nWindowsOld="$nWindows"
         fi
 
-
-        sleep 0.20
+        sleep 0.10
     done
 }
 
