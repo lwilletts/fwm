@@ -28,7 +28,7 @@ bar() {
 }
 
 center() {
-    W="150"
+    W="180"
     H=$((L * FH))
 
     # finding x y cords for centering
@@ -41,9 +41,9 @@ center() {
         X=$(($(wattr x "$PFW") + $(wattr w "$PFW")/2 - W/2 - X0))
         Y=$(($(wattr y "$PFW") + $(wattr h "$PFW")/2 - H/2 - Y0))
 
-        # move mouse to middle of window
-        wmp -a $(($(wattr x "$PFW") + $(wattr w "$PFW") / 2)) \
-               $(($(wattr y "$PFW") + $(wattr h "$PFW") / 2))
+        # move mouse to optimal selection position
+        wmp -a $(($(wattr x "$PFW") + $(wattr w "$PFW") / 2 - W / 2 + 20)) \
+               $(($(wattr y "$PFW") + $(wattr h "$PFW") / 2 - H / 2 + 20))
     }
 
     H=$L
