@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2015
 #
 # under
 
@@ -22,10 +23,8 @@ main() {
         [ "$((windowY + windowH))" -lt "$pointY" ] && continue
 
         # print wid on detection if no args passed
-        [ "$#" -eq 0 ] && {
-            printf '%s\n' "$wid"
-            exit
-        }
+        [ "$#" -eq 0 ] && printf '%s\n' "$wid"
+        exit
     done
 
     # run args as command to shell as no window was detected
