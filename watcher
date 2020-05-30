@@ -14,6 +14,10 @@ EOF
 }
 
 main() {
+    . fwmrc
+    wmenv
+    wmgaps
+
     wew | while read -r ev wid; do
         case "$ev" in
             CREATE)
@@ -75,7 +79,7 @@ main() {
             ENTER)
                 # only provide sloppy focus when cwm is not running
                 pgrep cwm > /dev/null 2>&1 || {
-                    wattr o "$wid" || wtf "$wid"
+                    wattr o "$wid" || focus -w "$wid" nojump
                 }
                 ;;
         esac

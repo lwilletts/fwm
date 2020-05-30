@@ -1,5 +1,4 @@
 #!/bin/sh
-# shellcheck disable=SC2015
 #
 # tile
 
@@ -16,7 +15,7 @@ Usage:
     $ $base -h | --help  : Show this help
 EOF
 
-    test $# -eq 0 || exit "$1"
+    [ $# -eq 0 ] || exit "$1"
 }
 
 # stolen logic from switch_grid from contrib
@@ -82,7 +81,7 @@ vertical() {
 left() {
     Y=$SY
     W=$(echo "$SW / 100 * 33" | bc -l | cut -d. -f 1)
-    test $W -lt 445 && W=445
+    [ "$W" -lt 445 ] && W=445
 
     X=$((SX + SW - W))
     H=$(((SH + IGAP) / (nWindows - 1) - IGAP))
@@ -102,7 +101,7 @@ right() {
     Y=$SY
     H=$(((SH + IGAP) / (nWindows - 1) - IGAP))
     W=$(echo "$SW / 100 * 33" | bc -l | cut -d. -f 1)
-    test $W -lt 445 && W=445
+    [ "$W" -lt 445 ] && W=445
 
     while read -r line; do
         wid="$(printf '%s\n' "$line" | cut -d\  -f 5)"
@@ -178,7 +177,7 @@ main() {
     nWindows="$(wc -l < "$winlist")"
 
     # test if possible to tile
-    test "$nWindows" -eq 0 && exit 2
+    [ "$nWindows" -eq 0 ] && exit 2
 
     SX=$(($(mattr x "$SCR") + LGAP))
     SY=$(($(mattr y "$SCR") + TGAP))
@@ -198,8 +197,8 @@ main() {
 
     # move mouse to middle of window
     widCheck "$PFW" && {
-        wmp -a $(($(wattr x "$PFW") + $(wattr w "$PFW") / 2)) \
-               $(($(wattr y "$PFW") + $(wattr h "$PFW") / 2))
+        wmp -a $(($(wattr x "$PFW") + $(wattr w "$PFW") / 2 + BW)) \
+               $(($(wattr y "$PFW") + $(wattr h "$PFW") / 2 + BW))
     }
 
     # clean temp file

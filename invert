@@ -23,7 +23,7 @@ main() {
         chwso -i "$wid"
     done < "$winlist"
 
-    rm -rf "$winlist"
+    rm "$winlist"
 }
 
 main "$@"

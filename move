@@ -1,5 +1,4 @@
 #!/bin/sh
-# shellcheck disable=SC2015
 #
 # move
 
@@ -144,14 +143,14 @@ double() {
     X=$(($(wattr x "$wid") - W / 4))
     Y=$(($(wattr y "$wid") - H / 4))
 
-    test "$W" -gt "$SW" && W=$SW
-    test "$H" -gt "$SH" && H=$SH
+    [ "$W" -gt "$SW" ] && W=$SW
+    [ "$H" -gt "$SH" ] && H=$SH
 
-    test "$X" -lt "$SX" && X=$SX
-    test "$Y" -lt "$SY" && Y=$SY
+    [ "$X" -lt "$SX" ] && X=$SX
+    [ "$Y" -lt "$SY" ] && Y=$SY
 
-    test "$((X + W))" -gt "$((SX + SW))" && X=$((SX + SW - W))
-    test "$((Y + H))" -gt "$((SY + SH))" && Y=$((SY + SH - H))
+    [ "$((X + W))" -gt "$((SX + SW))" ] && X=$((SX + SW - W))
+    [ "$((Y + H))" -gt "$((SY + SH))" ] && Y=$((SY + SH - H))
 }
 
 halve() {
@@ -160,8 +159,8 @@ halve() {
     X=$(($(wattr x "$wid") + W / 2))
     Y=$(($(wattr y "$wid") + H / 2))
 
-    test "$W" -lt 222 && exit 0
-    test "$H" -lt 131 && exit 0
+    [ "$W" -lt 222 ] && exit 0
+    [ "$H" -lt 131 ] && exit 0
 }
 
 grow() {
@@ -212,9 +211,8 @@ position() {
     wtp "$X" "$Y" "$W" "$H" "$wid"
 
     # move mouse to middle of window
-    wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2)) \
-           $(($(wattr y "$wid") + $(wattr h "$wid") / 2))
-
+    wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2 + BW)) \
+           $(($(wattr y "$wid") + $(wattr h "$wid") / 2 + BW))
 }
 
 main() {
@@ -282,8 +280,8 @@ main() {
                         [ "$mode" = "full" ] && chwb -s "$BW" -c "$ACTIVE" "$wid"
 
                         # move mouse to middle of window
-                        wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2)) \
-                               $(($(wattr y "$wid") + $(wattr h "$wid") / 2))
+                        wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2 + BW)) \
+                               $(($(wattr y "$wid") + $(wattr h "$wid") / 2 + BW))
 
                         # clean atoms
                         del_atom "$wid"
