@@ -1,5 +1,4 @@
 #!/bin/sh
-# shellcheck disable=SC2015
 #
 # under
 
@@ -12,23 +11,25 @@ main() {
         windowY="$(wattr y "$wid")"
 
         # no match if the left and top edges are greater than X or Y
-        test "$windowX" -gt "$pointX" && continue
-        test "$windowY" -gt "$pointY" && continue
+        [ "$windowX" -gt "$pointX" ] && continue
+        [ "$windowY" -gt "$pointY" ] && continue
 
         windowW="$(wattr w "$wid")"
         windowH="$(wattr h "$wid")"
 
         # no match if the right and bottom edges are less than X or Y
-        test "$((windowX + windowW))" -lt "$pointX" && continue
-        test "$((windowY + windowH))" -lt "$pointY" && continue
+        [ "$((windowX + windowW))" -lt "$pointX" ] && continue
+        [ "$((windowY + windowH))" -lt "$pointY" ] && continue
 
         # print wid on detection if no args passed
-        test "$#" -eq 0 && printf '%s\n' "$wid"
-        exit
+        [ "$#" -eq 0 ] && {
+            printf '%s\n' "$wid"
+            exit
+        }
     done
 
     # run args as command to shell as no window was detected
-    test "$#" -gt 0 && sh -c "$@"
+    [ "$#" -gt 0 ] && sh -c "$@"
 }
 
 main "$@"

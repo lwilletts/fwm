@@ -10,7 +10,7 @@ Usage:
     $ $base -h | help   : Show this help.
 EOF
 
-    [  $# -eq 0 ] || exit "$1"
+    [ $# -eq 0 ] || exit "$1"
 }
 
 bar() {

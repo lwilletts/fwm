@@ -10,7 +10,7 @@ Usage:
     $ $base
 EOF
 
-    test $# -eq 0 || exit "$1"
+    [ $# -eq 0 ] || exit "$1"
 }
 
 width() {

@@ -1,5 +1,4 @@
 #!/bin/sh
-# shellcheck disable=SC2015
 #
 # closer
 
@@ -8,18 +7,18 @@ usage() {
 
     cat >&2 << EOF
 Usage:
-    $ $base -u | up    : Focus next window up.
-    $ $base -l | left  : Focus next window left.
-    $ $base -d | down  : Focus next window down.
-    $ $base -r | right : Focus next window right.
-    $ $base -h | help  : Show this help.
+    $ $base -u | up    < -s | screen > : Focus next window up.
+    $ $base -l | left  < -s | screen > : Focus next window left.
+    $ $base -d | down  < -s | screen > : Focus next window down.
+    $ $base -r | right < -s | screen > : Focus next window right.
+    $ $base -h | help  < -s | screen > : Show this help.
 EOF
 
-    test $# -eq 0 || exit "$1"
+    [ $# -eq 0 ] || exit "$1"
 }
 
 windowUp() {
-    test "$PFW" = "0x00000000" && {
+    [ "$PFW" = "0x00000000" ] && {
         mouseY="$(wmp -r | cut -d\  -f 2)"
         printf '%s\n' "$root" | (xargs wattr yi; printf '%s\n' "$mouseY") | sort -nr | \
             sed -n "/$mouseY/{n;p}" | cut -d\  -f 2
@@ -29,7 +28,7 @@ windowUp() {
 }
 
 windowDown() {
-    test "$PFW" = "0x00000000" && {
+    [ "$PFW" = "0x00000000" ] && {
         mouseY="$(wmp -r | cut -d\  -f 2)"
         printf '%s\n' "$root" | (xargs wattr yi; printf '%s\n' "$mouseY") | sort -n | \
             sed -n "/$mouseY/{n;p}" | cut -d\  -f 2
@@ -39,7 +38,7 @@ windowDown() {
 }
 
 windowLeft() {
-    test "$PFW" = "0x00000000" && {
+    [ "$PFW" = "0x00000000" ] && {
         mouseX="$(wmp -r | cut -d\  -f 1)"
         printf '%s\n' "$root" | (xargs wattr xi; printf '%s\n' "$mouseX") | sort -nr | \
             sed -n "/$mouseX/{n;p}" | cut -d\  -f 2
@@ -49,7 +48,7 @@ windowLeft() {
 }
 
 windowRight() {
-    test "$PFW" = "0x00000000" && {
+    [  "$PFW" = "0x00000000" ] && {
         mouseX="$(wmp -r | cut -d\  -f 1)"
         printf '%s\n' "$root" | (xargs wattr xi; printf '%s\n' "$mouseX") | sort -n | \
             sed -n "/$mouseX/{n;p}" | cut -d\  -f 2
@@ -65,12 +64,8 @@ main() {
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
 
     case "$2" in
-        -s|--screen|screen)
-            root="$(listwindows)"
-            ;;
-        *)
-            root="$(lsw)"
-            ;;
+        -s|--screen|screen) root="$(listwindows)" ;;
+        *)                  root="$(lsw)"         ;;
     esac
 
     case "$1" in

@@ -1,5 +1,4 @@
 #!/bin/sh
-# shellcheck disable=SC2015
 #
 # adjust
 
@@ -14,7 +13,7 @@ Usage:
     $ $base -r | right $PFW : Move $JUMP pixels right.
 EOF
 
-    test $# -eq 0 || exit "$1"
+    [  $# -eq 0 ] || exit "$1"
 }
 
 main() {
@@ -33,8 +32,8 @@ main() {
     esac
 
     # move mouse to middle of window
-    wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2)) \
-           $(($(wattr y "$wid") + $(wattr h "$wid") / 2))
+    wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2 + BW)) \
+           $(($(wattr y "$wid") + $(wattr h "$wid") / 2 + BW))
 }
 
 main "$@"

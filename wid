@@ -1,5 +1,4 @@
 #!/bin/sh
-# shellcheck disable=SC2015
 #
 # wid
 
@@ -8,7 +7,7 @@ usage() {
 Usage: $(basename "$0") "search string"
 EOF
 
-    test $# -eq 0 || exit "$1"
+    [ $# -eq 0 ] || exit "$1"
 }
 
 showAll() {
