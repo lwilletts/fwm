@@ -31,6 +31,20 @@ main() {
                             ;;
                     esac
                 } || {
+                    # autogroups
+                    [ -f "$autogroup" ] && {
+                        while read -r line; do
+                            group="$(printf '%s\n' "$line" | cut -d\  -f 1)"
+                            class="$(printf '%s\n' "$line" | cut -d\  -f 2)"
+
+                            [ "$class" = "$CLASS" ] && {
+                                group -a "$group" "$wid"
+                                break
+                            }
+                        done < "$autogroup"
+                    }
+
+                    # position
                     case "$CLASS" in
                         qutebrowser)
                             [ "$(wattr xywh "$wid")" = "50 50 800 600" ] && {
@@ -54,26 +68,12 @@ main() {
                             ;;
                     esac
 
-                    # autogroups
-                    [ -f "$autogroup" ] && {
-                        while read -r line; do
-                            group="$(printf '%s\n' "$line" | cut -d\  -f 1)"
-                            class="$(printf '%s\n' "$line" | cut -d\  -f 2)"
-
-                            [ "$class" = "$CLASS" ] && {
-                                group -a "$group" "$wid"
-                                break
-                            }
-                        done < "$autogroup"
-                    }
-
-                    chwso -r "$wid"
-                    wtf "$wid"
+                    focus -w "$wid" nojump
                 }
                 ;;
             DESTROY)
                 # focus window underneath pointer if window is deleted
-                under > /dev/null && focus -w $(under)
+                under > /dev/null && focus -w "$(under)"
                 ;;
 
             ENTER)

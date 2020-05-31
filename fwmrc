@@ -62,7 +62,7 @@ listwindows() {
 
 wmenv() {
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
-    export PFW BW=2 JUMP=20
+    export PFW BW=1 JUMP=20
 }
 
 wmgaps() {
@@ -77,7 +77,8 @@ wmcolours() {
     URGENT="$(grep -w "color1" "$CLR" | cut -d\# -f 2)"
     ACTIVE="$(grep -w "foreground" "$CLR" | cut -d\# -f 2)"
     INACTIVE="$(grep -w "background" "$CLR" | cut -d\# -f 2)"
-    export ACTIVE URGENT INACTIVE
+    DIM="808080"
+    export ACTIVE URGENT INACTIVE DIM
 }
 
 dcolours() {
