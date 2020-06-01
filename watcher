@@ -52,8 +52,11 @@ main() {
                                 move center "$wid" "$(lsm -p)"
                             }
                             ;;
-                        obs)           continue ;;
-                        discord|Steam) continue ;;
+                        obs|discord|Steam)
+                            chwb -s "$BW" -c "$DIM" "$PFW"
+                            chwso -l "$wid"
+                            continue
+                            ;;
                         ?idair*)
                             move full "$wid" "$(lsm -p)"
                             ;;
@@ -62,13 +65,14 @@ main() {
                             ;;
                         gl)
                             sleep 0.2
+                            wmv -a $(wmp) "$wid"
                             ;;
                         *)
                             wmv -a $(wmp) "$wid"
                             ;;
                     esac
 
-                    focus -w "$wid" nojump
+                    focus -w "$wid"
                 }
                 ;;
             DESTROY)

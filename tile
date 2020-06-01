@@ -173,7 +173,7 @@ main() {
 
     # save windows to tmp in window stack order
     winlist="$(mktemp)"
-    wattr xywhi $(listwindows "$SCR" | tac) > "$winlist"
+    wattr xywhi $(listwindows "$SCR") > "$winlist"
     nWindows="$(wc -l < "$winlist")"
 
     # test if possible to tile

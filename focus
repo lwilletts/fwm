@@ -50,18 +50,19 @@ focus() {
     if [ "$(atomx MODE "$wid")" = "full" ]; then
         chwb -s "$BW" -c "$DIM" "$PFW"
         chwb -s 0 "$wid"
-    fi
-
-    # set border when focusing from a fullscreen wid
-    if [ "$(atomx MODE "$PFW")" = "full" ]; then
-        chwb -s 0 "$PFW"
-        chwb -s "$BW" -c "$ACTIVE" "$wid"
     else
-        # normal focusing
-        chwb -s "$BW" -c "$DIM" "$PFW"
-        chwb -s "$BW" -c "$ACTIVE" "$wid"
+        # set border when focusing from a fullscreen wid
+        if [ "$(atomx MODE "$PFW")" = "full" ]; then
+            chwb -s 0 "$PFW"
+            chwb -s "$BW" -c "$ACTIVE" "$wid"
+        else
+            # normal focusing
+            chwb -s "$BW" -c "$DIM" "$PFW"
+            chwb -s "$BW" -c "$ACTIVE" "$wid"
+        fi
     fi
 
+    # move mouse to center of new window
     if [ -z "$nojump" ]; then
         wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2 + BW)) \
                $(($(wattr y "$wid") + $(wattr h "$wid") / 2 + BW))
