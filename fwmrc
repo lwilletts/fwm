@@ -68,8 +68,9 @@ wmenv() {
 wmgaps() {
     PRI="$(lsm -p)"
     SEC="$(lsm | grep -v "$PRI" | head -n 1)"
-    export PRI SEC
-    export TGAP=50 BGAP=30 LGAP=30 RGAP=30 IGAP=10
+    BAR="bottom"
+    export PRI SEC BAR
+    export TGAP=30 BGAP=60 LGAP=30 RGAP=30 IGAP=10
 }
 
 wmcolours() {
@@ -84,21 +85,19 @@ wmcolours() {
 dcolours() {
     wmcolours
 
-    NF="$INACTIVE"
-    SF="$ACTIVE"
-    NB="$ACTIVE"
-    SB="$INACTIVE"
-    BC="$INACTIVE"
+    NF="$ACTIVE"   # normal foreground
+    SF="$INACTIVE" # selected forground
+    NB="$INACTIVE" # normal background
+    SB="$ACTIVE"   # selected background
+    BC="$ACTIVE"   # border colour
 
     export NF SF NB SB BC
 }
 
 wmenus() {
     processes="new
-connect
+ssh
 move
-place
-select
 resize
 delete
 terminate

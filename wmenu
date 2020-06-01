@@ -13,7 +13,7 @@ Usage:
     $ $base -h | help         : Show this help.
 EOF
 
-    test $# -eq 0 || exit "$1"
+    [ $# -eq 0 ] || exit "$1"
 }
 
 width() {
@@ -67,15 +67,16 @@ center() {
 }
 
 bar() {
-    X=$((LGAP + BW))
+    X=$((LGAP))
     W=$(($(mattr w "$PRI") - LGAP - RGAP - BW*2))
 
-    # top bar
-    H=$((TGAP/2 + BW*2))
-    Y=$((H - TGAP/4))
-
-    # bottom bar
-    # Y=$(($(mattr h "$PRI") - FH * (nWindows + 1) - BGAP - BW*2))
+    if [ "$BAR" = "top" ]; then
+        H=$((TGAP/2 + BW*2))
+        Y=$((H - TGAP/4))
+    else
+        H=$((BGAP/2 + BW*2))
+        Y=$(($(mattr h "$PRI") - FH * (nWindows + 1) - BGAP))
+    fi
 
     # position mouse
     wmp -a "$((X + 40))" "$(($(mattr y "$PRI") + Y + 20))"
