@@ -37,7 +37,7 @@ main() {
                             group="$(printf '%s\n' "$line" | cut -d\  -f 1)"
                             class="$(printf '%s\n' "$line" | cut -d\  -f 2)"
 
-                            [ "$class" = "$CLASS" ] && {
+                            [ "$class" = "$CLASS" ] && wattr m "$wid" && {
                                 group -a "$group" "$wid"
                                 break
                             }
@@ -59,13 +59,14 @@ main() {
                             ;;
                         ?idair*)
                             move full "$wid" "$(lsm -p)"
+                            chwso -l "$wid"
+                            continue
                             ;;
                         python3|DiscordCanary)
                             move center "$wid"
                             ;;
                         gl)
                             sleep 0.2
-                            wmv -a $(wmp) "$wid"
                             ;;
                         *)
                             wmv -a $(wmp) "$wid"
@@ -81,10 +82,7 @@ main() {
                 ;;
 
             ENTER)
-                # only provide sloppy focus when cwm is not running
-                pgrep cwm > /dev/null 2>&1 || {
-                    wattr o "$wid" || focus -w "$wid" nojump
-                }
+                wattr o "$wid" || focus -w "$wid" nojump
                 ;;
         esac
     done

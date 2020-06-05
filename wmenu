@@ -100,7 +100,7 @@ main() {
     esac
 
     nWindows=$($LSWCMD | grep -cv "$PFW")
-    test "$nWindows" -eq 0 && exit 1
+    [ "$nWindows" -eq 0 ] && exit 1
 
     MOUSE="$(wmp)"
 
