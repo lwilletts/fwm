@@ -23,8 +23,10 @@ menu() {
     # menu geometry
     X0="$(mattr x "$PFM")"
     Y0="$(mattr y "$PFM")"
-    X=$(($(wmp | cut -d\  -f 1) - X0 - 20))
-    Y=$(($(wmp | cut -d\  -f 2) - Y0 - 20))
+
+    mouse="$(wmp)"
+    X=$((${mouse% *} - X0 - 20))
+    Y=$((${mouse#* } - Y0 - 20))
 }
 
 center() {

@@ -13,6 +13,14 @@ EOF
     [ $# -eq 0 ] || exit "$1"
 }
 
+# add delay and to execute in the background
+addgroup() {
+    sleep 2
+
+    # test if window has appeared and add to group
+    wattr m "$wid" && group -a "$1" "$2"
+}
+
 main() {
     . fwmrc
     wmenv
@@ -34,11 +42,11 @@ main() {
                     # autogroups
                     [ -f "$autogroup" ] && {
                         while read -r line; do
-                            group="$(printf '%s\n' "$line" | cut -d\  -f 1)"
-                            class="$(printf '%s\n' "$line" | cut -d\  -f 2)"
+                            group=${line% *}
+                            class=${line#* }
 
-                            [ "$class" = "$CLASS" ] && wattr m "$wid" && {
-                                group -a "$group" "$wid"
+                            [ "$class" = "$CLASS" ] && {
+                                addgroup "$group" "$wid" &
                                 break
                             }
                         done < "$autogroup"

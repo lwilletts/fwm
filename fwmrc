@@ -85,11 +85,11 @@ wmcolours() {
 dcolours() {
     wmcolours
 
-    NF="$ACTIVE"   # normal foreground
-    SF="$INACTIVE" # selected forground
-    NB="$INACTIVE" # normal background
-    SB="$ACTIVE"   # selected background
-    BC="$ACTIVE"   # border colour
+    NF="$INACTIVE" # normal foreground
+    SF="$ACTIVE"   # selected forground
+    NB="$ACTIVE"   # normal background
+    SB="$INACTIVE" # selected background
+    BC="$INACTIVE" # border colour
 
     export NF SF NB SB BC
 }

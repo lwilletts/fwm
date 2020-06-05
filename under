@@ -1,11 +1,11 @@
 #!/bin/sh
-# shellcheck disable=SC2015
 #
 # under
 
 main() {
-    pointX=$(wmp | cut -d\  -f 1)
-    pointY=$(wmp | cut -d\  -f 2)
+    mouse="$(wmp)"
+    pointX=${mouse% *}
+    pointY=${mouse#* }
 
     for wid in $(lsw | tac); do
         windowX="$(wattr x "$wid")"

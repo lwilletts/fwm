@@ -60,7 +60,7 @@ split() {
     X=$SX
     W=$(((SW + IGAP) / nWindows - IGAP))
     while read -r line; do
-        wid="$(printf '%s\n' "$line" | cut -d\  -f 5)"
+        wid="${line##* }"
         wtp "$X" "$SY" "$W" "$SH" "$wid"
         X=$((X + W + IGAP))
     done < "$winlist"
@@ -71,7 +71,7 @@ vertical() {
     H=$(((SH + IGAP) / nWindows - IGAP))
 
     while read -r line; do
-        wid="$(printf '%s\n' "$line" | cut -d\  -f 5)"
+        wid="${line##* }"
         wtp "$SX" "$Y" "$SW" "$H" "$wid"
         Y=$((Y + H + IGAP))
     done < "$winlist"
@@ -87,7 +87,7 @@ left() {
     H=$(((SH + IGAP) / (nWindows - 1) - IGAP))
 
     while read -r line; do
-        wid="$(printf '%s\n' "$line" | cut -d\  -f 5)"
+        wid="${line##* }"
         wtp "$X" "$Y" "$W" "$H" "$wid"
         Y=$((Y + H + IGAP))
     done < "$winlist"
@@ -104,7 +104,7 @@ right() {
     [ "$W" -lt 445 ] && W=445
 
     while read -r line; do
-        wid="$(printf '%s\n' "$line" | cut -d\  -f 5)"
+        wid="${line##* }"
         wtp "$SX" "$Y" "$W" "$H" "$wid"
         Y=$((Y + H + IGAP))
     done < "$winlist"
@@ -127,7 +127,7 @@ browse() {
     tail -n +3 "$winlist" > "$botlist"
 
     while read -r line; do
-        wid="$(printf '%s\n' "$line" | cut -d\  -f 5)"
+        wid="${line##* }"
         wtp "$X" "$Y" "$W" "$H" "$wid"
         X=$((X + W + IGAP))
     done < "$toplist"
@@ -138,7 +138,7 @@ browse() {
     H=$((SH - H - IGAP))
 
     while read -r line; do
-        wid="$(printf '%s\n' "$line" | cut -d\  -f 5)"
+        wid="${line##* }"
         wtp "$X" "$Y" "$W" "$H" "$wid"
         X=$((X + W + IGAP))
     done < "$botlist"

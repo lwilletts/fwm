@@ -17,11 +17,7 @@ EOF
 
 react() {
     while read -r line; do
-        cmd="$(printf '%s\n' "$line" | cut -d\  -f 1)"
-        bin="$(printf '%s\n' "$cmd" | cut -d'_' -f 1)"
-        opt="$(printf '%s\n' "$cmd" | cut -d'_' -f 2)"
-
-        prgs="$(printf '%s\n' "$line" | cut -d\  -f 2-)"
+        prgs="${line#* }" cmd="${line%% *}" bin="${cmd%_*}" opt="${cmd#*_}"
 
         # test strings to see if program is running
         for prg in $prgs; do
