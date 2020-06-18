@@ -44,7 +44,9 @@ main() {
         # compare number of current windows vs number of old windows
         if [ "$nWindows" -ne "$nWindowsOld" ]; then
             # exceptions to autotiling
-            case "$(atomx WM_CLASS "$(lsw | tail -n 1)")" in
+            prev="$(lsw | tail -n 1)"
+
+            case "$(atomx WM_CLASS "$prev")" in
                 python3|DiscordCanary) continue ;;
             esac
 

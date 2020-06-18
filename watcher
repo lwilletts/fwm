@@ -60,7 +60,7 @@ main() {
                                 move center "$wid" "$(lsm -p)"
                             }
                             ;;
-                        obs|discord|Steam)
+                        discord|Steam)
                             chwb -s "$BW" -c "$DIM" "$PFW"
                             chwso -l "$wid"
                             continue
@@ -70,8 +70,21 @@ main() {
                             chwso -l "$wid"
                             continue
                             ;;
+                        resolve)
+                            move center "$wid" "$(lsm -p)"
+                            chwso -r "$wid"
+                            continue
+                            ;;
                         python3|DiscordCanary)
                             move center "$wid"
+                            ;;
+                        ripcord)
+                            case "$NAME" in
+                                Preferences) move center "$wid"   ;;
+                                *Voice*)     move center "$wid"   ;;
+                                Upload)      move center "$wid"   ;;
+                                *)           wmv -a $(wmp) "$wid" ;;
+                            esac
                             ;;
                         gl)
                             sleep 0.2
@@ -81,7 +94,7 @@ main() {
                             ;;
                     esac
 
-                    focus -w "$wid"
+                    focus -w "$wid" nojump
                 }
                 ;;
             DESTROY)

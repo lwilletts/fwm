@@ -70,7 +70,7 @@ wmgaps() {
     SEC="$(lsm | grep -v "$PRI" | head -n 1)"
     BAR="bottom"
     export PRI SEC BAR
-    export TGAP=30 BGAP=60 LGAP=30 RGAP=30 IGAP=10
+    export TGAP=30 BGAP=60 LGAP=30 RGAP=30 IGAP=15
 }
 
 wmcolours() {
@@ -85,11 +85,11 @@ wmcolours() {
 dcolours() {
     wmcolours
 
-    NF="$INACTIVE" # normal foreground
-    SF="$ACTIVE"   # selected forground
-    NB="$ACTIVE"   # normal background
-    SB="$INACTIVE" # selected background
-    BC="$INACTIVE" # border colour
+    NF="$ACTIVE"   # normal foreground
+    SF="$INACTIVE" # selected foreground
+    NB="$INACTIVE" # normal background
+    SB="$ACTIVE"   # selected background
+    BC="$DIM"      # border colour
 
     export NF SF NB SB BC
 }
