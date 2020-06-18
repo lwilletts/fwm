@@ -45,9 +45,10 @@ focus() {
     # move mouse to center of new window
     # be as responsive as possible to user input
     wtf "$wid"
-    chwso -r "$wid"
 
     if [ -z "$nojump" ]; then
+        chwso -r "$wid"
+
         wmp -a $(($(wattr x "$wid") + $(wattr w "$wid") / 2 + BW)) \
                $(($(wattr y "$wid") + $(wattr h "$wid") / 2 + BW))
     fi
@@ -74,7 +75,9 @@ main() {
     wmenv
     wmcolours
 
-    [ "$3" = "nojump" ] && nojump=1
+    case "$3" in
+        nojump) nojump=1 ;;
+    esac
 
     case "$1" in
         -w|--wid|wid)     window "$2" ;;
