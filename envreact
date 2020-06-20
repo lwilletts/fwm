@@ -29,12 +29,18 @@ react() {
                 case "$opt" in
                     run) pgrep "$bin" > /dev/null || "$bin" & ;;
                     end) pkill "$bin" 2> /dev/null            ;;
+                    oneshot)
+                        for prg in $prgs; do
+                            $prg
+                        done
+                        ;;
                 esac
                 ;;
             *)
                 case "$opt" in
                     end) pgrep "$bin" > /dev/null || "$bin" & ;;
                     run) pkill "$bin" 2> /dev/null            ;;
+                    oneshot) continue                         ;;
                 esac
                 ;;
         esac
