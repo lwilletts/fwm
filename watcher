@@ -29,7 +29,6 @@ main() {
     wew | while read -r ev wid; do
         case "$ev" in
             CREATE)
-                NAME="$(atomx WM_NAME "$wid")"
                 CLASS="$(atomx WM_CLASS "$wid")"
 
                 wattr o "$wid" && {
@@ -78,32 +77,11 @@ main() {
                         python3|DiscordCanary)
                             move center "$wid"
                             ;;
-                        ripcord)
-                            case "$NAME" in
-                                Preferences) move center "$wid"   ;;
-                                *Voice*)     move center "$wid"   ;;
-                                Upload)      move center "$wid"   ;;
-                                *)           wmv -a $(wmp) "$wid" ;;
-                            esac
-                            ;;
                         gl)
                             sleep 0.2
                             ;;
-                        *)
-                            wmv -a $(wmp) "$wid"
-                            ;;
                     esac
-
-                    focus -w "$wid" nojump
                 }
-                ;;
-            DESTROY)
-                # focus window underneath pointer if window is deleted
-                under > /dev/null && focus -w "$(under)"
-                ;;
-
-            ENTER)
-                wattr o "$wid" || focus -w "$wid" nojump
                 ;;
         esac
     done
