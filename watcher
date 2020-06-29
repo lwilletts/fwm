@@ -32,13 +32,13 @@ main() {
                 NAME="$(atomx WM_NAME "$wid")"
                 CLASS="$(atomx WM_CLASS "$wid")"
 
-                wattr o "$wid" && {
+                if wattr o "$wid"; then
                     case "$CLASS" in
                         lemonbar)
                             chwso -l "$wid"
                             ;;
                     esac
-                } || {
+                else
                     # autogroups
                     [ -f "$autogroup" ] && {
                         while read -r line; do
@@ -61,7 +61,7 @@ main() {
                             }
                             ;;
                         discord|Steam)
-                            chwb -s "$BW" -c "$DIM" "$PFW"
+                            chwb -s "$BW" -c "$DIM" "$wid"
                             chwso -l "$wid"
                             continue
                             ;;
@@ -89,19 +89,28 @@ main() {
                         gl)
                             sleep 0.2
                             ;;
+                        stalonetray)
+                            chwb -s "$BW" -c "$DIM" "$wid"
+                            chwso -l "$wid"
+                            continue
+                            ;;
                         *)
                             wmv -a $(wmp) "$wid"
                             ;;
                     esac
 
                     focus -w "$wid" nojump
-                }
+                fi
                 ;;
-            DESTROY)
+            UNMAP|DESTROY)
                 # focus window underneath pointer if window is deleted
-                under > /dev/null && focus -w "$(under)"
+                # else focus prev window
+                if under > /dev/null; then
+                    focus -w "$(under)"
+                else
+                    focus -w "$(lsw | tail -n 1)"
+                fi
                 ;;
-
             ENTER)
                 wattr o "$wid" || focus -w "$wid" nojump
                 ;;
