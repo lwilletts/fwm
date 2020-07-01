@@ -136,7 +136,6 @@ obs() {
     H=720
 }
 
-
 double() {
     W=$(($(wattr w "$wid") * 2))
     H=$(($(wattr h "$wid") * 2))
