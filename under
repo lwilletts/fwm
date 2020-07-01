@@ -7,7 +7,7 @@ main() {
     pointX=${mouse% *}
     pointY=${mouse#* }
 
-    for wid in $(lsw | tac); do
+    for wid in $( (lsw; lsw -o) | tac); do
         windowX="$(wattr x "$wid")"
         windowY="$(wattr y "$wid")"
 
