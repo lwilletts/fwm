@@ -17,7 +17,7 @@ sel() {
     sleep 0.2
     wid="$(slw)"
 
-    test "$wid" = "0x00000000" && exit 0
+    [ "$wid" = "0x00000000" ] && exit 0
 
     case "$1" in
         shot)   shot "$wid"                  ;;

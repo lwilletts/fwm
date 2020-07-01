@@ -18,7 +18,7 @@ showAll() {
 }
 
 main() {
-    test $# -eq 0 && usage 1
+    [ $# -eq 0 ] && usage 1
 
     . fwmrc
 

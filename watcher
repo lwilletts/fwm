@@ -38,7 +38,9 @@ main() {
                             chwso -l "$wid"
                             ;;
                     esac
-                else
+                fi
+
+                if ! wattr o "$wid"; then
                     # autogroups
                     [ -f "$autogroup" ] && {
                         while read -r line; do
@@ -102,7 +104,7 @@ main() {
                     focus -w "$wid" nojump
                 fi
                 ;;
-            UNMAP|DESTROY)
+            DESTROY)
                 # focus window underneath pointer if window is deleted
                 # else focus prev window
                 if under > /dev/null; then
@@ -112,7 +114,9 @@ main() {
                 fi
                 ;;
             ENTER)
-                wattr o "$wid" || focus -w "$wid" nojump
+                if [ "$wid" != "$(pfw 2> /dev/null)" ]; then
+                    wattr o "$wid" || focus -w "$wid" nojump
+                fi
                 ;;
         esac
     done

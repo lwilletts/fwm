@@ -62,7 +62,7 @@ listwindows() {
 
 wmenv() {
     PFW="$(pfw 2> /dev/null || printf '%s\n' "0x00000000")"
-    export PFW BW=1 JUMP=20
+    export PFW BW=1 JUMP=30
 }
 
 wmgaps() {
@@ -89,7 +89,7 @@ dcolours() {
     SF="$INACTIVE" # selected foreground
     NB="$INACTIVE" # normal background
     SB="$ACTIVE"   # selected background
-    BC="$DIM"      # border colour
+    BC="$ACTIVE"   # border colour
 
     export NF SF NB SB BC
 }
