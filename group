@@ -21,25 +21,30 @@ EOF
 list_groups() {
     for wid in $(lsw -a); do
         wg="$(atomx GROUP "$wid")"
-        [ -n "$wg" ] && printf 'GROUP_%s\t%s %s\n' \
+        [ -n "$wg" ] && printf 'GROUP_%s %s %s\n' \
                         "$wg" "$wid" "$(atomx WM_CLASS "$wid")"
-    done | sort
+    done
+}
+
+sort_groups() {
+    list_groups | sort
 }
 
 show_group() {
-    windows="$(lsw)"
-
     for wid in $(lsw -u); do
         wg=$(atomx GROUP "$wid")
         [ -z "$wg" ] && continue
-        [ "$wg" -eq "$1" ] && mapw -m "$wid"
+        [ "$wg" -eq "$1" ] && {
+            mapw -m "$wid"
+            chwso -r "$wid"
+        }
     done
+
+    # focus window in group at the top of the stack
+    focus -w "$(list_groups | awk -v grp="$1" '$0 ~ grp {print $2}')"
 
     # set group to active
     atomx GROUP_"$1"=on "$ROOT" > /dev/null
-
-    # grab group windows only and focus the highest in the stack
-    focus -w "$( (printf '%s\n' "$windows"; lsw) | sort -R | uniq -u)"
 }
 
 hide_group() {
@@ -95,7 +100,7 @@ main() {
         -A|--scr|scr)   add_screen "$2"       ;;
         -d|--del|del)   atomx -d GROUP "$2"   ;;
         -t|--tog|tog)   toggle_group "$2"     ;;
-        -l|--list|list) list_groups           ;;
+        -l|--list|list) sort_groups           ;;
         -h|--help|help) usage 0               ;;
         *)              usage 1               ;;
     esac
