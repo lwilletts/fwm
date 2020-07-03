@@ -13,6 +13,22 @@ EOF
     [ $# -eq 0 ] || exit "$1"
 }
 
+wmenus() {
+    processes="new
+ssh
+move
+resize
+delete
+copy
+open
+shot
+pfw
+reset
+off"
+
+    export processes
+}
+
 sel() {
     sleep 0.2
     wid="$(slw)"
@@ -22,7 +38,6 @@ sel() {
     case "$1" in
         shot)   shot "$wid"                  ;;
         delete) killw "$wid"                 ;;
-        term)   killw -p "$wid"              ;;
         resize) chwso -r "$wid"; xmrs "$wid" ;;
         move)   chwso -r "$wid"; xmmv "$wid" ;;
         place)  chwso -r "$wid"; sh -c "wtp $(xrectsel '%x %y %w %h') $wid" ;;
@@ -92,20 +107,19 @@ dmenu -name "$(basename "$0")" -f -l "$L" -fn "$FONT" -p "$PROMPT" \
     # if dmenu returns no output refocus previous window
     # else run command
     case "$process" in
-        new)       new                ;;
-        ssh)       sshmenu -m         ;;
-        move)      sel move           ;;
-        select)    wmenu -m           ;;
-        resize)    sel resize         ;;
-        delete)    sel delete         ;;
-        terminate) sel term           ;;
-        copy)      xsel -ob | xsel -i ;;
-        open)      open               ;;
-        shot)      shot               ;;
-        pfw)       sel shot           ;;
-        reset)     reboot             ;;
-        off)       poweroff           ;;
-        *)         focus -w "$PFW"    ;;
+        new)       new                    ;;
+        ssh)       sshmenu -m             ;;
+        move)      sel move               ;;
+        select)    wmenu -m               ;;
+        resize)    sel resize             ;;
+        delete)    sel delete             ;;
+        copy)      xsel -ob | xsel -i     ;;
+        open)      open                   ;;
+        shot)      shot                   ;;
+        pfw)       sel shot               ;;
+        reset)     reboot                 ;;
+        off)       poweroff               ;;
+        *)         focus -w "$PFW" nojump ;;
     esac
 }
 

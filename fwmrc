@@ -93,20 +93,3 @@ dcolours() {
 
     export NF SF NB SB BC
 }
-
-wmenus() {
-    processes="new
-ssh
-move
-resize
-delete
-terminate
-copy
-open
-shot
-pfw
-reset
-off"
-
-    export processes programs
-}
