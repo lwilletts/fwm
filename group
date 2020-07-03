@@ -40,8 +40,8 @@ show_group() {
         }
     done
 
-    # focus window in group at the top of the stack
-    focus -w "$(list_groups | awk -v grp="$1" '$0 ~ grp {print $2}')"
+    # focus window in group that is at the top
+    focus -w "$(list_groups | grep "GROUP_$1" | tail -n 1 | cut -d\  -f 2)"
 
     # set group to active
     atomx GROUP_"$1"=on "$ROOT" > /dev/null
