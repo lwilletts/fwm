@@ -112,7 +112,19 @@ main() {
         *)         usage 1 ;;
     esac
 
-    focus -w "$(selection)"
+    # unfocus from current window to add contrast
+    focus -u
+
+    # grab window id from user input
+    wid="$(selection)"
+
+    # if dmenu returns no output refocus previous window
+    # else focus selected window
+    if [ -n "$wid" ]; then
+        focus -w "$wid"
+    else
+        focus -w "$PFW"
+    fi
 }
 
 main "$@"

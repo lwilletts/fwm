@@ -80,11 +80,17 @@ main() {
 
     L="$(printf '%s\n' "$processes" | wc -l)"
 
+    # unfocus from current window to add contrast
+    focus -u
+
+    # grab command to run
     process=$(printf '%s\n' "$processes" | \
 dmenu -name "$(basename "$0")" -f -l "$L" -fn "$FONT" -p "$PROMPT" \
 -nf "#$NF" -sf "#$SF" -nb "#$NB" -sb "#$SB" -bc "#$BC" \
 -s "$(mattr d "$PFM")" -x $X -y $Y -w "$W" -h "$FH" -bw $BW)
 
+    # if dmenu returns no output refocus previous window
+    # else run command
     case "$process" in
         new)       new                ;;
         ssh)       sshmenu -m         ;;
@@ -99,6 +105,7 @@ dmenu -name "$(basename "$0")" -f -l "$L" -fn "$FONT" -p "$PROMPT" \
         pfw)       sel shot           ;;
         reset)     reboot             ;;
         off)       poweroff           ;;
+        *)         focus -w "$PFW"    ;;
     esac
 }
 

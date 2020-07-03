@@ -71,12 +71,22 @@ main() {
         -h|--help|help) usage 0 ;;
     esac
 
+    # unfocus from current window to add contrast
+    focus -u
+
+    # grab hostname
     host=$(printf '%s\n' "$hosts" | \
 dmenu -name "$(basename "$0")" -f -l "$nHosts" -fn "$FONT" -p "$PROMPT" \
 -nf "#$NF" -sf "#$SF" -nb "#$NB" -sb "#$SB" -bc "#$BC" \
 -s "$(mattr d "$PFM")" -x $X -y $Y -w "$W" -h "$FH" -bw $BW)
 
-    [ -n "$host" ] && urxvtc -g 85x22 -e sh -c "mosh $host || ssh $host"
+    # if dmenu returns no output refocus previous window
+    # else connect to hostname
+    if [ -n "$host" ]; then
+        urxvtc -g 85x22 -e sh -c "mosh $host || ssh $host"
+    else
+        focus -w "$PFW"
+    fi
 }
 
 main "$@"

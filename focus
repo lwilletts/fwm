@@ -69,6 +69,11 @@ focus() {
     fi
 }
 
+unfocus() {
+    wtf "$(lsw -r)"
+    chwb -s "$BW" -c "$DIM" "$PFW"
+}
+
 main() {
     . fwmrc
     wmenv
@@ -79,12 +84,13 @@ main() {
     esac
 
     case "$1" in
-        -w|--wid|wid)     window "$2" ;;
-        -n|--next|next)   next        ;;
-        -p|--prev|prev)   prev        ;;
-        -c|--cycle|cycle) cycle       ;;
-        -h|--help|help)   usage 0     ;;
-        *)                usage 1     ;;
+        -w|--wid|wid)         window "$2" ;;
+        -n|--next|next)       next        ;;
+        -p|--prev|prev)       prev        ;;
+        -c|--cycle|cycle)     cycle       ;;
+        -u|--unfocus|unfocus) unfocus     ;;
+        -h|--help|help)       usage 0     ;;
+        *)                    usage 1     ;;
     esac
 }
 

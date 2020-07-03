@@ -69,14 +69,25 @@ main() {
         *)         usage 1 ;;
     esac
 
-    printf '%s\n' "$PATH" | sed 's/:/\n/g' | while read -r dir; do
+    # unfocus from current window to add contrast
+    focus -u
+
+    # grab user program
+    prg="$(printf '%s\n' "$PATH" | sed 's/:/\n/g' | while read -r dir; do
         printf '%s\n' "$(find -L $dir/* -type f -executable)" | \
             rev | cut -d/ -f 1 | rev
     done | sort -u | \
     dmenu -name "drun" -f -i -fn "$FONT" -p "$PROMPT" \
     -nf "#$NF" -sf "#$SF" -nb "#$NB" -sb "#$SB" -bc "#$BC" \
-    -s "$(mattr d "$PFM")" -x $X -y $Y -w $W -h "$H" -bw $BW -l $L \
-    | ${SHELL:-"/bin/sh"} &
+    -s "$(mattr d "$PFM")" -x $X -y $Y -w $W -h "$H" -bw $BW -l $L)"
+
+    # if dmenu returns no output refocus previous window
+    # else run command
+    if [ -n "$prg" ]; then
+        printf '%s\n' "$prg" | ${SHELL:-"/bin/sh"} &
+    else
+        focus -w "$PFW"
+    fi
 }
 
 main "$@"
