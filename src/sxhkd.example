@@ -1,0 +1,94 @@
+# menus & mouse
+{mod1, mod2} + Return
+    urxvtc -g 85x22
+{mod1, mod2} + shift + Return
+    urxvtc -cd "$(mpvc -f "%path%" | rev | cut -d\/ -f 2- | rev)" -g 85x22
+mod1 + {d,s,w,shift + w}
+    {drun -c, sshmenu -c, wmenu -c, wmenu -b all}
+{mod1 + @button1, mod1 + @button3}
+    wattr o $(pfw) || chwso -r $(pfw); {xmmv,xmrs}
+mod1 + {button4,button5}
+    chwso {-r,-l} $(pfw)
+{~button3,button10}
+    {under "cmdmenu", cmdmenu}
+
+# sys
+mod4 + shift + l
+    lock
+mod1 + shift + r
+    pkill -USR1 -x sxhkd
+mod1 + shift + b
+    bright 10 off
+
+# window manipulation
+mod1 + {_,shift + }q
+    {killw,killwa} $(pfw)
+mod1 + {_,shift + }Tab
+    {focus cycle,focus prev}
+mod1 + {h,j,k,l}
+    closer {left,down -s,up -s,right}
+mod1 + shift + {h,j,k,l}
+    adjust {left,down,up,right}
+mod1 + {Left,Down,Up,Right}
+    move {left,bottom,top,right}
+mod1 + shift + {f,g,m}
+    move {full,center,maximise} $(pfw) cycle
+mod1 + {f,g,m,a,o,equal,minus,plus,underscore}
+    move {full,center,maximise,vmaximise,obs,grow,shrink,double,halve}
+
+# resize
+mod1 + r: {h,j,k,l}
+    move {shrink_left,grow_down,shrink_up,grow_right} $(pfw)
+mod1 + r: Escape
+    pkill -ALRM sxhkd
+
+# tile
+mod1 + t: {t,s,v,,l,r,g}
+    tile {browse,split,vert,left,right,grid}; pkill -ALRM sxhkd
+
+# groups
+mod1 + {shift + ,ctrl + ,_} {1-8}
+    group {-a,-A,-t} {1-8} $(pfw)
+mod1 + c
+    group -d $(pfw)
+
+# music
+mod4 + {bracketleft,bracketright,braceleft,braceright}
+    mpvc seek {-5,5,-30,30} -q
+mod4 + {p,shift + Tab,n,Tab,z,c,r,BackSpace,space,slash}
+    mpvc {prev,prev,next,next,shuffle,clear,single,remove current,toggle,play $} -q
+mod4 + a
+    fd . ~/usr/mus -L -t f -e mp3 -e flac -e wav -e ogg -e m4a -e opus \
+                   -E 'soundtracks' | shuf | shuf | mpvc add -q
+
+# video
+mod1 + v
+    fd . ~/usr/vid/yt/music -t f | shuf | shuf | mpvc add -S /tmp/vidsocket -q
+mod1 + {comma,period,space,slash}
+    mpvc {prev,next,toggle,play $} -S /tmp/vidsocket -q
+mod1 + {bracketleft,bracketright,braceleft,braceright}
+    mpvc seek {-5,5,-30,30} -S /tmp/vidsocket -q
+mod1 + p
+    mpris-ctl --player Chromium pp
+
+# volume
+mod1 + {9,0}
+    mpvc volume {-5,+5} -S /tmp/vidsocket -q
+mod4 + {s,d,9,0}
+    mpvc volume {-5,+5,-5,+5} -q
+{XF86AudioMute, XF86AudioLowerVolume, XF86AudioRaiseVolume}
+    volctrl {!,- 3,+ 3}
+
+# shot
+Print
+    shot
+shift + Print
+    shot "$(pfw)"
+
+# misc
+mod1 + x
+    fcut
+mod1 + i
+    invert lemonbar
+
+# vim: set ft=sxhkdrc :

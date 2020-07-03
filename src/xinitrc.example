@@ -1,0 +1,40 @@
+#!/bin/sh
+
+case "$(hostname)" in
+    spark)
+        unclutter-xfixes &
+        ;;
+    fyriousa)
+        export LD_PRELOAD=
+        wmp -a 1280 1200
+
+        snip &
+        unclutter &
+        autotile vert HDMI-A-2 &
+        ;;
+esac
+
+# x11 environment
+xset +dpms                     # powersaving
+xset b 50                      # bell volume
+xset dpms 0 900 0              # screen blanking
+xset r rate 250 40             # faster keypresses
+xset +fp ~/.local/share/fonts  # custom fonts
+xsetroot -cursor_name left_ptr # left pointer as cursor
+screens                        # set randr
+
+[ -f ~/.Xresources ] && xrdb -load ~/.Xresources
+pgrep urxvtd 2> /dev/null || urxvtd -q -o -f &
+
+# back
+hsetroot -root -tile "$HOME/usr/img/patterns/blackorchid.png" -brightness -0.01
+
+# wm
+bars &
+ewmh &
+sxhkd &
+watcher &
+envreact &
+
+sleep 0.3
+xwait
