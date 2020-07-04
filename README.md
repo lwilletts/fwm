@@ -12,7 +12,7 @@ Dependencies:
 - [mmutils](https://github.com/pockata/mmutils)
 
 Known good WMs:
-- [cwm](hhttps://github.com/leahneukirchen/cwm)
+- [cwm](https://github.com/leahneukirchen/cwm)
 - [glazier](https://git.z3bra.org/glazier/log.html)
 
 Optional:
@@ -21,6 +21,10 @@ Optional:
 - [dmenu](https://tools.suckless.org/dmenu): for menu selections
 - [xrectsel](https://github.com/lolilolicon/xrectsel): mouse placement of new
   windows
+
+## Install
+
+Add cloned directory to your `$PATH` or copy/link scripts to a location in `$PATH`.
 
 #### adjust
 

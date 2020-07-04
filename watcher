@@ -69,7 +69,7 @@ main() {
                             ;;
                         ?idair*)
                             move full "$wid" "$(lsm -p)"
-                            chwso -l "$wid"
+                            chwso -r "$wid"
                             continue
                             ;;
                         resolve)
@@ -96,6 +96,9 @@ main() {
                             chwso -l "$wid"
                             continue
                             ;;
+                        scrcpy)
+                            move center "$wid" "$(lsm -p)"
+                            ;;
                         *)
                             wmv -a $(wmp) "$wid"
                             ;;
@@ -104,14 +107,7 @@ main() {
                     focus -w "$wid" nojump
                 fi
                 ;;
-            DESTROY)
-                # focus window underneath pointer if window is deleted
-                # else focus prev window
-                if under > /dev/null; then
-                    focus -w "$(under)"
-                else
-                    focus -w "$(lsw | tail -n 1)"
-                fi
+            UNMAP|DESTROY)
                 ;;
             ENTER)
                 if [ "$wid" != "$(pfw 2> /dev/null)" ]; then
