@@ -60,7 +60,7 @@ focus() {
 
     # no border when wid is found to be fullscreen
     if [ "$(atomx MODE "$wid")" = "full" ]; then
-        chwb -s "$BW" -c "$DIM" "$PFW"
+        chwb -s "$BW" -c "$INACTIVE" "$PFW"
         chwb -s 0 "$wid"
     else
         # set border when focusing from a fullscreen wid
@@ -69,7 +69,7 @@ focus() {
             chwb -s "$BW" -c "$ACTIVE" "$wid"
         else
             # normal focusing
-            chwb -s "$BW" -c "$DIM" "$PFW"
+            chwb -s "$BW" -c "$INACTIVE" "$PFW"
             chwb -s "$BW" -c "$ACTIVE" "$wid"
         fi
     fi
