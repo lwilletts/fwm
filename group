@@ -68,6 +68,7 @@ toggle_group() {
     case $(atomx GROUP_"$1" "$ROOT") in
         on)  hide_group "$1" ;;
         off) show_group "$1" ;;
+        *)   atomx GROUP_"$1"=on "$ROOT" > /dev/null ;;
     esac
 }
 
@@ -87,6 +88,10 @@ smart_toggle_group() {
             ;;
         off)
             show_group "$1"
+            ;;
+        *)
+            atomx GROUP_"$1"=on "$ROOT" > /dev/null
+            smart_toggle_group "$1"
             ;;
     esac
 }
