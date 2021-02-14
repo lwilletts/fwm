@@ -13,6 +13,15 @@ EOF
     [ $# -eq 0 ] || exit "$1"
 }
 
+debug() {
+    wew | while read -r ev wid; do
+        NAME="$(atomx WM_NAME "$wid")"
+        CLASS="$(atomx WM_CLASS "$wid")"
+
+        echo "$ev" "$wid" "$NAME" "$CLASS"
+    done
+}
+
 # add delay and to execute in the background
 addgroup() {
     sleep 2
@@ -62,8 +71,11 @@ main() {
                                 move center "$wid" "$(lsm -p)"
                             }
                             ;;
+                        gl)
+                            sleep 0.22
+                            ;;
                         discord|Steam)
-                            chwb -s "$BW" -c "$DIM" "$wid"
+                            chwb -s "$BW" -c "$INACTIVE" "$wid"
                             chwso -l "$wid"
                             continue
                             ;;
@@ -88,16 +100,17 @@ main() {
                                 *)           wmv -a $(wmp) "$wid" ;;
                             esac
                             ;;
-                        gl)
-                            sleep 0.2
-                            ;;
-                        stalonetray)
-                            chwb -s "$BW" -c "$DIM" "$wid"
-                            chwso -l "$wid"
-                            continue
-                            ;;
-                        scrcpy)
-                            move center "$wid" "$(lsm -p)"
+                        urxvt)
+                            case "$NAME" in
+                                "calender")
+                                    move -bl "$wid" "$PRI"
+                                    ;;
+                                "cava"|"volbar")
+                                    move -br "$wid" "$PRI"
+                                    ;;
+                            esac
+
+                            wmv -a $(wmp) "$wid"
                             ;;
                         *)
                             wmv -a $(wmp) "$wid"
@@ -108,6 +121,8 @@ main() {
                 fi
                 ;;
             UNMAP|DESTROY)
+                # add way to retrieve group id that wid belonged to
+                    atomx -d GROUP_"$2" "$(lsw -r)"
                 ;;
             ENTER)
                 if [ "$wid" != "$(pfw 2> /dev/null)" ]; then
@@ -119,5 +134,9 @@ main() {
 }
 
 autogroup="$HOME/.autogroup"
+
+case "$1" in
+    -d|debug) debug ;;
+esac
 
 main "$@"
