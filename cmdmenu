@@ -19,11 +19,9 @@ ssh
 move
 resize
 delete
-copy
 open
 shot
 pfw
-reset
 off"
 
     export processes
@@ -54,9 +52,16 @@ new() {
 
     xrectsel '%w %h %x %y' | {
             read -r w h x y
-            w=$(( ( w - (ib + ob)*2 ) / fw ))
-            h=$(( ( h - (ib + ob)*2 ) / fh ))
-            exec urxvtc -g "${w}x${h}+${x}+${y}"
+
+            if [ "$w" -lt 100 ]; then
+                exec urxvtc -g 85x22
+            elif [ "$h" -lt 100 ]; then
+                exec urxvtc -g 85x22
+            else
+                w=$(( ( w - (ib + ob)*2 ) / fw ))
+                h=$(( ( h - (ib + ob)*2 ) / fh ))
+                exec urxvtc -g "${w}x${h}"
+            fi
     }
 }
 
@@ -113,11 +118,9 @@ dmenu -name "$(basename "$0")" -f -l "$L" -fn "$FONT" -p "$PROMPT" \
         select)    wmenu -m               ;;
         resize)    sel resize             ;;
         delete)    sel delete             ;;
-        copy)      xsel -ob | xsel -i     ;;
         open)      open                   ;;
         shot)      shot                   ;;
         pfw)       sel shot               ;;
-        reset)     reboot                 ;;
         off)       poweroff               ;;
         *)         focus -w "$PFW" nojump ;;
     esac
