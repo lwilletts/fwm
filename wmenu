@@ -36,6 +36,20 @@ selection() {
         cut -d\  -f 1
 }
 
+groupoutput() {
+    for wid in $(printf '%s\n' "$grplist" | grep "GROUP_$grp" | cut -d' ' -f 2); do
+        printf '%s\n' "$wid $(atomx WM_CLASS "$wid") | $(wname "$wid")"
+    done
+}
+
+groupselection() {
+    groupoutput | sort -rk 2 | \
+        dmenu -name "$(basename "$0")" -f -l "$nWindows" -i -fn "$FONT" -p "$PROMPT" \
+        -nf "#$NF" -sf "#$SF" -nb "#$NB" -sb "#$SB" -bc "#$BC" \
+        -s "$(mattr d "$PFM")" -x "$X" -y "$Y" -w "$W" -h "$FH" -bw "$BW" | \
+        cut -d\  -f 1
+}
+
 menu() {
     width
 
@@ -70,7 +84,7 @@ center() {
 
 bar() {
     X=$((LGAP))
-    W=$(($(mattr w "$PRI") - LGAP - RGAP - BW*2))
+    width
 
     if [ "$BAR" = "top" ]; then
         H=$((TGAP/2 + BW*2))
@@ -81,7 +95,25 @@ bar() {
     fi
 
     # position mouse
-    wmp -a "$((X + 40))" "$(($(mattr y "$PRI") + Y + 20))"
+    wmp -a "$(($(mattr x "$PRI") + 40))" "$(($(mattr y "$PRI") + Y + 20))"
+}
+
+groupbar() {
+    grp="$1"
+    grplist="$(group -l)"
+
+    case "$(printf '%s\n' "$grplist" | grep -v "$PFW" | grep -c "GROUP_$grp")" in
+        0)
+            exit 1
+            ;;
+        *)
+            LSWCMD="printf '%s\n' $grplist | grep GROUP_$grp | cut -d' ' -f 2"
+
+            output
+
+            exit 0
+            ;;
+    esac
 }
 
 main() {
@@ -98,18 +130,21 @@ main() {
     case "$2" in
         -a|all) LSWCMD="lsw -a" ;;
         -u|hid) LSWCMD="lsw -u" ;;
-        *)      LSWCMD="lsw"    ;;
+        *)
+            LSWCMD="lsw"
+            ;;
     esac
 
     nWindows=$($LSWCMD | grep -cv "$PFW")
     [ "$nWindows" -eq 0 ] && exit 1
 
     case "$1" in
-        -b|bar)    bar     ;;
-        -m|menu)   menu    ;;
-        -c|center) center  ;;
-        -h|help)   usage 0 ;;
-        *)         usage 1 ;;
+        -b|bar)    bar           ;;
+        -m|menu)   menu          ;;
+        -c|center) center        ;;
+        -g|group)  groupbar "$2" ;;
+        -h|help)   usage 0       ;;
+        *)         usage 1       ;;
     esac
 
     # unfocus from current window to add contrast

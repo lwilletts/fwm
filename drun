@@ -33,10 +33,13 @@ center() {
     H=$((L * FH))
 
     # finding x y cords for centering
-    [ "$PFW" = "0x00000000" ] && {
+    if [ "$PFW" = "$(lsw -r)" ]; then
         X=$(($(mattr w "$PFM")/2 - W/2 - 10))
         Y=$(($(mattr h "$PFM")/2 - H/2 - 10))
-    } || {
+    elif [ "$PFW" = "0x00000000" ]; then
+        X=$(($(mattr w "$PFM")/2 - W/2 - 10))
+        Y=$(($(mattr h "$PFM")/2 - H/2 - 10))
+    else
         X0="$(mattr x "$PFM")"
         Y0="$(mattr y "$PFM")"
         X=$(($(wattr x "$PFW") + $(wattr w "$PFW")/2 - W/2 - X0))
@@ -45,7 +48,7 @@ center() {
         # move mouse to optimal selection position
         wmp -a $(($(wattr x "$PFW") + $(wattr w "$PFW") / 2 - W / 2 + 20)) \
                $(($(wattr y "$PFW") + $(wattr h "$PFW") / 2 - H / 2 + 20))
-    }
+    fi
 
     H=$L
 }
@@ -79,7 +82,7 @@ main() {
     done | sort -u | \
     dmenu -name "drun" -f -i -fn "$FONT" -p "$PROMPT" \
     -nf "#$NF" -sf "#$SF" -nb "#$NB" -sb "#$SB" -bc "#$BC" \
-    -s "$(mattr d "$PFM")" -x $X -y $Y -w $W -h "$H" -bw $BW -l $L)"
+    -s "$(mattr d "$PFM")" -x $X -y $Y -w $W -h "$H" -bw "$DBW" -l $L)"
 
     # if dmenu returns no output refocus previous window
     # else run command

@@ -77,7 +77,7 @@ focus() {
 
 unfocus() {
     wtf "$(lsw -r)"
-    chwb -s "$BW" -c "$DIM" "$PFW"
+    chwb -s "$BW" -c "$INACTIVE" "$PFW"
 }
 
 main() {

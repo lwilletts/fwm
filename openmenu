@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# sshmenu
+# openmenu
 
 usage() {
     base=$(basename "$0")
@@ -15,7 +15,7 @@ EOF
 
 width() {
     ps=$(txtw -f "$FONT" "$PROMPT")
-    char="$(printf '%s\n' "$hosts" | wc -L)"
+    char="$(printf '%s\n' "$games" | wc -L)"
     W=$(echo "($ps + $char * 4.9 + 8) / 1" | bc)
 }
 
@@ -31,7 +31,7 @@ menu() {
 
 center() {
     width
-    H=$((nHosts * FH))
+    H=$((nGames * FH))
 
     # finding x y cords for centering
     if [ "$PFW" = "$(lsw -r)" ]; then
@@ -64,9 +64,9 @@ main() {
     W="150"
     PROMPT=" Mosh >"
 
-    hosts="$(grep -w "host" ~/.ssh/config | cut -d\  -f 2)"
-    nHosts=$(printf '%s\n' "$hosts" | grep -cv "$PFW")
-    [ "$nHosts" -eq 0 ] && exit 1
+    games="$(sed -e '1,18d;32,$d;s/^ *//g' "$(which gl)" | cut -d')' -f 1)"
+    nGames=$(printf '%s\n' "$games" | grep -cv "$PFW")
+    [ "$nGames" -eq 0 ] && exit 1
 
     case "$1" in
         -m|menu)        menu    ;;
@@ -79,15 +79,15 @@ main() {
     focus -u
 
     # grab hostname
-    host=$(printf '%s\n' "$hosts" | \
-dmenu -name "$(basename "$0")" -f -l "$nHosts" -fn "$FONT" -p "$PROMPT" \
+    game=$(printf '%s\n' "$games" | \
+dmenu -name "$(basename "$0")" -f -l "$nGames" -fn "$FONT" -p "$PROMPT" \
 -nf "#$NF" -sf "#$SF" -nb "#$NB" -sb "#$SB" -bc "#$BC" \
 -s "$(mattr d "$PFM")" -x $X -y $Y -w "$W" -h "$FH" -bw $BW)
 
     # if dmenu returns no output refocus previous window
-    # else connect to hostname
-    if [ -n "$host" ]; then
-        urxvtc -g 85x22 -e sh -c "mosh $host || ssh $host"
+    # else launch game
+    if [ -n "$game" ]; then
+        gl "$game"
     else
         focus -w "$PFW"
     fi

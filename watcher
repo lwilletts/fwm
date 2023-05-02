@@ -35,6 +35,9 @@ main() {
     wmenv
     wmgaps
 
+    # focus immediately
+    focus -w "$(under)"
+
     wew | while read -r ev wid; do
         case "$ev" in
             CREATE)
@@ -68,37 +71,50 @@ main() {
                         qutebrowser)
                             [ "$(wattr xywh "$wid")" = "50 50 800 600" ] && {
                                 wrs 200 200 "$wid"
-                                move center "$wid" "$(lsm -p)"
+                                move center "$wid"
+                            } || {
+                                move left "$wid" "$PRI"
                             }
                             ;;
                         gl)
                             sleep 0.22
                             ;;
                         discord|Steam)
+                            continue
+                            ;;
+                        obs)
                             chwb -s "$BW" -c "$INACTIVE" "$wid"
-                            chwso -l "$wid"
-                            continue
-                            ;;
-                        ?idair*)
-                            move full "$wid" "$(lsm -p)"
                             chwso -r "$wid"
                             continue
                             ;;
-                        resolve)
-                            move center "$wid" "$(lsm -p)"
-                            chwso -r "$wid"
-                            continue
-                            ;;
-                        python3|DiscordCanary)
+                        dragon)
                             move center "$wid"
+                            wmv -a $(wmp) "$wid"
+                            continue
                             ;;
-                        ripcord)
-                            case "$NAME" in
-                                Preferences) move center "$wid"   ;;
-                                *Voice*)     move center "$wid"   ;;
-                                Upload)      move center "$wid"   ;;
-                                *)           wmv -a $(wmp) "$wid" ;;
-                            esac
+                        win10)
+                            move full "$wid" "$PRI"
+                            continue
+                            ;;
+                        google-chrome)
+                            move center "$wid" "$PRI"
+                            ;;
+                        steam_app_1182480)
+                            group -u 8
+                            continue
+                            ;;
+                        "Wine System Tray")
+                            group -u 8
+                            continue
+                            ;;
+                        steam_app_*)
+                            move full "$wid" "$PRI"
+                            continue
+                            ;;
+                        # origin
+                        solaar)
+                            group -u 8
+                            continue
                             ;;
                         urxvt)
                             case "$NAME" in
@@ -122,7 +138,6 @@ main() {
                 ;;
             UNMAP|DESTROY)
                 # add way to retrieve group id that wid belonged to
-                    atomx -d GROUP_"$2" "$(lsw -r)"
                 ;;
             ENTER)
                 if [ "$wid" != "$(pfw 2> /dev/null)" ]; then

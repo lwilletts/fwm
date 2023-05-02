@@ -7,8 +7,7 @@
 
 # check if arg 1 is an integer
 intCheck() {
-    [ "$1" -ne 0 ] 2> /dev/null
-    [ "$?" -ne 2 ] || return 1
+    printf '%d' "$1" > /dev/null 2>&1
 }
 
 widCheck() {
@@ -68,9 +67,10 @@ wmenv() {
 wmgaps() {
     PRI="$(lsm -p)"
     SEC="$(lsm | grep -v "$PRI" | head -n 1)"
-    BAR="bottom"
+    BAR="botborder"
     export PRI SEC BAR
-    export TGAP=30 BGAP=60 LGAP=30 RGAP=30 IGAP=15
+    export TGAP=8 BGAP=40 LGAP=8 RGAP=8 IGAP=8
+    export TSEC=8 BSEC=8 LSEC=8 RSEC=8 ISEC=8
 }
 
 wmcolours() {
@@ -85,11 +85,13 @@ wmcolours() {
 dcolours() {
     wmcolours
 
-    NF="$ACTIVE"   # normal foreground
-    SF="$INACTIVE" # selected foreground
-    NB="$INACTIVE" # normal background
-    SB="$ACTIVE"   # selected background
-    BC="$ACTIVE"   # border colour
+    NF="$INACTIVE"   # normal foreground
+    SF="$ACTIVE" # selected foreground
+    NB="$ACTIVE" # normal background
+    SB="$INACTIVE"   # selected background
+    BC="$URGENT" # border colour
 
-    export NF SF NB SB BC
+    DBW="2"
+
+    export NF SF NB SB BC DBW
 }

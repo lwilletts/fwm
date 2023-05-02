@@ -179,10 +179,21 @@ main() {
     # test if possible to tile
     [ "$nWindows" -eq 0 ] && exit 2
 
-    SX=$(($(mattr x "$SCR") + LGAP))
-    SY=$(($(mattr y "$SCR") + TGAP))
-    SW=$(($(mattr w "$SCR") - LGAP - RGAP))
-    SH=$(($(mattr h "$SCR") - TGAP - BGAP))
+    # grab screen variables
+    case "$SCR" in
+        "$PRI")
+            SX=$(($(mattr x "$SCR") + LGAP))
+            SY=$(($(mattr y "$SCR") + TGAP))
+            SW=$(($(mattr w "$SCR") - LGAP - RGAP))
+            SH=$(($(mattr h "$SCR") - TGAP - BGAP))
+            ;;
+        "$SEC")
+            SX=$(($(mattr x "$SCR") + LSEC))
+            SY=$(($(mattr y "$SCR") + TSEC))
+            SW=$(($(mattr w "$SCR") - LSEC - RSEC))
+            SH=$(($(mattr h "$SCR") - TSEC - BSEC))
+            ;;
+    esac
 
     case "$1" in
         -g|--grid|grid)     grid     ;;

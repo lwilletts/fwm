@@ -14,14 +14,13 @@ EOF
 }
 
 wmenus() {
-    processes="new
-ssh
+    processes="open
 move
 resize
-delete
-open
+ssh
 shot
 pfw
+delete
 off"
 
     export processes
@@ -31,7 +30,7 @@ sel() {
     sleep 0.2
     wid="$(slw)"
 
-    [ "$wid" = "0x00000000" ] && exit 0
+    [ "$wid" = "$(lsw -r)" ] && exit 0
 
     case "$1" in
         shot)   shot "$wid"                  ;;
@@ -107,7 +106,7 @@ main() {
     process=$(printf '%s\n' "$processes" | \
 dmenu -name "$(basename "$0")" -f -l "$L" -fn "$FONT" -p "$PROMPT" \
 -nf "#$NF" -sf "#$SF" -nb "#$NB" -sb "#$SB" -bc "#$BC" \
--s "$(mattr d "$PFM")" -x $X -y $Y -w "$W" -h "$FH" -bw $BW)
+-s "$(mattr d "$PFM")" -x $X -y $Y -w "$W" -h "$FH" -bw "$DBW")
 
     # if dmenu returns no output refocus previous window
     # else run command
@@ -118,8 +117,8 @@ dmenu -name "$(basename "$0")" -f -l "$L" -fn "$FONT" -p "$PROMPT" \
         select)    wmenu -m               ;;
         resize)    sel resize             ;;
         delete)    sel delete             ;;
-        open)      open                   ;;
-        shot)      shot                   ;;
+        open)      openmenu -m            ;;
+        shot)      shot pri               ;;
         pfw)       sel shot               ;;
         off)       poweroff               ;;
         *)         focus -w "$PFW" nojump ;;

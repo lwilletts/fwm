@@ -132,8 +132,8 @@ obs() {
 
     X=$SX
     Y=$SY
-    W=1280
-    H=720
+    W=1462
+    H=822
 }
 
 double() {
@@ -201,7 +201,7 @@ position() {
     save_atom "$wid" "$mode"
 
     # briefly hide mouse
-    wmp -a $(wattr wh "$(lsw -r)")
+    # wmp -a $(wattr wh "$(lsw -r)")
 
     # raise window
     chwso -r "$wid"
@@ -254,10 +254,20 @@ main() {
     esac
 
     # grab screen variables
-    SX=$(($(mattr x "$SCR") + LGAP))
-    SY=$(($(mattr y "$SCR") + TGAP))
-    SW=$(($(mattr w "$SCR") - LGAP - RGAP))
-    SH=$(($(mattr h "$SCR") - TGAP - BGAP))
+    case "$SCR" in
+        "$PRI")
+            SX=$(($(mattr x "$SCR") + LGAP))
+            SY=$(($(mattr y "$SCR") + TGAP))
+            SW=$(($(mattr w "$SCR") - LGAP - RGAP))
+            SH=$(($(mattr h "$SCR") - TGAP - BGAP))
+            ;;
+        "$SEC")
+            SX=$(($(mattr x "$SCR") + LSEC))
+            SY=$(($(mattr y "$SCR") + TSEC))
+            SW=$(($(mattr w "$SCR") - LSEC - RSEC))
+            SH=$(($(mattr h "$SCR") - TSEC - BSEC))
+            ;;
+    esac
 
     # restore window position
     [ -n "$(atomx OLD_POS "$wid")" ] && {
