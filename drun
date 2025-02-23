@@ -53,6 +53,25 @@ center() {
     H=$L
 }
 
+mouse() {
+    W="180"
+    monitorXY=$(mattr xywhn "$PFM")
+    XM=$(echo "$monitorXY" | cut -d\  -f 1)
+    YM=$(echo "$monitorXY" | cut -d\  -f 2)
+    WM=$(echo "$monitorXY" | cut -d\  -f 3)
+    HM=$(echo "$monitorXY" | cut -d\  -f 4)
+    IM=$(echo "$monitorXY" | cut -d\  -f 5)
+
+
+    # subtract monitor onto mouse XY position
+    X=$(($(wmp -a | cut -d' ' -f 1) - 20))
+    Y=$(($(wmp -a | cut -d' ' -f 2) - 20))
+
+    echo $X $Y
+
+    H=$L
+}
+
 main() {
     . fwmrc
     wmenv
@@ -68,6 +87,7 @@ main() {
     case "$1" in
         -b|bar)    bar     ;;
         -c|center) center  ;;
+        -m|mouse)  mouse   ;;
         -h|help)   usage 0 ;;
         *)         usage 1 ;;
     esac
@@ -82,13 +102,13 @@ main() {
     done | sort -u | \
     dmenu -name "drun" -f -i -fn "$FONT" -p "$PROMPT" \
     -nf "#$NF" -sf "#$SF" -nb "#$NB" -sb "#$SB" -bc "#$BC" \
-    -s "$(mattr d "$PFM")" -x $X -y $Y -w $W -h "$H" -bw "$DBW" -l $L)"
+    -s "$(mattr d "$PFM")" -x "$X" -y "$Y" -w "$W" -h "$H" -bw "$DBW" -l $L)"
 
     # if dmenu returns no output refocus previous window
     # else run command
     if [ -n "$prg" ]; then
         printf '%s\n' "$prg" | ${SHELL:-"/bin/sh"} &
-    else
+    elif; then
         focus -w "$PFW"
     fi
 }

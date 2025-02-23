@@ -77,7 +77,7 @@ main() {
                             }
                             ;;
                         gl)
-                            sleep 0.22
+                            sleep 0.2
                             ;;
                         discord|Steam)
                             continue
@@ -85,11 +85,6 @@ main() {
                         obs)
                             chwb -s "$BW" -c "$INACTIVE" "$wid"
                             chwso -r "$wid"
-                            continue
-                            ;;
-                        dragon)
-                            move center "$wid"
-                            wmv -a $(wmp) "$wid"
                             continue
                             ;;
                         win10)
@@ -103,19 +98,26 @@ main() {
                             group -u 8
                             continue
                             ;;
+                        steam_app_*)
+                            move full "$wid" "$PRI"
+                            ;;
+                        streamdeck)
+                            group -u 8
+                            continue
+                            ;;
                         "Wine System Tray")
                             group -u 8
                             continue
                             ;;
-                        steam_app_*)
-                            move full "$wid" "$PRI"
-                            continue
-                            ;;
-                        # origin
-                        solaar)
+                        steamwebhelper)
                             group -u 8
                             continue
                             ;;
+                        steam_app_*)
+                            move center "$wid" "$PRI"
+                            continue
+                            ;;
+                        # origin
                         urxvt)
                             case "$NAME" in
                                 "calender")
@@ -141,7 +143,14 @@ main() {
                 ;;
             ENTER)
                 if [ "$wid" != "$(pfw 2> /dev/null)" ]; then
-                    wattr o "$wid" || focus -w "$wid" nojump
+                    CLASS="$(atomx WM_CLASS "$wid")"
+                        case "$CLASS" in
+                            steamwebhelper)
+                                ;;
+                            *)
+                                wattr o "$wid" || focus -w "$wid" nojump
+                                ;;
+                        esac
                 fi
                 ;;
         esac

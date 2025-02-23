@@ -58,7 +58,7 @@ Dynamic program launching / stopping based on other programs. Reads
 
 Example configuration file:
 
-```
+``
 cwm_run MidairCE
 snip_run obs
 picom_end MidairCE Tribes.exe DOOM ShadowOfTheTombRaider

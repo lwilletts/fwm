@@ -44,8 +44,6 @@ show_group() {
         }
     done
 
-    focus -w "$PFW"
-
     # set group to active
     atomx GROUP_"$1"=on "$ROOT" > /dev/null
 }
@@ -89,10 +87,8 @@ smart_toggle_group() {
 
             for wid in $windows; do
                 if [ "$wid" = "$PFW" ]; then
-                    # if [ "$PFW" != "$(lsw | head -n 1)" ]; then
-                        hide_group "$1"
-                        return
-                    # fi
+                    hide_group "$1"
+                    return
                 fi
             done
 
@@ -100,6 +96,7 @@ smart_toggle_group() {
             ;;
         off)
             show_group "$1"
+            focus -w "$PFW"
             ;;
         *)
             smart_toggle_group "$1"

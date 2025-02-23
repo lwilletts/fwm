@@ -1,0 +1,27 @@
+#!/bin/sh
+#
+# middle
+
+usage() {
+    base=$(basename "$0")
+
+    cat >&2 << EOF
+Usage:
+    $base
+EOF
+
+    [ $# -eq 0 ] || exit "$1"
+}
+
+main() {
+    PRI="$(lsm -p)"
+
+    X="$(mattr x "$PRI")"
+    Y="$(mattr y "$PRI")"
+    W="$(mattr w "$PRI")"
+    H="$(mattr h "$PRI")"
+
+    wmp -a $((X + W/2)) $((Y + H/2))
+}
+
+main "$@"
